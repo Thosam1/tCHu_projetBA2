@@ -7,10 +7,10 @@ public final class Station { //immuable ?
     private int id; // between 0-50 - maybe use a map ? a name and a tag for countries ?
     private String name;
 
-    Station(int id, String name){
+    public Station(int id, String name){
+        Preconditions.checkArgument(id > 0);  //peut lever une IllegalArgumentException
         this.id = id;
-        this.name = name;           //lever une IllegalArgumentException <0
-        Preconditions.checkArgument(id > 0);
+        this.name = name; 
     }
 
     public int id() {

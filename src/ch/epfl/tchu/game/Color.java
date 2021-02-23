@@ -13,6 +13,7 @@ public enum Color {
     RED,
     WHITE;
 
+    //liste immuable
     public static final List<Color> ALL = List.of(Color.values());
     public static final int COUNT = Color.ALL.size();
 
