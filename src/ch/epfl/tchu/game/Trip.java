@@ -7,9 +7,9 @@ import java.util.Objects;
 import ch.epfl.tchu.Preconditions;
 
 public final class Trip {
-    public final Station from;
-    public final Station to;
-    public final int points;
+    private final Station from;
+    private final Station to;
+    private final int points;
     
     public Trip(Station from, Station to, int points) {
             this.from = Objects.requireNonNull(from);
@@ -29,6 +29,14 @@ public final class Trip {
                 output.add(new Trip(start, destination, points));
             }
         }
+        return output;
+    }
+    
+    //Utile pour le deuxième constructeur de ticket
+    //créé une liste avec un seul trip
+    public static List<Trip> simpleTrip(Station from, Station to, int points){
+        ArrayList<Trip> output = new ArrayList<Trip>();
+        output.add(new Trip(from, to, points));
         return output;
     }
     
