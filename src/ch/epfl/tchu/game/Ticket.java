@@ -26,23 +26,33 @@ public final class Ticket implements Comparable<Ticket> {
     public Ticket(List<Trip> trips) {
         Preconditions.checkArgument(!trips.isEmpty());  // if empty throws an IllegalArgumentException
         this.trips = trips; // Objects.requireNonNull(List.copyOf(trips)); à supprimer
-       
+
+//        Objects.requireNonNull(trips);    // ici la mauvaise exception est lancée :)
+//        this.trips = List.copyOf(trips);
+//        this.trips = Objects.requireNonNull(List.copyOf(trips));
+
+
         //vérification que toutes les gares de départ sont les meme
         if (trips!=null) {
             for (Trip trip1 : trips) {              // we could improve this with a better algorithm
                 for(Trip trip2 : trips){
-                    if(!(trip1.from().equals(trip2.from()))){
-                        throw new IllegalArgumentException();
-                    }
+                    Preconditions.checkArgument(trip1.from().equals(trip2.from()));
                 }
-//                if(!(trip.from().equals(trips.get(0).from()))){ // là tu compares seulement l'index 0 avec tous les autres, mais qu'en est-il de l'index 1,2,3,... ?
-//                    throw new IllegalArgumentException();
-//                }
             }
+        }
+        if (trips.size()!=0) {
+            text = computeText(trips);
+        } else text = "";
+    }
 
-        }
-        text = computeText(trips);
-        }
+//        for (Trip trip : trips) { c'est ce que t'as changé, à toi de voir quelle version tu veux garder
+//            Preconditions.checkArgument(trip.from().equals(trips.get(0).from())); // ici tu compares seulement l'index 0 avec tous les autres, mais qu'en est-il de l'index 1,2,3,... ?
+//        }
+//        if (trips.size()!=0) {
+//            text = computeText(trips);
+//        }
+//        else text = "";
+//    }
     
     /**
      * deuxieme constructeur qui construit un Ticket à partir de deux Stations et 
@@ -76,6 +86,7 @@ public final class Ticket implements Comparable<Ticket> {
         String initialStation = trips.get(0).from().name();
         TreeSet<String> destinations = new TreeSet<>();
         String output;
+
         for (Trip trip : trips) {
             destinations.add(trip.to() + " (" + trip.points() +")");
             }
@@ -107,27 +118,22 @@ public final class Ticket implements Comparable<Ticket> {
      */
     public int points(StationConnectivity connectivity) {
         int maxPositivePoints = 0;
-        int maxNegativePoints = -400; //ce nombre est arbitraire, il en faut juste un très bas
+        int maxNegativePoints = -100; //ce nombre est arbitraire, il en faut juste un très bas
         for (Trip trip : trips) {
             int tripPoints = trip.points(connectivity);
             if (tripPoints>=0) {
-                if(tripPoints > maxPositivePoints) {
-                    maxPositivePoints = tripPoints;
-                    }
+                    maxPositivePoints = Math.max(tripPoints, maxPositivePoints);
                 }
             else {
-                if(tripPoints > maxNegativePoints) {
-                    maxNegativePoints = tripPoints;
-                }
+                    maxNegativePoints = Math.max(tripPoints, maxNegativePoints);
             }
         }
-
-        if(maxPositivePoints != 0) return maxPositivePoints;
-        else return maxNegativePoints;
+        return (maxPositivePoints > 0) ? maxPositivePoints : maxNegativePoints;
         }
     
     public int compareTo(Ticket that) {
-        return this.text().compareTo(that.text());
+        return this.text()
+                .compareTo(that.text());
     }
     
     @Override

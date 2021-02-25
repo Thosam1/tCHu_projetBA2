@@ -44,10 +44,10 @@ public final class Trip {   // immuable
      */
     public static List<Trip> all(List<Station> from, List<Station> to, int points){
         Preconditions.checkArgument(points > 0 && !from.isEmpty() && !to.isEmpty());    // j'ai rajouté les deux dedans si ça joue pour toi
-//        if ((from.isEmpty())&&(to.isEmpty())){
-//            throw new IllegalArgumentException();
-//        }
+//        Preconditions.checkArgument(!((from.isEmpty())||(to.isEmpty())));
+
         ArrayList<Trip> output = new ArrayList<Trip>();
+
         for (Station start : from) {
             for (Station destination : to) {
                 output.add(new Trip(start, destination, points));
@@ -77,9 +77,6 @@ public final class Trip {   // immuable
      *          points si les deux stations sont connectées et -points sinon
      */
     public int points(StationConnectivity connectivity) {
-        if(connectivity.connected(from, to)) {
-            return points;
-        }
-        else return -points;
+        return (connectivity.connected(from, to)) ? points : -points;
     }
 }
