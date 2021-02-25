@@ -24,15 +24,22 @@ public final class Ticket implements Comparable<Ticket> {
      *          Trip ne sont pas les meme
      */
     public Ticket(List<Trip> trips) {
-        this.trips = Objects.requireNonNull(List.copyOf(trips));
+        Preconditions.checkArgument(!trips.isEmpty());  // if empty throws an IllegalArgumentException
+        this.trips = trips; // Objects.requireNonNull(List.copyOf(trips)); à supprimer
        
         //vérification que toutes les gares de départ sont les meme
         if (trips!=null) {
-            for (Trip trip : trips) {
-                if(!(trip.from().equals(trips.get(0).from()))){
-                    throw new IllegalArgumentException();
+            for (Trip trip1 : trips) {              // we could improve this with a better algorithm
+                for(Trip trip2 : trips){
+                    if(!(trip1.from().equals(trip2.from()))){
+                        throw new IllegalArgumentException();
+                    }
                 }
+//                if(!(trip.from().equals(trips.get(0).from()))){ // là tu compares seulement l'index 0 avec tous les autres, mais qu'en est-il de l'index 1,2,3,... ?
+//                    throw new IllegalArgumentException();
+//                }
             }
+
         }
         text = computeText(trips);
         }
@@ -100,7 +107,7 @@ public final class Ticket implements Comparable<Ticket> {
      */
     public int points(StationConnectivity connectivity) {
         int maxPositivePoints = 0;
-        int maxNegativePoints = -100; //ce nombre est arbitraire, il en faut juste un très bas
+        int maxNegativePoints = -400; //ce nombre est arbitraire, il en faut juste un très bas
         for (Trip trip : trips) {
             int tripPoints = trip.points(connectivity);
             if (tripPoints>=0) {
@@ -114,6 +121,7 @@ public final class Ticket implements Comparable<Ticket> {
                 }
             }
         }
+
         if(maxPositivePoints != 0) return maxPositivePoints;
         else return maxNegativePoints;
         }

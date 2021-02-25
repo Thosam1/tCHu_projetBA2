@@ -11,7 +11,7 @@ import ch.epfl.tchu.Preconditions;
  *
  */
 
-public final class Trip {
+public final class Trip {   // immuable
     private final Station from;
     private final Station to;
     private final int points;
@@ -43,10 +43,10 @@ public final class Trip {
      *          Liste contenant des Trips (from.size() * to.size() Trips pour etre exact)
      */
     public static List<Trip> all(List<Station> from, List<Station> to, int points){
-        Preconditions.checkArgument(points > 0);
-        if ((from.isEmpty())&&(to.isEmpty())){
-            throw new IllegalArgumentException();
-        }
+        Preconditions.checkArgument(points > 0 && !from.isEmpty() && !to.isEmpty());    // j'ai rajouté les deux dedans si ça joue pour toi
+//        if ((from.isEmpty())&&(to.isEmpty())){
+//            throw new IllegalArgumentException();
+//        }
         ArrayList<Trip> output = new ArrayList<Trip>();
         for (Station start : from) {
             for (Station destination : to) {
