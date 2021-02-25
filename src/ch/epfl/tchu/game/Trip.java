@@ -5,12 +5,25 @@ import java.util.List;
 import java.util.Objects;
 
 import ch.epfl.tchu.Preconditions;
+/**
+ * 
+ * @author Aymeric de chillaz (326617)
+ *
+ */
 
 public final class Trip {
     private final Station from;
     private final Station to;
     private final int points;
-    
+    /**
+     * construit un Trip qui est un trajet entre deux Stations. (celles ci ne doivent pas etre null et les points doivent etre positif)
+     * @param from
+     *          Station de départ
+     * @param to
+     *          Station d arrivée
+     * @param points
+     *          Points associés à ce trajet
+     */
     public Trip(Station from, Station to, int points) {
             this.from = Objects.requireNonNull(from);
             this.to = Objects.requireNonNull(to);
@@ -18,6 +31,17 @@ public final class Trip {
             this.points = points;
     }
     
+    /**
+     * créé une liste de Trip qui valent autant de points
+     * @param from
+     *          Stations de départ
+     * @param to
+     *          Stations d'arrivée
+     * @param points
+     *          points associé à tous ces Trip
+     * @return
+     *          Liste contenant des Trips (from.size() * to.size() Trips pour etre exact)
+     */
     public static List<Trip> all(List<Station> from, List<Station> to, int points){
         Preconditions.checkArgument(points > 0);
         if ((from.isEmpty())&&(to.isEmpty())){
@@ -32,14 +56,6 @@ public final class Trip {
         return output;
     }
     
-    //Utile pour le deuxième constructeur de ticket
-    //créé une liste avec un seul trip
-    public static List<Trip> simpleTrip(Station from, Station to, int points){
-        ArrayList<Trip> output = new ArrayList<Trip>();
-        output.add(new Trip(from, to, points));
-        return output;
-    }
-    
     public Station from() {
         return from;
     }
@@ -51,6 +67,15 @@ public final class Trip {
     public int points() {
         return points;
     }
+    
+    /**
+     * méthode qui permet de savoir combien de points le joueur perd ou gagne sur ce ticket
+     * 
+     * @param connectivity 
+     *          permet d appeler la méthode connected avec les attributs from et to
+     * @return 
+     *          points si les deux stations sont connectées et -points sinon
+     */
     public int points(StationConnectivity connectivity) {
         if(connectivity.connected(from, to)) {
             return points;

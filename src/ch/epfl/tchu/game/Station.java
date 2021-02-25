@@ -8,7 +8,7 @@ public final class Station { //immuable ?
     private String name;
 
     public Station(int id, String name){
-        Preconditions.checkArgument(id > 0);  //peut lever une IllegalArgumentException
+        Preconditions.checkArgument(id >= 0);  //peut lever une IllegalArgumentException
         this.id = id;
         this.name = name; 
     }
