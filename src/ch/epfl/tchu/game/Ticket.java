@@ -24,19 +24,20 @@ public final class Ticket implements Comparable<Ticket> {
      *          Trip ne sont pas les meme
      */
     public Ticket(List<Trip> trips) {
-        this.trips = Objects.requireNonNull(List.copyOf(trips));
+        Objects.requireNonNull(trips);
+        this.trips = List.copyOf(trips);
+        //this.trips = Objects.requireNonNull(List.copyOf(trips));
        
         //vérification que toutes les gares de départ sont les meme
-        if (trips!=null) {
-            for (Trip trip : trips) {
-                if(!(trip.from().equals(trips.get(0).from()))){
-                    throw new IllegalArgumentException();
-                }
+      //  if (trips!=null) {
+        for (Trip trip : trips) {
+            Preconditions.checkArgument(trip.from().equals(trips.get(0).from()));
             }
-        }
-        text = computeText(trips);
-        }
-    
+         if (trips.size()!=0) {
+             text = computeText(trips);
+         }
+         else text = "";
+         }
     /**
      * deuxieme constructeur qui construit un Ticket à partir de deux Stations et 
      * des points
@@ -69,6 +70,7 @@ public final class Ticket implements Comparable<Ticket> {
         String initialStation = trips.get(0).from().name();
         TreeSet<String> destinations = new TreeSet<>();
         String output;
+        
         for (Trip trip : trips) {
             destinations.add(trip.to() + " (" + trip.points() +")");
             }
@@ -104,22 +106,18 @@ public final class Ticket implements Comparable<Ticket> {
         for (Trip trip : trips) {
             int tripPoints = trip.points(connectivity);
             if (tripPoints>=0) {
-                if(tripPoints > maxPositivePoints) {
-                    maxPositivePoints = tripPoints;
-                    }
+                    maxPositivePoints = Math.max(tripPoints, maxPositivePoints);
                 }
             else {
-                if(tripPoints > maxNegativePoints) {
-                    maxNegativePoints = tripPoints;
-                }
+                    maxNegativePoints = Math.max(tripPoints, maxNegativePoints);
             }
         }
-        if(maxPositivePoints != 0) return maxPositivePoints;
-        else return maxNegativePoints;
+        return (maxPositivePoints > 0) ? maxPositivePoints : maxNegativePoints;
         }
     
     public int compareTo(Ticket that) {
-        return this.text().compareTo(that.text());
+        return this.text()
+                .compareTo(that.text());
     }
     
     @Override
