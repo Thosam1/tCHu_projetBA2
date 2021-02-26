@@ -115,14 +115,14 @@ public final class Route {
         for (int i = 0; i<length; ++i) {
             if (color().equals(null)) {//c'est une route neutre
                 for(Card card : Card.ALL) {
-                    output.add(SortedBag.of(length-i, card, length, new Card(null)));
+                    output.add(SortedBag.of(length-i, card, i, Card.LOCOMOTIVE));
                 }
             }
             else {
-                output.add(SortedBag.of(length-i,new Card(color()), length, new Card(null)));
+                output.add(SortedBag.of(length-i, Card.of(color), i, Card.LOCOMOTIVE));
                 }
             }
-        output.add(SortedBag.of(length, new Card(null))); //SortedBag contenant un nombre de locomotives égale à length
+        output.add(SortedBag.of(length, Card.LOCOMOTIVE)); //SortedBag contenant un nombre de locomotives égale à length
         return output;
         }
     
