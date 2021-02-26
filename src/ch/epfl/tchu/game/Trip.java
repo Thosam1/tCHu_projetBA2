@@ -44,7 +44,6 @@ public final class Trip {   // immuable
      */
     public static List<Trip> all(List<Station> from, List<Station> to, int points){
         Preconditions.checkArgument(points > 0 && !from.isEmpty() && !to.isEmpty());    // j'ai rajouté les deux dedans si ça joue pour toi
-//        Preconditions.checkArgument(!((from.isEmpty())||(to.isEmpty())));
 
         ArrayList<Trip> output = new ArrayList<Trip>();
 

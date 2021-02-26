@@ -24,13 +24,8 @@ public final class Ticket implements Comparable<Ticket> {
      *          Trip ne sont pas les meme
      */
     public Ticket(List<Trip> trips) {
-        Preconditions.checkArgument(!trips.isEmpty());  // if empty throws an IllegalArgumentException
-        this.trips = trips; // Objects.requireNonNull(List.copyOf(trips)); à supprimer
-
-//        Objects.requireNonNull(trips);    // ici la mauvaise exception est lancée :)
-//        this.trips = List.copyOf(trips);
-//        this.trips = Objects.requireNonNull(List.copyOf(trips));
-
+        Preconditions.checkArgument(!trips.isEmpty());
+        this.trips = List.copyOf(trips); // prendre en attribut une liste immuable
 
         //vérification que toutes les gares de départ sont les meme
         if (trips!=null) {
@@ -39,9 +34,7 @@ public final class Ticket implements Comparable<Ticket> {
                 Preconditions.checkArgument(trip.from().name().equals(firstInitialStationName));
             }
         }
-        if (trips.size()!=0) {
-            text = computeText(trips);
-        } else text = "";
+        text = (trips.size()!=0) ? computeText(trips) : "";
     }
     
     /**
