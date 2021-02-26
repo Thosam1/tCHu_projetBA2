@@ -55,14 +55,26 @@ public final class Trip {   // immuable
         return output;
     }
     
+    /**
+     * getter de l'attribut from qui est la Station initiale
+     * @return from 
+     */
     public Station from() {
         return from;
     }
     
+    /**
+     * getter de l'attribut to qui est la Station finale
+     * @return to
+     */
     public Station to() {
         return to;
     }
     
+    /**
+     * getter de l'attribut points qui est le nombre de point associé à la validation de ce Trip
+     * @return points
+     */
     public int points() {
         return points;
     }

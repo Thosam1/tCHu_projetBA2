@@ -1,25 +1,42 @@
 package ch.epfl.tchu.game;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
-
+/**
+ * 
+ * @author Aymeric de chillaz (326617)
+ *
+ */
 public final class Route {
-    public final String id;
-    public final Station station1;
-    public final Station station2;
-    public final int length;
-    public final Level level;
-    public final Color color;
+    private final String id;
+    private final Station station1;
+    private final Station station2;
+    private final int length;
+    private final Level level;
+    private final Color color;
     
-    
+/**
+ * Enumeration qui permet de savoir si une route est un tunnel ou pas
+ *
+ */
     public enum Level{
         OVERGROUND,
-        UNDERGROUND;
+        UNDERGROUND; //tunnel
     }
-    
+    /**
+     * construit les routes et vérifie que les stations ne sont pas égales
+     * vérifie aussi que length est compris entre les constantes MIN_ROUTE_LENGTH et MAX_ROUTE_LENGTH
+     * @param id identité de la route
+     * @param station1 première gare de la route
+     * @param station2 seconde gare de la route
+     * @param length longueur de la route
+     * @param level niveau auquel se trouve la route (i.e. tunnel ou pas)
+     * @param color couleur de la route ou null s'il s'agit d'une route de couleur neutre
+     */
     public Route(String id, Station station1, Station station2, int length, Level level, Color color) {
         Preconditions.checkArgument(!(station1.equals(station2)));
         Preconditions.checkArgument((length >= Constants.MIN_ROUTE_LENGTH) && (length <= Constants.MAX_ROUTE_LENGTH));
@@ -31,25 +48,91 @@ public final class Route {
         this.level = Objects.requireNonNull(level);
         this.color = color;
     }
+    
+    
+    /**
+     * getter pour l'identité de la premiere route
+     * @return id
+     */
     public String id() {return id;}
+    
+    /**
+     * getter pour la première gare de la route
+     * @return station1
+     */
     public Station station1() {return station1;}
+    
+    /**
+     * getter pour la seconde gare de la route
+     * @return station2
+     */
     public Station station2() {return station2;}
+    
+    /**
+     * getter pour la longueur de la route
+     * @return length
+     */
     public int length() {return length;}
+    
+    /**
+     * getter pour le Level de la route (OVERGROUND ou UNDERGROUND)
+     * @return level
+     */
     public Level level() {return level;}
+    
+    /**
+     * getter pour la couleur de la route, peut etre null s'il s'agit d'une route neutre
+     * @return color
+     */
     public Color color() {return color;}
     
+    /**
+     * méthode qui return une liste contenant la premiere gare en premiere position et la seconde en seconde position
+     */
     public List<Station> stations(){
         return List.of(station1, station2);
-    }
+        }
+    
+    /**
+     * méthode qui retourne la gare de la route qui n'est pas celle donnée
+     * lève une exception si station est différent des deux gares stockées en attribut
+     * @param station 
+     * @return station1 ou station2 dépendant de la valeur de station
+     */
     public Station stationOpposite(Station station) {
         Preconditions.checkArgument((station.equals(station1))||(station.equals(station2)));
         return (station.equals(station1)) ? station2 : station1;
-    }
+        }
     
+    /**
+     * retourne la liste de tous les ensembles de cartes qui pourraient etre joués pour s'emparer
+     * de la route
+     * Trié par ordre croissant de nombre de cartes locomotive, puis par couleur
+     * @return liste décrite au-dessus
+     */
     public List<SortedBag<Card>> possibleClaimCards(){
-        
-    }
+        List<SortedBag<Card>> output = new ArrayList<SortedBag<Card>>();
+        for (int i = 0; i<length; ++i) {
+            if (color().equals(null)) {//c'est une route neutre
+                for(Card card : Card.ALL) {
+                    output.add(SortedBag.of(length-i, card, length, new Card(null)));
+                }
+            }
+            else {
+                output.add(SortedBag.of(length-i,new Card(color()), length, new Card(null)));
+                }
+            }
+        output.add(SortedBag.of(length, new Card(null))); //SortedBag contenant un nombre de locomotives égale à length
+        return output;
+        }
     
+    /**
+     * retourne le nombre de cartes additionnelles à jouer pour s'emparer de la route (en tunnel)
+     * lève l'exception IllegalArgumentException si la route n'est pas un tunnel ou drawnCards n'est pas égal à 3
+     * @param claimCards cartes initialement posés par le joueur
+     * @param drawnCards les trois cartes tirées du sommet de la pioche
+     * @return une valeur int entre, 0 et 3, compris
+     */
     public int additionalClaimCardsCount(SortedBag<Card> claimCards, SortedBag<Card> drawnCards) {
         Preconditions.checkArgument(drawnCards.size() == Constants.ADDITIONAL_TUNNEL_CARDS);
         Preconditions.checkArgument(level.equals(Level.UNDERGROUND));
@@ -78,5 +161,8 @@ public final class Route {
         return additionalCards;
     }
     
+    /**
+     * @return nombre de points de construction qu'un joueur obtient lorsqu'il s'empare de la route
+     */
     public int claimPoints() {return Constants.ROUTE_CLAIM_POINTS.get(length);}
 }

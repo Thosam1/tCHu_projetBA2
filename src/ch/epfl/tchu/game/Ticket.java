@@ -51,6 +51,10 @@ public final class Ticket implements Comparable<Ticket> {
         this(List.of(new Trip(from, to, points)));
     }
     
+    /**
+     * getter de l'attribut text qui est associé à ce ticket
+     * @return text
+     */
     public String text() {
         return text;
     }
@@ -82,14 +86,6 @@ public final class Ticket implements Comparable<Ticket> {
         return output;
         }
     
-    public static void main(String args[]) {
-        var s1 = new Station(0, "From");
-        var s2 = new Station(1, "To");
-        var s3 = new Station(2, "2");
-        var t = new Ticket(List.of(new Trip(s1, s2, 15), new Trip(s1,s3, 15)));
-        System.out.println(t.text());
-    }
-    
     /**
      * méthode qui détermine combien un joueur perd ou gagne en points pour un ticket
      * @param connectivity
@@ -113,11 +109,19 @@ public final class Ticket implements Comparable<Ticket> {
         return (maxPositivePoints > 0) ? maxPositivePoints : maxNegativePoints;
         }
     
+    /**
+     * méthode qui compare deux tickets
+     * @return une valeure dans {-1,0,1} Tout dépend de la comparaison qui est faite par ordre alphabétique
+     * négatif si that.text() vient après, 0 si ce sont les meme et positif si that.text() vient avant
+     */
     public int compareTo(Ticket that) {
         return this.text()
                 .compareTo(that.text());
     }
     
+    /**
+     * @return text permet de print les billets
+     */
     @Override
     public String toString() {
         return text;
