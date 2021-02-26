@@ -34,25 +34,15 @@ public final class Ticket implements Comparable<Ticket> {
 
         //vérification que toutes les gares de départ sont les meme
         if (trips!=null) {
-            for (Trip trip1 : trips) {              // we could improve this with a better algorithm
-                for(Trip trip2 : trips){
-                    Preconditions.checkArgument(trip1.from().equals(trip2.from()));
-                }
+            String firstInitialStationName = trips.get(0).from().name();
+            for (Trip trip : trips) { 
+                Preconditions.checkArgument(trip.from().name().equals(firstInitialStationName));
             }
         }
         if (trips.size()!=0) {
             text = computeText(trips);
         } else text = "";
     }
-
-//        for (Trip trip : trips) { c'est ce que t'as changé, à toi de voir quelle version tu veux garder
-//            Preconditions.checkArgument(trip.from().equals(trips.get(0).from())); // ici tu compares seulement l'index 0 avec tous les autres, mais qu'en est-il de l'index 1,2,3,... ?
-//        }
-//        if (trips.size()!=0) {
-//            text = computeText(trips);
-//        }
-//        else text = "";
-//    }
     
     /**
      * deuxieme constructeur qui construit un Ticket à partir de deux Stations et 
