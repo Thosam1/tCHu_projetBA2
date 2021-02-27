@@ -6,19 +6,22 @@ import java.util.Objects;
 
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
+
+
 /**
  * 
  * @author Aymeric de chillaz (326617)
  *
  */
 public final class Route {
+
     private final String id;
     private final Station station1;
     private final Station station2;
     private final int length;
     private final Level level;
     private final Color color;
-    
+
 /**
  * Enumeration qui permet de savoir si une route est un tunnel ou pas
  *
