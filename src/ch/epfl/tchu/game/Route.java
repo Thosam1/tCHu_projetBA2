@@ -113,9 +113,11 @@ public final class Route {
     public List<SortedBag<Card>> possibleClaimCards(){
         List<SortedBag<Card>> output = new ArrayList<SortedBag<Card>>();
         for (int i = 0; i<length; ++i) {
-            if (color().equals(null)) {//c'est une route neutre
+            if (color() == null) {//c'est une route neutre
+            //if (Card.of(color))    
                 for(Card card : Card.ALL) {
-                    output.add(SortedBag.of(length-i, card, i, Card.LOCOMOTIVE));
+                    if (!(card.equals(Card.LOCOMOTIVE))) {
+                        output.add(SortedBag.of(length-i, card, i, Card.LOCOMOTIVE));}
                 }
             }
             else {
