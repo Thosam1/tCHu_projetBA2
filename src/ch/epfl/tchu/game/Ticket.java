@@ -1,6 +1,5 @@
 package ch.epfl.tchu.game;
 import java.util.List;
-import java.util.Objects;
 import java.util.TreeSet;
 import ch.epfl.tchu.Preconditions;
 

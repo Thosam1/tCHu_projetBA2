@@ -21,7 +21,7 @@ class TestRoute {
       //  Station station = new Station(0,"test");
     //    new Route("id", station, station, 2, Level.OVERGROUND, Color.BLUE);
             Station station = new Station(0,"test");
-            Route test = new Route("id", station, station, 2, Level.OVERGROUND, Color.BLUE);});
+            new Route("id", station, station, 2, Level.OVERGROUND, Color.BLUE);});
         }
 
     @Test
