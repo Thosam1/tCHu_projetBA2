@@ -10,6 +10,7 @@ import java.util.List;
  * @author Thösam Norlha-Tsang (330163)
  *  représente : un chemin dans le réseau d'un joueur
  */
+
 public final class Trail {
 
     private final int length;    // optional
@@ -17,7 +18,7 @@ public final class Trail {
     private final Station station2;   // optional
     private final List<Route> listOfRoutesInTrail;    //in order
 
-    public Trail (Station station1, Station station2, int length, List<Route> listOfRoutesInTrail) {
+    private Trail (Station station1, Station station2, int length, List<Route> listOfRoutesInTrail) {
         this.station1 = station1;
         this.station2 = station2;
         this.length = length;
