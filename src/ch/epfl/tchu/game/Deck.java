@@ -16,7 +16,9 @@ import ch.epfl.tchu.SortedBag;
 public final class Deck<C extends Comparable<C>> {
     private final int size;
     private final boolean isEmpty;
-    private final List<C> deck;
+    //public for TEST
+    //=========================================================================
+    public final List<C> deck;
     
     /**
      * construit un Deck à partir d'une liste de cartes de Type C
@@ -29,22 +31,53 @@ public final class Deck<C extends Comparable<C>> {
         size = cards.size();
         isEmpty = (size==0);
         deck = List.copyOf(cards);
+        //TEST
+        /*
+        System.out.println("construction Deck");
         for (C card : deck) {
             System.out.println(card);
-        }
+        }*/
     }
     
     public static void main(String[] args) {
-        SortedBag cards = SortedBag.of(2,Card.BLUE, 1, Card.LOCOMOTIVE);
-        Deck deck = Deck.of(cards, new Random());
+        SortedBag.Builder<Card> builder = new SortedBag.Builder<>();
+        builder.add(Card.BLUE);
+        builder.add(Card.GREEN);
+        builder.add(Card.BLUE);
+        builder.add(Card.LOCOMOTIVE);
+        builder.add(Card.VIOLET);
+        builder.add(Card.BLACK);
+        builder.add(Card.BLACK);
+        builder.add(Card.RED);
+        builder.add(Card.GREEN);
+        builder.add(Card.BLACK);
+        builder.add(Card.ORANGE);
+        builder.add(Card.YELLOW);
+        SortedBag cards = builder.build();
+      
+        /*SortedBag<Card> cards = SortedBag.of(2,Card.BLUE, 1, Card.LOCOMOTIVE);
+        SortedBag<Card> cards = SortedBag.of(); */
+        Deck<Card> deck = Deck.of(cards, new Random());
+        System.out.println(deck.deck.toString());
         System.out.println(deck.size()); //3
         System.out.println(deck.isEmpty()); //false
         System.out.println(deck.topCard());
-        deck.withoutTopCard();
+        
+        
+        Deck<Card> newDeck =  deck.withoutTopCard();
+        System.out.println(newDeck.deck.toString());
+        
         System.out.println("end of test withoutTopCard");
-        deck.withoutTopCards(2);
+        System.out.println();
+        
+        Deck<Card> newDeck2 = deck.withoutTopCards(2);
+        System.out.println(newDeck2.deck.toString());
+        
         System.out.println("end of test withoutTopCards");
+        System.out.println();
+        
         System.out.println(deck.topCards(2).toString());
+        
         
     }
     
@@ -89,9 +122,7 @@ public final class Deck<C extends Comparable<C>> {
      */
     public Deck<C> withoutTopCard(){
         Preconditions.checkArgument(!isEmpty);
-        List<C> newDeckList = List.copyOf(deck);
-        newDeckList.remove(0);
-        return new Deck<C>(newDeckList);
+        return this.withoutTopCards(1);
         
     }
     
@@ -120,8 +151,8 @@ public final class Deck<C extends Comparable<C>> {
     public Deck<C> withoutTopCards(int count){
         Preconditions.checkArgument((0<=count)&&(count<=size));
         List<C> newDeckList = List.copyOf(deck);
-        newDeckList.subList(0,count).clear();
-        return new Deck<C>(newDeckList);
+
+        return new Deck<C>(newDeckList.subList(count, size));
     }
     
 }
