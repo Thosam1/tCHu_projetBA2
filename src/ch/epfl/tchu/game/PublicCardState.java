@@ -71,5 +71,6 @@ public class PublicCardState {
      * @return la taille de la défausse
      */
     public int discardsSize() {return discardsSize;}
+
     
 }
