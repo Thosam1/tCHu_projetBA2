@@ -21,7 +21,7 @@ public enum Card {
     public static final List<Card> ALL = List.of(Card.values());    // toutes les valeurs du type enum dans l'ordre
     public static final int COUNT = Card.ALL.size();    //  le nombre total de valeurs du type enum
 
-    final private Color color;  // enregistrer la couleur à la création
+    private Color color;  // enregistrer la couleur à la création
 
     private Card(Color color) { this.color = color;}  // constructeur privé     // if null -> locomotive
 
@@ -33,9 +33,14 @@ public enum Card {
      */
     public static Card of(Color color) {
         if(color == null) {
-            return Card.valueOf(LOCOMOTIVE.toString());
+            Card actual = Card.valueOf(LOCOMOTIVE.toString());
+            actual.color = color;
+//            System.out.println(actual);
+            return actual;
         }else{
-            return Card.valueOf(color.toString());
+            Card actual = Card.valueOf(color.toString());
+            actual.color = color;
+            return actual;
         }
     }
 

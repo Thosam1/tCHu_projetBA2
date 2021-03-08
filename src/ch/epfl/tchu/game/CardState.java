@@ -45,7 +45,7 @@ public final class CardState extends PublicCardState {
         Deck<Card> deckMinus = deck.withoutTopCards(Constants.FACE_UP_CARDS_COUNT); // pioche : cartes restantes
 
         SortedBag<Card> bin1 = null; // défausse : vide
-        return new CardState(five_faceUp, deckMinus.size(), bin1.size(), deckMinus, bin1);
+        return new CardState(five_faceUp, deckMinus.size(), 0, deckMinus, bin1);
     }
 
     /**
@@ -58,7 +58,7 @@ public final class CardState extends PublicCardState {
 
         Card cardOnTop = topDeckCard();
 
-        List<Card> newfiveFaceUp = faceUpCards();
+        List<Card> newfiveFaceUp = new ArrayList<>(faceUpCards());
         newfiveFaceUp.set(slot, cardOnTop);
 
         Deck<Card> reworkedDeck = deck.withoutTopCard();
@@ -104,7 +104,11 @@ public final class CardState extends PublicCardState {
      */
     public CardState withMoreDiscardedCards(SortedBag<Card> additionalDiscards){
         SortedBag<Card> discardsRework = bin;
-        discardsRework.union(additionalDiscards);
+        if(discardsRework == null || discardsRework.size() == 0){
+            discardsRework = additionalDiscards;
+        }else{
+            discardsRework.union(additionalDiscards);
+        }
         return new CardState(faceUpCards(), deckSize(), discardsRework.size(), deck, discardsRework);
     }
 

@@ -1,5 +1,6 @@
 package ch.epfl.tchu.gui;
 
+import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 
@@ -30,7 +31,7 @@ public final class Info {
      */
     public static String cardName(Card card, int count) {
         String cardInFrench = "";
-        switch (card.color()) {
+        switch (card) {
             case BLACK :
                 cardInFrench = StringsFr.BLACK_CARD;
                 break;
@@ -55,8 +56,11 @@ public final class Info {
             case WHITE :
                 cardInFrench = StringsFr.WHITE_CARD;
                 break;
-            default:
+            case LOCOMOTIVE:
                 cardInFrench = StringsFr.LOCOMOTIVE_CARD;
+                break;
+            default:
+                cardInFrench = StringsFr.LOCOMOTIVE_CARD; // !!!
         }
         if(Math.abs(count) > 1) {
             cardInFrench = cardInFrench + "s";
@@ -71,8 +75,12 @@ public final class Info {
      * @return le message déclarant que les joueurs, dont les noms sont ceux donnés, ont terminé la partie ex æqo en ayant chacun remporté les points donnés (utilise DRAW)
      */
     public static String draw(List<String> playerNames, int points) {
+        Preconditions.checkArgument(playerNames.size() == 2);
 
-        return String.format(StringsFr.DRAW, playerNames.toString(), points);
+        String bothNames = "";
+        bothNames = playerNames.get(0) + StringsFr.AND_SEPARATOR + playerNames.get(1);
+
+        return String.format(StringsFr.DRAW, bothNames, points);
     }
 
     /**
@@ -88,7 +96,7 @@ public final class Info {
      */
     public String keptTickets(int count) {
         String s = "";
-        if(count == 0 || count == 1){
+        if(!(count == 0 || count == 1)){
             s = "s";
         }
         return String.format(StringsFr.KEPT_N_TICKETS, player, count, s);
@@ -108,7 +116,7 @@ public final class Info {
      */
     public String drewTickets(int count) {
         String s = "";
-        if(count == 0 || count == 1){
+        if(!(count == 0 || count == 1)){
             s = "s";
         }
         return String.format(StringsFr.DREW_TICKETS, player, count, s);
@@ -162,7 +170,9 @@ public final class Info {
         if(additionalCost == 0) {
             temp = temp + String.format(StringsFr.NO_ADDITIONAL_COST);
         } else {
-            temp = temp + String.format(StringsFr.SOME_ADDITIONAL_COST, additionalCost, "s");
+            String s = "";
+            if(additionalCost > 1){s = "s";}
+            temp = temp + String.format(StringsFr.SOME_ADDITIONAL_COST, additionalCost, s);
         }
         return temp;
 
@@ -181,8 +191,9 @@ public final class Info {
      * @return le message déclarant que le joueur n'a plus que le nombre donné (et inférieur ou égale à 2) de wagons, et que le dernier tour commence
      */
     public String lastTurnBegins(int carCount){
+        Preconditions.checkArgument(carCount <= 2);
         String s = "";
-        if(carCount == 0 || carCount == 1){
+        if(!(carCount == 0 || carCount == 1)){
             s = "s";
         }
         return String.format(StringsFr.LAST_TURN_BEGINS, player, carCount, s);
@@ -207,7 +218,7 @@ public final class Info {
         String firstS = "";
         String secondS = "";
         if(points>1){firstS = "s";}
-        if(loserPoints>1){firstS = "s";}
+        if(loserPoints>1){secondS = "s";}
         return String.format(StringsFr.WINS, player, points,firstS, loserPoints, secondS);
 
     }
@@ -221,7 +232,7 @@ public final class Info {
     }
 
     private static String routeString(Route route){
-        return (route.station1().name() + StringsFr.EN_DASH_SEPARATOR + route.station2().name());
+        return (route.station1().name() + StringsFr.EN_DASH_SEPARATOR + route.station2().name());   // fonctionne avec " - "
     }
 
     private static String cardListString(SortedBag<Card> cardSortedBag){
@@ -233,7 +244,7 @@ public final class Info {
             int n = cardSortedBag.countOf(c);
             if(i == cardSortedBag.toSet().size() - 2){
                 cardList = cardList + n + " " + cardName(c, n) + StringsFr.AND_SEPARATOR;
-            }else if(i == cardSortedBag.toSet().size() - 2){
+            }else if(i == cardSortedBag.toSet().size() - 1){
                 cardList = cardList + n + " " + cardName(c, n);
             }else{
                 cardList = cardList + n + " " + cardName(c, n) + ", ";
