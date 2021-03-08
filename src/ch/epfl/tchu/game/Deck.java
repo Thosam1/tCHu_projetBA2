@@ -16,9 +16,7 @@ import ch.epfl.tchu.SortedBag;
 public final class Deck<C extends Comparable<C>> {
     private final int size;
     private final boolean isEmpty;
-    //public for TEST
-    //=========================================================================
-    public final List<C> deck;
+    private final List<C> deck;
     
     /**
      * construit un Deck à partir d'une liste de cartes de Type C
