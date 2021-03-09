@@ -33,5 +33,7 @@ class TestStationPartition {
         assertEquals(true, partition.connected(new Station (10,""), new Station (11,"")));
         assertEquals(false, partition.connected(new Station(0,""), new Station(14,"")));
         assertEquals(true, partition.connected(new Station(6,""), new Station(6,"")));
+        assertEquals(true, partition.connected(new Station(20,"station20"), new Station(20, "station20")));
+        assertEquals(false, partition.connected(new Station(20,"station20"), new Station(19, "station19")));
     }
 }

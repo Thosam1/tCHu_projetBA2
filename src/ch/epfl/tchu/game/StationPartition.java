@@ -29,8 +29,14 @@ public final class StationPartition implements StationConnectivity{
      */
     @Override
     public boolean connected(Station s1, Station s2) {
-        return tableauDesLiens[s1.id()]==tableauDesLiens[s2.id()];
+        if((s1.id()>=tableauDesLiens.length)||(s2.id()>=tableauDesLiens.length)
+            ||(s1.id()<0)||(s2.id()<0)) {
+            return s1.id()==s2.id();
+        }
+        else {
+            return tableauDesLiens[s1.id()]==tableauDesLiens[s2.id()];}
     }
+    
     /*//TEST
     public static void main(String[] args) {
         StationPartition.Builder builder = new StationPartition.Builder(16);
