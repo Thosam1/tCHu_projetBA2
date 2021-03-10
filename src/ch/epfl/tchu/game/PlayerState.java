@@ -163,17 +163,25 @@ public final class PlayerState extends PublicPlayerState {
      *
      * @return
      */
-    public int ticketPoints(){  // ?!?!?    !!! UH ?
+    public int ticketPoints(){
+        int idMax = -1;
         int ticketPoints = 0;
-//        StationConnectivity connectivity;
-//        for(Ticket t: tickets){
-//            t.points(connectivity);
-//        }
-        for(Route r: routes()){
-
+        for(Route r : routes()){
+            idMax = Math.max(Math.max(r.station1().id(), r.station2().id()), idMax);
+            }
+        
+        StationPartition.Builder builder = new StationPartition.Builder(idMax+1);
+        
+        for (Route r : routes) {
+            builder.connect(r.station1(), r.station2());
+        }
+        StationPartition partition = builder.build();
+        
+        for (Ticket ticket : tickets) {
+            ticketPoints += ticket.points(partition);
         }
         return ticketPoints;
-    }
+        }
 
     /**
      * @return la totalité des points obtenus par le joueur à la fin de la partie, à savoir la somme des points retournés par les méthodes claimPoints et ticketPoints

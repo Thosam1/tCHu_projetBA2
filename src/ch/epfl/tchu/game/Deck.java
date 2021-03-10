@@ -74,7 +74,7 @@ public final class Deck<C extends Comparable<C>> {
         System.out.println("end of test withoutTopCards");
         System.out.println();
         
-        System.out.println(deck.topCards(2).toString());
+        System.out.println(deck.topCards(4).toString());
         
         
     }

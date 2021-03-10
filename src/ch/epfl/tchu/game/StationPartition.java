@@ -110,6 +110,7 @@ public final class StationPartition implements StationConnectivity{
             for(int i = 0; i<partition.length; ++i) {
                 output[i] = this.representative(i);
             }
+            
             return new StationPartition(output);
         }
         

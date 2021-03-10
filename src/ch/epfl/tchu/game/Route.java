@@ -115,19 +115,36 @@ public final class Route {
      */
     public List<SortedBag<Card>> possibleClaimCards(){
         List<SortedBag<Card>> output = new ArrayList<SortedBag<Card>>();
-        for (int i = 0; i<length; ++i) {
-            if (color() == null) {//c'est une route neutre
-            //if (Card.of(color))    
+        if(level==Level.UNDERGROUND) {
+            for (int i = 0; i<length; ++i) {
+                if (color() == null) {//c'est une route neutre
+                    //if (Card.of(color))    
+                    for(Card card : Card.ALL) {
+                        if (!(card.equals(Card.LOCOMOTIVE))) {
+                            output.add(SortedBag.of(length-i, card, i, Card.LOCOMOTIVE));}
+                    }
+                }
+                //route de couleur
+                else {
+                    output.add(SortedBag.of(length-i, Card.of(color), i, Card.LOCOMOTIVE));
+                }
+                }
+            //SortedBag contenant un nombre de locomotives égale à length
+            output.add(SortedBag.of(length, Card.LOCOMOTIVE));
+            }
+        
+        //Pour les routes OVERGROUND nous ne voulons pas de LOCOMOTIVES dans l'output
+        else {
+            if(color()==null) {
                 for(Card card : Card.ALL) {
-                    if (!(card.equals(Card.LOCOMOTIVE))) {
-                        output.add(SortedBag.of(length-i, card, i, Card.LOCOMOTIVE));}
+                    if (card!=Card.LOCOMOTIVE) {
+                        output.add(SortedBag.of(length,card));}
                 }
             }
             else {
-                output.add(SortedBag.of(length-i, Card.of(color), i, Card.LOCOMOTIVE));
-                }
+                output.add(SortedBag.of(length, Card.of(color)));
             }
-        output.add(SortedBag.of(length, Card.LOCOMOTIVE)); //SortedBag contenant un nombre de locomotives égale à length
+        }
         return output;
         }
     

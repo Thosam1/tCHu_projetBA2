@@ -19,6 +19,7 @@ public enum Card {
     LOCOMOTIVE(null); // has to be at the end - null
 
     public static final List<Card> ALL = List.of(Card.values());    // toutes les valeurs du type enum dans l'ordre
+    
     public static final int COUNT = Card.ALL.size();    //  le nombre total de valeurs du type enum
 
     private Color color;  // enregistrer la couleur à la création
