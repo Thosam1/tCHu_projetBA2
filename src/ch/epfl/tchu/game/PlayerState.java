@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * @author Thösam Norlha-Tsang (330163)
+ * @author Aymeric de chillaz (326617)
  * class PlayerState représente l'état complet d'un joueur. Elle hérite de PublicPlayerState.
  */
 
@@ -40,7 +41,7 @@ public final class PlayerState extends PublicPlayerState {
         Preconditions.checkArgument(initialCards.size() == 4);
 
         return new PlayerState(null, initialCards, null);   // do we have to initialize to 0 ?
-//        return new PlayerState(SortedBag.of(new ArrayList<>()), initialCards, new ArrayList<>());
+//        return new PlayerState(SortedBag.of(new ArrayList<Ticket>()), initialCards, new ArrayList<Routes>());
     }
 
     /**
@@ -87,69 +88,106 @@ public final class PlayerState extends PublicPlayerState {
         return new PlayerState(tickets(), unionCards, routes());
     }
 
-//    /**
-//     * @param route
-//     * @return vrai ssi le joueur peut s'emparer de la route donnée, c-à-d s'il lui reste assez de wagons et s'il possède les cartes nécessaires
-//     */
-//    public boolean canClaimRoute(Route route){  // ??? how to catch a route ???
-//        if(route.length() ==){
-//
-//        }
-//    }
-//
-//    /**
-//     *
-//     * @param route
-//     * @return la liste de tous les ensembles de cartes que le joueur pourrait utiliser pour prendre possession de la route donnée
-//     * @throws IllegalArgumentException si le joueur n'a pas assez de wagons pour s'emparer de la route
-//     */
-//    public List<SortedBag<Card>> possibleClaimCards(Route route){
-//        Preconditions.checkArgument();
-//    }
-//
-//    /**
-//     *
-//     * @param additionalCardsCount
-//     * @param initialCards
-//     * @param drawnCards
-//     * @return la liste de tous les ensembles de cartes que le joueur pourrait utiliser pour s'emparer d'un tunnel, trié par ordre croissant du nombre de cartes locomotives, sachant qu'il a initialement posé les cartes initialCards, que les 3 cartes tirées du sommet de la pioche sont drawnCards, et que ces dernières forcent le joueur à poser encore additionalCardsCount cartes
-//     * @throws IllegalArgumentException si le nombre de cartes additionnelles n'est pas compris entre 1 et 3 (inclus), si l'ensemble des cartes initiales est vide ou contient plus de 2 types de cartes différents, ou si l'ensemble des cartes tirées ne contient pas exactement 3 cartes
-//     */
-//    public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards, SortedBag<Card> drawnCards){
-//        Preconditions.checkArgument();
-//    }
-//
-//    /**
-//     *
-//     * @param route
-//     * @param claimCards
-//     * @return un état identique au récepteur, si ce n'est que le joueur s'est de plus emparé de la route donnée au moyen des cartes données
-//     */
-//    public PlayerState withClaimedRoute(Route route, SortedBag<Card> claimCards){
-//        SortedBag<Card> reworkCards = cards().difference(claimCards);    // just check in case
-//        List<Route> reworkRoutes = routes();
-//        reworkRoutes.add(route);
-//
-//        return new PlayerState(tickets(),reworkCards, reworkRoutes);
-//    }
-//
-//    /**
-//     *
-//     * @return
-//     */
-//    public int ticketPoints(){  // ?!?!?
-//        int ticketPoints = 0;
+    /**
+     * @param route
+     * @return vrai ssi le joueur peut s'emparer de la route donnée, c-à-d s'il lui reste assez de wagons et s'il possède les cartes nécessaires
+     */
+    public boolean canClaimRoute(Route route){  // ??? how to catch a route ???
+        if(route.length() <= howMuchCardsOf(route.color(), cards())){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     *
+     * @param route
+     * @return la liste de tous les ensembles de cartes que le joueur pourrait utiliser pour prendre possession de la route donnée
+     * @throws IllegalArgumentException si le joueur n'a pas assez de wagons pour s'emparer de la route
+     */
+    public List<SortedBag<Card>> possibleClaimCards(Route route){
+        Preconditions.checkArgument(canClaimRoute(route));
+
+        List<SortedBag<Card>> cardList = new ArrayList<>();
+
+        // utiliser la class route, puis filtrer
+        List<SortedBag<Card>> allPossible = route.possibleClaimCards();
+        for(SortedBag<Card> c: allPossible){
+            if(cards().contains(c)){
+                cardList.add(c);
+            }
+        }
+        return cardList;
+    }
+
+    /**
+     *
+     * @param additionalCardsCount
+     * @param initialCards
+     * @param drawnCards
+     * @return la liste de tous les ensembles de cartes que le joueur pourrait utiliser pour s'emparer d'un tunnel, trié par ordre croissant du nombre de cartes locomotives, sachant qu'il a initialement posé les cartes initialCards, que les 3 cartes tirées du sommet de la pioche sont drawnCards, et que ces dernières forcent le joueur à poser encore additionalCardsCount cartes
+     * @throws IllegalArgumentException si le nombre de cartes additionnelles n'est pas compris entre 1 et 3 (inclus), si l'ensemble des cartes initiales est vide ou contient plus de 2 types de cartes différents, ou si l'ensemble des cartes tirées ne contient pas exactement 3 cartes
+     */
+    public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards, SortedBag<Card> drawnCards){
+        Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= 3);
+        Preconditions.checkArgument(initialCards.size() >= 1 && initialCards != null);
+        Preconditions.checkArgument(initialCards.toSet().size() <= 2);
+        Preconditions.checkArgument(drawnCards.size() == 3);
+
+        // 1)
+
+
+        // 2)
+
+
+        // 3)
+
+    }
+
+    /**
+     *
+     * @param route
+     * @param claimCards
+     * @return un état identique au récepteur, si ce n'est que le joueur s'est de plus emparé de la route donnée au moyen des cartes données
+     */
+    public PlayerState withClaimedRoute(Route route, SortedBag<Card> claimCards){
+        SortedBag<Card> reworkCards = cards().difference(claimCards);    // just check in case
+        List<Route> reworkRoutes = routes();
+        reworkRoutes.add(route);
+
+        return new PlayerState(tickets(),reworkCards, reworkRoutes);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int ticketPoints(){  // ?!?!?    !!! UH ?
+        int ticketPoints = 0;
+//        StationConnectivity connectivity;
 //        for(Ticket t: tickets){
-//            t.points();
+//            t.points(connectivity);
 //        }
-//        return ticketPoints;
-//    }
-//
-//    /**
-//     * @return la totalité des points obtenus par le joueur à la fin de la partie, à savoir la somme des points retournés par les méthodes claimPoints et ticketPoints
-//     */
-//    public int finalPoints(){
-//        return claimPoints() + ticketPoints();
-//    }
+        for(Route r: routes()){
+
+        }
+        return ticketPoints;
+    }
+
+    /**
+     * @return la totalité des points obtenus par le joueur à la fin de la partie, à savoir la somme des points retournés par les méthodes claimPoints et ticketPoints
+     */
+    public int finalPoints(){
+        return claimPoints() + ticketPoints();
+    }
+
+    /**
+     * @param color
+     * @return le nombre de cartes de la couleur donnée que le joueur possède
+     */
+    private int howMuchCardsOf(Color color, SortedBag<Card> cardSortedBag){
+        return cardSortedBag.countOf(Card.of(color));
+    }
 
 }
