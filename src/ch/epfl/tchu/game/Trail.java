@@ -34,7 +34,7 @@ public final class Trail {
      */
     public static Trail longest(List<Route> routes){
 
-        if(routes == null){
+        if(routes == null || routes.size() == 0){
             return new Trail(null, null, 0, null);
         }
 
@@ -55,6 +55,16 @@ public final class Trail {
 
         List<Trail> storagePotentialTrails = new ArrayList<>();   // if one trail with length > longestTrail, then remove all and add the latest one, if == just add
         int longestTrail = 0;
+
+        // select longest route for the "disconnected routes" case
+        for(Route r: routes){
+            int length = r.length();
+            if(length > longestTrail){
+                longestTrail = length;
+                if(storagePotentialTrails.size() >= 1){storagePotentialTrails.clear();}
+                storagePotentialTrails.add(new Trail(r.station1(), r.station2(), r.length(), Collections.singletonList(r)));
+            }
+        }
 
         //  --- --- ---
 

@@ -43,6 +43,16 @@ public class CardStateTest {
             CardState test = CardState.of(deck);
         });
     }
+    @Test
+    public void ofException2Test(){
+        List<Card> cards = new ArrayList<>();
+        SortedBag<Card> bag = SortedBag.of(cards);
+        Deck<Card> deck = Deck.of(bag , new Random());
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            CardState test = CardState.of(deck);
+        });
+    }
 
     @Test
     public void withDrawnFaceUpCardTest(){
@@ -60,11 +70,11 @@ public class CardStateTest {
         Deck<Card> deck = Deck.of(bag , new Random());
         CardState test = CardState.of(deck);
 
-        test = test.withDrawnFaceUpCard(2);
+        test = test.withDrawnFaceUpCard(0);
 
-        System.out.println(test.deckSize());
-        System.out.println(test.discardsSize());
-        System.out.println(test.faceUpCards().size());
+//        System.out.println(test.deckSize());
+//        System.out.println(test.discardsSize());
+//        System.out.println(test.faceUpCards().size());
 
         assertTrue((test.deckSize() == 2) && (test.discardsSize() == 0) && (test.faceUpCards().size() == 5));
 
@@ -87,6 +97,27 @@ public class CardStateTest {
 
         assertThrows(IndexOutOfBoundsException.class, () -> {
             CardState rework = test.withDrawnFaceUpCard(5);
+        });
+
+    }
+    @Test
+    public void withDrawnFaceUpCardBoundException2Test(){
+        List<Card> cards = new ArrayList<>();
+        cards.add(Card.BLUE);
+        cards.add(Card.BLUE);
+        cards.add(Card.RED);
+        cards.add(Card.RED);
+        cards.add(Card.GREEN);
+        cards.add(Card.GREEN);
+        cards.add(Card.LOCOMOTIVE);
+        cards.add(Card.LOCOMOTIVE);
+
+        SortedBag<Card> bag = SortedBag.of(cards);
+        Deck<Card> deck = Deck.of(bag , new Random());
+        CardState test = CardState.of(deck);
+
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            CardState rework = test.withDrawnFaceUpCard(6);
         });
 
     }
@@ -255,6 +286,29 @@ public class CardStateTest {
         SortedBag<Card> discard = SortedBag.of(discardList);
         test = test.withMoreDiscardedCards(discard);
         assertTrue((test.deckSize() == 3) && (test.faceUpCards().size() == 5) && (test.discardsSize() == 3));
+
+    }
+    @Test
+    public void withMoreDiscardedCardsZeroTest(){
+        List<Card> cards = new ArrayList<>();
+        cards.add(Card.BLUE);
+        cards.add(Card.BLUE);
+        cards.add(Card.RED);
+        cards.add(Card.RED);
+        cards.add(Card.GREEN);
+        cards.add(Card.GREEN);
+        cards.add(Card.LOCOMOTIVE);
+        cards.add(Card.LOCOMOTIVE);
+
+        SortedBag<Card> bag = SortedBag.of(cards);
+        Deck<Card> deck = Deck.of(bag , new Random());
+        CardState test = CardState.of(deck);
+
+        List<Card> discardList = new ArrayList<>();
+
+        SortedBag<Card> discard = SortedBag.of(discardList);
+        test = test.withMoreDiscardedCards(null);
+        assertTrue((test.deckSize() == 3) && (test.faceUpCards().size() == 5) && (test.discardsSize() == 0));
 
     }
 

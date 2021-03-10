@@ -2,6 +2,7 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.gui.Info;
+import ch.epfl.tchu.gui.StringsFr;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -127,7 +128,7 @@ public class InfoTest {
         cards.add(Card.of(Color.YELLOW));
         SortedBag<Card> initialCards = SortedBag.of(cards);
         String test = playerInfo.claimedRoute(ChMap.routes().get(16), initialCards);
-        assertEquals(test , "Player1 a pris possession de la route Berne - Lucerne au moyen de 2 bleues et 1 jaune.\n");
+        assertEquals(test , "Player1 a pris possession de la route Berne" + StringsFr.EN_DASH_SEPARATOR + "Lucerne au moyen de 2 bleues et 1 jaune.\n");
     }
 
     @Test
@@ -140,7 +141,7 @@ public class InfoTest {
         SortedBag<Card> initialCards = SortedBag.of(cards);
 
         String test = playerInfo.attemptsTunnelClaim(ChMap.routes().get(16), initialCards);
-        assertEquals(test , "Player1 tente de s'emparer du tunnel Berne - Lucerne au moyen de 2 bleues et 1 jaune !\n");
+        assertEquals(test , "Player1 tente de s'emparer du tunnel Berne" + StringsFr.EN_DASH_SEPARATOR + "Lucerne au moyen de 2 bleues et 1 jaune !\n");
     }
 
     @Test
@@ -173,7 +174,7 @@ public class InfoTest {
         Info playerInfo = new Info("Player1");
 
         String test = playerInfo.didNotClaimRoute(ChMap.routes().get(16));
-        assertEquals(test , "Player1 n'a pas pu (ou voulu) s'emparer de la route Berne - Lucerne.\n");
+        assertEquals(test , "Player1 n'a pas pu (ou voulu) s'emparer de la route Berne" + StringsFr.EN_DASH_SEPARATOR + "Lucerne.\n");
     }
 
     @Test
@@ -217,7 +218,7 @@ public class InfoTest {
         Trail longestTrail = Trail.longest(testedRoutes);
 
         String test = playerInfo.getsLongestTrailBonus(longestTrail);
-        assertEquals(test , "\nPlayer1 reçoit un bonus de 10 points pour le plus long trajet (Yverdon - Lucerne).\n");
+        assertEquals(test , "\nPlayer1 reçoit un bonus de 10 points pour le plus long trajet (Yverdon" + StringsFr.EN_DASH_SEPARATOR + "Lucerne).\n");
     }
 
     @Test
