@@ -246,6 +246,8 @@ public class PlayerStateTest {
 
     }
 
+    // à partir de là stp
+
     @Test
     public void possibleAdditionalCardsTest(){  // !!! ordre
 
