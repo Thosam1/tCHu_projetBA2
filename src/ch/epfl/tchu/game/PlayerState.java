@@ -5,7 +5,9 @@ import ch.epfl.tchu.SortedBag;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Thösam Norlha-Tsang (330163)
@@ -135,15 +137,37 @@ public final class PlayerState extends PublicPlayerState {
         Preconditions.checkArgument(initialCards.toSet().size() <= 2);
         Preconditions.checkArgument(drawnCards.size() == 3);
 
-        // 1)
-
-
-        // 2)
-
-
-        // 3)
-
-    }
+        Card initialCardsType = Card.LOCOMOTIVE;
+        
+        Map<Card, Integer> map = cards.toMap();
+        
+        //On retire les cartes initialCards des cartes détenus par le joueur
+        for (Card initialCard : initialCards) {
+            map.put(initialCard, map.get(initialCard) - 1);
+            
+            //Nous voulons savoir si il y a une carte différente qu'une Locomotive 
+            //parmis celles qui ont été posé initialement
+            if(initialCard != Card.LOCOMOTIVE) {
+                initialCardsType = initialCard;
+            }
+        }
+        
+        SortedBag<Card> cartesUtilisables;
+        if(initialCardsType == Card.LOCOMOTIVE) { //le joueur a que posé des Locomotives
+            cartesUtilisables = SortedBag.of(map.get(Card.LOCOMOTIVE), Card.LOCOMOTIVE);
+        }
+        else {//on est interessé par ses Locomotives et ses cartes de type initialCarsType
+            cartesUtilisables = SortedBag.of(map.get(Card.LOCOMOTIVE), Card.LOCOMOTIVE, 
+                    map.get(initialCardsType), initialCardsType);
+        }
+        
+        List<SortedBag<Card>> options = new ArrayList<>(cartesUtilisables.subsetsOfSize(additionalCardsCount));
+        options.sort(
+          Comparator.comparingInt(cs -> cs.countOf(Card.LOCOMOTIVE)));
+        return options;
+        
+        }
+    
 
     /**
      *
