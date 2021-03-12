@@ -39,7 +39,7 @@ public class PublicCardState {
      * @return le nombre total de cartes qui sont pas en main des joueurs
      * (5 correspond au nombre de carte visible)
      */
-    public int totalSize() {return 5 + deckSize + discardsSize;}
+    public int totalSize() {return Constants.FACE_UP_CARDS_COUNT + deckSize + discardsSize;}
     
     /**
      * @return les 5 cartes face visible sous la forme d'une liste
