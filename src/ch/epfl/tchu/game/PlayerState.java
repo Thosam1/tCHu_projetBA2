@@ -2,10 +2,14 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
+import ch.epfl.tchu.game.Route.Level;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,33 +36,8 @@ public final class PlayerState extends PublicPlayerState {
         this.cards = cards;
         this.routes = routes;
     }
-    public static void main(String[] args) {
-        SortedBag<Ticket> tickets = SortedBag.of();
-        List<Route> routes = new ArrayList<>();
-        SortedBag.Builder<Card> builder = new SortedBag.Builder<>();
-        builder.add(Card.BLACK);
-        builder.add(Card.BLACK);
-        builder.add(Card.BLACK);
-        builder.add(Card.BLACK);
-        builder.add(Card.BLACK);
-        builder.add(Card.LOCOMOTIVE);
-        builder.add(Card.LOCOMOTIVE);
-        builder.add(Card.LOCOMOTIVE);
-        builder.add(Card.GREEN);
-        builder.add(Card.YELLOW);
-        SortedBag<Card> cards = builder.build();
-        
-        PlayerState test = new PlayerState(tickets, cards, routes);
-        
-        int additionalCardsCount = 2;
-        SortedBag<Card> initialCards = SortedBag.of(3, Card.BLACK, 2, Card.LOCOMOTIVE);
-        SortedBag<Card> drawnCards = SortedBag.of(3,Card.RED);
-        
-        List<SortedBag<Card>> output = test.possibleAdditionalCards(additionalCardsCount, initialCards, drawnCards);
-        for(SortedBag<Card> bag : output) {
-            System.out.println(bag.toString());
-        }
-    }
+    
+    
     /**
      * méthode de construction statique :
      * @param initialCards
@@ -166,25 +145,24 @@ public final class PlayerState extends PublicPlayerState {
      */
     public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards, SortedBag<Card> drawnCards){
         Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= 3);
-        Preconditions.checkArgument(initialCards.size() >= 1 && initialCards != null);
+        Preconditions.checkArgument(initialCards != null);
+        Preconditions.checkArgument(initialCards.size() >= 1);
         Preconditions.checkArgument(initialCards.toSet().size() <= 2);
         Preconditions.checkArgument(drawnCards.size() == 3);
 
         Card initialCardsType = Card.LOCOMOTIVE;
-
-        Map<Card, Integer> map = cards.toMap();
-
-        //On retire les cartes initialCards des cartes détenus par le joueur
-        for (Card initialCard : initialCards) {
-            map.put(initialCard, map.get(initialCard) - 1);
-
-            //Nous voulons savoir si il y a une carte différente qu'une Locomotive
-            //parmis celles qui ont été posé initialement
-            if(initialCard != Card.LOCOMOTIVE) {
-                initialCardsType = initialCard;
+        for (Card card : initialCards) {
+            if(card != Card.LOCOMOTIVE) {
+                initialCardsType = card;
             }
         }
 
+      //On retire les cartes initialCards des cartes détenus par le joueur
+        SortedBag<Card> cardsWithoutInitialCards = cards.difference(initialCards);
+        
+        Map<Card, Integer> map = new HashMap<>(cardsWithoutInitialCards.toMap());
+
+        
         SortedBag<Card> cartesUtilisables;
         if(initialCardsType == Card.LOCOMOTIVE) { //le joueur a que posé des Locomotives
             cartesUtilisables = SortedBag.of(map.get(Card.LOCOMOTIVE), Card.LOCOMOTIVE);
@@ -193,7 +171,7 @@ public final class PlayerState extends PublicPlayerState {
             cartesUtilisables = SortedBag.of(map.get(Card.LOCOMOTIVE), Card.LOCOMOTIVE,
                     map.get(initialCardsType), initialCardsType);
         }
-
+        
         List<SortedBag<Card>> options = new ArrayList<>(cartesUtilisables.subsetsOfSize(additionalCardsCount));
         options.sort(
           Comparator.comparingInt(cs -> cs.countOf(Card.LOCOMOTIVE)));

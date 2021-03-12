@@ -37,7 +37,7 @@ public class PublicPlayerState {    // immuable ??? héritage problème
         // IF ROUTE == NULL ?   -> it should fail (null pointer exception)
         for(Route r: routes){
             sumOfRoutesLengths = sumOfRoutesLengths + r.length();
-            points = points + r.claimPoints();
+            points += r.claimPoints();
         }
 
         this.carCount = Constants.INITIAL_CAR_COUNT - sumOfRoutesLengths;   // nombre de wagons

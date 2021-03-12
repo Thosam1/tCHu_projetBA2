@@ -245,7 +245,7 @@ public class PlayerStateTest {
 
     @Test
     public void possibleClaimCardsTest(){
-        
+        assertEquals("je met une erreur pour que tu ne l oublies pas", "");
     }
 
     // à partir de là stp
@@ -253,15 +253,18 @@ public class PlayerStateTest {
     
     @Test
     public void possibleAdditionalCardsTest(){  // !!! ordre
-        //a mettre dans une méthode main
         SortedBag<Ticket> tickets = SortedBag.of();
         List<Route> routes = new ArrayList<>();
         SortedBag.Builder<Card> builder = new SortedBag.Builder<>();
+        builder.add(Card.BLACK); //utilisé
+        builder.add(Card.BLACK); //utilisé
+        builder.add(Card.BLACK); //utilisé
         builder.add(Card.BLACK);
         builder.add(Card.BLACK);
         builder.add(Card.BLACK);
         builder.add(Card.BLACK);
-        builder.add(Card.BLACK);
+        builder.add(Card.LOCOMOTIVE); //utilisé
+        builder.add(Card.LOCOMOTIVE); //utilisé
         builder.add(Card.LOCOMOTIVE);
         builder.add(Card.LOCOMOTIVE);
         builder.add(Card.LOCOMOTIVE);
@@ -271,15 +274,18 @@ public class PlayerStateTest {
         
         PlayerState test = new PlayerState(tickets, cards, routes);
         
-        int additionalCardsCount = 2;
+        int additionalCardsCount = 3;
         SortedBag<Card> initialCards = SortedBag.of(3, Card.BLACK, 2, Card.LOCOMOTIVE);
-        SortedBag<Card> drawnCards = SortedBag.of(3,Card.RED);
+        SortedBag<Card> drawnCards = SortedBag.of(1,Card.RED, 2, Card.BLACK);
         
         List<SortedBag<Card>> output = test.possibleAdditionalCards(additionalCardsCount, initialCards, drawnCards);
-        for(SortedBag<Card> bag : output) {
-            System.out.println(bag.toString());
-        }
-        assertEquals("je met ça parcequ il y a un probleme avec cette méthode", "");
+        
+        SortedBag<Card> bag1 = SortedBag.of(3,Card.BLACK);
+        SortedBag<Card> bag2 = SortedBag.of(2,Card.BLACK,1,Card.LOCOMOTIVE);
+        SortedBag<Card> bag3 = SortedBag.of(1,Card.BLACK,2,Card.LOCOMOTIVE);
+        SortedBag<Card> bag4 = SortedBag.of(3,Card.LOCOMOTIVE);
+        
+        assertEquals(output, List.of(bag1, bag2, bag3, bag4));
     }
 
     @Test
@@ -402,6 +408,6 @@ public class PlayerStateTest {
         
         List<Route> routes = List.of(route1,route2,route3,route4,route5,route6);
         PlayerState state = new PlayerState(builder.build(),cards,routes);
-        assertEquals(8,state.ticketPoints());
+        assertEquals(8,state.finalPoints());
     }
 }
