@@ -32,7 +32,33 @@ public final class PlayerState extends PublicPlayerState {
         this.cards = cards;
         this.routes = routes;
     }
-
+    public static void main(String[] args) {
+        SortedBag<Ticket> tickets = SortedBag.of();
+        List<Route> routes = new ArrayList<>();
+        SortedBag.Builder<Card> builder = new SortedBag.Builder<>();
+        builder.add(Card.BLACK);
+        builder.add(Card.BLACK);
+        builder.add(Card.BLACK);
+        builder.add(Card.BLACK);
+        builder.add(Card.BLACK);
+        builder.add(Card.LOCOMOTIVE);
+        builder.add(Card.LOCOMOTIVE);
+        builder.add(Card.LOCOMOTIVE);
+        builder.add(Card.GREEN);
+        builder.add(Card.YELLOW);
+        SortedBag<Card> cards = builder.build();
+        
+        PlayerState test = new PlayerState(tickets, cards, routes);
+        
+        int additionalCardsCount = 2;
+        SortedBag<Card> initialCards = SortedBag.of(3, Card.BLACK, 2, Card.LOCOMOTIVE);
+        SortedBag<Card> drawnCards = SortedBag.of(3,Card.RED);
+        
+        List<SortedBag<Card>> output = test.possibleAdditionalCards(additionalCardsCount, initialCards, drawnCards);
+        for(SortedBag<Card> bag : output) {
+            System.out.println(bag.toString());
+        }
+    }
     /**
      * méthode de construction statique :
      * @param initialCards
