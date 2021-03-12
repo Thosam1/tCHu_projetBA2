@@ -34,7 +34,7 @@ public class PublicPlayerState {    // immuable ??? héritage problème
         int sumOfRoutesLengths = 0;
         int points = 0;
 
-        // IF ROUTE == NULL ?
+        // IF ROUTE == NULL ?   -> it should fail (null pointer exception)
         for(Route r: routes){
             sumOfRoutesLengths = sumOfRoutesLengths + r.length();
             points = points + r.claimPoints();

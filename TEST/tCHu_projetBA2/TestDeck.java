@@ -67,6 +67,13 @@ class TestDeck {
         assertThrows(IllegalArgumentException.class, () -> {
             deck.topCards(3);
         });}
+    @Test
+    public void topCards() {
+        SortedBag<Card> cards = SortedBag.of(2, Card.LOCOMOTIVE);
+        Deck deck = Deck.of(cards, new Random());
+        int number = deck.topCards(2).size();
+        assertEquals(number, 2);
+    }
     
     @Test
     public void withoutTopCardsThrowsExceptionWhenNegative(){
@@ -83,7 +90,14 @@ class TestDeck {
         assertThrows(IllegalArgumentException.class, () -> {
             deck.withoutTopCards(3);
         });}
-    
+
+    @Test
+    public void withoutTopCards() {
+        SortedBag<Card> cards = SortedBag.of(2, Card.LOCOMOTIVE);
+        Deck deck = Deck.of(cards, new Random());
+        int number = deck.withoutTopCards(2).size();
+        assertEquals(number, 0);
+    }
 }
     
     

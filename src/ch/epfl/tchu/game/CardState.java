@@ -27,7 +27,8 @@ public final class CardState extends PublicCardState {
      * @param bin          cartes dans la défausse
      */
     private CardState(List<Card> faceUpCards, Deck deck, SortedBag<Card> bin) {
-        super(faceUpCards, deck == null ? 0 : deck.size(), bin == null ? 0 : bin.size());
+//        super(faceUpCards, deck == null ? 0 : deck.size(), bin == null ? 0 : bin.size());
+        super(faceUpCards, deck.size(), bin.size());
         this.deck = deck;
         this.bin = bin;
     }
@@ -45,7 +46,7 @@ public final class CardState extends PublicCardState {
         List<Card> five_faceUp = top_five_face_up.toList();
         Deck<Card> deckMinus = deck.withoutTopCards(Constants.FACE_UP_CARDS_COUNT); // pioche : cartes restantes
 
-        SortedBag<Card> bin1 = null; // défausse : vide
+        SortedBag<Card> bin1 = SortedBag.of(); // défausse : vide
         return new CardState(five_faceUp, deckMinus, bin1);
     }
 
@@ -100,7 +101,7 @@ public final class CardState extends PublicCardState {
         Deck<Card> reworkedDeck = null;
         reworkedDeck = reworkedDeck.of(bin, rng);
         
-        return new CardState(faceUpCards(), reworkedDeck, null);
+        return new CardState(faceUpCards(), reworkedDeck, SortedBag.of());
     }
 
     /**
@@ -109,9 +110,9 @@ public final class CardState extends PublicCardState {
      * @return un ensemble de cartes identique au récepteur (this), mais avec les cartes données ajoutées à la défausse
      */
     public CardState withMoreDiscardedCards(SortedBag<Card> additionalDiscards){
-        if(additionalDiscards == null){additionalDiscards = SortedBag.of(new ArrayList<Card>());}   // just in case for the weekly test
+//        if(additionalDiscards == null){additionalDiscards = SortedBag.of(new ArrayList<Card>());}   // just in case for the weekly test !! it should fail if it is null !!!
 
-        if(bin == null || bin.size() == 0){
+        if(bin.size() == 0){
             return new CardState(faceUpCards(), deck, additionalDiscards);
         }else{
             SortedBag<Card> discardsRework = bin;

@@ -95,11 +95,18 @@ public final class PlayerState extends PublicPlayerState {
      * @return vrai ssi le joueur peut s'emparer de la route donnée, c-à-d s'il lui reste assez de wagons et s'il possède les cartes nécessaires
      */
     public boolean canClaimRoute(Route route){  // ??? how to catch a route ???
-        if(route.length() <= howMuchCardsOf(route.color(), cards())){
-            return true;
-        }else{
-            return false;
+//        if(route.length() <= howMuchCardsOf(route.color(), cards())){
+//            return true;
+//        }else{
+//            return false;
+//        }
+        List<SortedBag<Card>> allPossible = route.possibleClaimCards();
+        for(SortedBag<Card> c: allPossible){
+            if(cards().contains(c)){
+                return true;
+            }
         }
+        return false;
     }
 
     /**
