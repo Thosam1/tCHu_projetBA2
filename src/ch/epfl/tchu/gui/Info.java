@@ -1,11 +1,12 @@
  package ch.epfl.tchu.gui;
 
+import java.util.List;
+
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
-import ch.epfl.tchu.game.*;
-
-import javax.print.DocFlavor;
-import java.util.List;
+import ch.epfl.tchu.game.Card;
+import ch.epfl.tchu.game.Route;
+import ch.epfl.tchu.game.Trail;
 
 /**
  * @author Thösam Norlha-Tsang (330163)

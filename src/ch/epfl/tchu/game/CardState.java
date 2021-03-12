@@ -26,7 +26,7 @@ public final class CardState extends PublicCardState {
      * @param deck         cartes dans la pioche
      * @param bin          cartes dans la défausse
      */
-    private CardState(List<Card> faceUpCards, Deck deck, SortedBag<Card> bin) {
+    private CardState(List<Card> faceUpCards, Deck<Card> deck, SortedBag<Card> bin) {
 //        super(faceUpCards, deck == null ? 0 : deck.size(), bin == null ? 0 : bin.size());
         super(faceUpCards, deck.size(), bin.size());
         this.deck = deck;
@@ -99,7 +99,7 @@ public final class CardState extends PublicCardState {
 
         //mélange les cartes de la défausse + constitue une nouvelle pioche
         Deck<Card> reworkedDeck = null;
-        reworkedDeck = reworkedDeck.of(bin, rng);
+        reworkedDeck = Deck.of(bin, rng);
         
         return new CardState(faceUpCards(), reworkedDeck, SortedBag.of());
     }
