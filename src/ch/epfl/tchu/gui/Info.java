@@ -1,4 +1,4 @@
-package ch.epfl.tchu.gui;
+ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
@@ -62,7 +62,7 @@ public final class Info {
             default:
                 cardInFrench = StringsFr.LOCOMOTIVE_CARD; // !!!
         }
-        if(Math.abs(count) > 1) {
+        if(Math.abs(count) != 1) {
             cardInFrench = cardInFrench + "s";
         }
 

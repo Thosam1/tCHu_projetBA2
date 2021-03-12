@@ -121,8 +121,5 @@ public final class CardState extends PublicCardState {
 
     }
 
-//    for(int slot: FACE_UP_CARD_SLOTS){  // parcourir index des cartes face visible
-//
-//    }
 
 }
