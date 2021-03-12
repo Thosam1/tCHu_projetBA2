@@ -1,17 +1,14 @@
 package ch.epfl.tchu.game;
 
-import ch.epfl.tchu.Preconditions;
-import ch.epfl.tchu.SortedBag;
-import ch.epfl.tchu.game.Route.Level;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import ch.epfl.tchu.Preconditions;
+import ch.epfl.tchu.SortedBag;
 
 /**
  * @author Thösam Norlha-Tsang (330163)

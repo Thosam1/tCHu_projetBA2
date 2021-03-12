@@ -1,9 +1,8 @@
 package ch.epfl.tchu.game;
 
-import ch.epfl.tchu.Preconditions;
-import ch.epfl.tchu.SortedBag;
-
 import java.util.List;
+
+import ch.epfl.tchu.Preconditions;
 
 /**
  * @author Thösam Norlha-Tsang (330163)

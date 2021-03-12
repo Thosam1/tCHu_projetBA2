@@ -1,4 +1,3 @@
-import ch.epfl.tchu.*;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Color;
 
