@@ -29,12 +29,6 @@ public final class Deck<C extends Comparable<C>> {
         size = cards.size();
         isEmpty = (size==0);
         deck = List.copyOf(cards);
-        //TEST
-        /*
-        System.out.println("construction Deck");
-        for (C card : deck) {
-            System.out.println(card);
-        }*/
     }
     
     public static void main(String[] args) {

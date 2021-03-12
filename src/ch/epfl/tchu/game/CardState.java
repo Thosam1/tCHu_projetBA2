@@ -119,8 +119,5 @@ public final class CardState extends PublicCardState {
         return new CardState(faceUpCards(), deckSize(), discardsRework.size(), deck, discardsRework);
     }
 
-//    for(int slot: FACE_UP_CARD_SLOTS){  // parcourir index des cartes face visible
-//
-//    }
 
 }
