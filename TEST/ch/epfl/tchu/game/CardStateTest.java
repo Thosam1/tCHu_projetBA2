@@ -307,9 +307,12 @@ public class CardStateTest {
         List<Card> discardList = new ArrayList<>();
 
         SortedBag<Card> discard = SortedBag.of(discardList);
-        test = test.withMoreDiscardedCards(null);
-        assertTrue((test.deckSize() == 3) && (test.faceUpCards().size() == 5) && (test.discardsSize() == 0));
 
+
+//        assertTrue((test.deckSize() == 3) && (test.faceUpCards().size() == 5) && (test.discardsSize() == 0));
+        assertThrows(NullPointerException.class, () -> {
+            test.withMoreDiscardedCards(null);
+        });
     }
 
 

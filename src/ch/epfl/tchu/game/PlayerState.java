@@ -68,7 +68,7 @@ public final class PlayerState extends PublicPlayerState {
     public static PlayerState initial(SortedBag<Card> initialCards){
         Preconditions.checkArgument(initialCards.size() == 4);
 
-        return new PlayerState(null, initialCards, null);   // do we have to initialize to 0 ?
+        return new PlayerState(SortedBag.of(), initialCards, new ArrayList<>());   // do we have to initialize to 0 ? YES !!!
 //        return new PlayerState(SortedBag.of(new ArrayList<Ticket>()), initialCards, new ArrayList<Routes>());
     }
 
@@ -99,7 +99,7 @@ public final class PlayerState extends PublicPlayerState {
      * @param card
      * @return un état identique au récepteur, si ce n'est que le joueur possède en plus la carte donnée
      */
-    public PlayerState withAddedCard(Card card){
+    public PlayerState withAddedCard(Card card){    // à revoir
         SortedBag<Card> addedCard = cards();
         SortedBag<Card> single = SortedBag.of(Collections.singletonList(card));
         addedCard = addedCard.union(single);
@@ -111,9 +111,7 @@ public final class PlayerState extends PublicPlayerState {
      * @return un état identique au récepteur, si ce n'est que le joueur possède en plus les cartes données
      */
     public PlayerState withAddedCards(SortedBag<Card> additionalCards){
-        SortedBag<Card> unionCards = cards();;
-        unionCards = unionCards.union(additionalCards);
-        return new PlayerState(tickets(), unionCards, routes());
+        return new PlayerState(tickets(), cards().union(additionalCards), routes());
     }
 
     /**
@@ -121,18 +119,10 @@ public final class PlayerState extends PublicPlayerState {
      * @return vrai ssi le joueur peut s'emparer de la route donnée, c-à-d s'il lui reste assez de wagons et s'il possède les cartes nécessaires
      */
     public boolean canClaimRoute(Route route){  // ??? how to catch a route ???
-//        if(route.length() <= howMuchCardsOf(route.color(), cards())){
-//            return true;
-//        }else{
-//            return false;
-//        }
-        List<SortedBag<Card>> allPossible = route.possibleClaimCards();
-        for(SortedBag<Card> c: allPossible){
-            if(cards().contains(c)){
-                return true;
-            }
-        }
-        return false;
+        if(possibleClaimCards(route).size()>0)
+            return true;
+        else
+            return false;
     }
 
     /**
@@ -142,7 +132,7 @@ public final class PlayerState extends PublicPlayerState {
      * @throws IllegalArgumentException si le joueur n'a pas assez de wagons pour s'emparer de la route
      */
     public List<SortedBag<Card>> possibleClaimCards(Route route){
-        Preconditions.checkArgument(canClaimRoute(route));
+        Preconditions.checkArgument(carCount() >= route.length());// WAGONS CHECK
 
         List<SortedBag<Card>> cardList = new ArrayList<>();
 
