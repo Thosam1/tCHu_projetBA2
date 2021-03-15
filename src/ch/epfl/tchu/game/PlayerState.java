@@ -11,9 +11,9 @@ import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 
 /**
+ * Classe PlayerState représente l'état complet d'un joueur. Elle hérite de PublicPlayerState.
  * @author Thösam Norlha-Tsang (330163)
  * @author Aymeric de chillaz (326617)
- * class PlayerState représente l'état complet d'un joueur. Elle hérite de PublicPlayerState.
  */
 
 public final class PlayerState extends PublicPlayerState {

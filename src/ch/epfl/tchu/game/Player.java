@@ -5,6 +5,10 @@ import ch.epfl.tchu.SortedBag;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Interface Player représente un joueur de tCHu
+ * @author Thösam Norlha-Tsang (330163)
+ */
 public interface Player {
 
     public enum TurnKind {

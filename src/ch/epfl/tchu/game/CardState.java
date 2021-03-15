@@ -112,7 +112,7 @@ public final class CardState extends PublicCardState {
     public CardState withMoreDiscardedCards(SortedBag<Card> additionalDiscards){
 //        if(additionalDiscards == null){additionalDiscards = SortedBag.of(new ArrayList<Card>());}   // just in case for the weekly test !! it should fail if it is null !!!
 
-        if(bin.size() == 0){
+        if(discardsSize() == 0){
             return new CardState(faceUpCards(), deck, additionalDiscards);
         }else{
             SortedBag<Card> discardsRework = bin;
