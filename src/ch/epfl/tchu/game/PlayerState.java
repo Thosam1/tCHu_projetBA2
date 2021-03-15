@@ -67,7 +67,7 @@ public final class PlayerState extends PublicPlayerState {
     /**
      * @return les cartes wagon/locomotive du joueur
      */
-    SortedBag<Card> cards(){
+    public SortedBag<Card> cards(){
         return cards;
     }
 
@@ -94,7 +94,7 @@ public final class PlayerState extends PublicPlayerState {
      * @param route
      * @return vrai ssi le joueur peut s'emparer de la route donnée, c-à-d s'il lui reste assez de wagons et s'il possède les cartes nécessaires
      */
-    public boolean canClaimRoute(Route route){  // ??? how to catch a route ???
+    public boolean canClaimRoute(Route route){  // si wagon ET cartes
         if(possibleClaimCards(route).size()>0)
             return true;
         else
@@ -108,17 +108,19 @@ public final class PlayerState extends PublicPlayerState {
      * @throws IllegalArgumentException si le joueur n'a pas assez de wagons pour s'emparer de la route
      */
     public List<SortedBag<Card>> possibleClaimCards(Route route){
-        Preconditions.checkArgument(carCount() >= route.length());// WAGONS CHECK
+        Preconditions.checkArgument(carCount() >= route.length()); // WAGONS CHECK !!! wagons (pièces) =/= cartes wagons - locomotives
 
-        List<SortedBag<Card>> cardList = new ArrayList<>();
-
-        // utiliser la class route, puis filtrer
-        List<SortedBag<Card>> allPossible = route.possibleClaimCards();
-        for(SortedBag<Card> c: allPossible){
-            if(cards().contains(c)){
-                cardList.add(c);
-            }
-        }
+//        List<SortedBag<Card>> cardList = new ArrayList<>();           !! ne pas effacer !!
+//
+//        // utiliser la class route, puis filtrer
+//        List<SortedBag<Card>> allPossible = route.possibleClaimCards();
+//        for(SortedBag<Card> c: allPossible){
+//            if(cards().contains(c)){
+//                cardList.add(c);
+//            }
+//        }
+        List<SortedBag<Card>> cardList = new ArrayList<>(route.possibleClaimCards());
+        cardList.removeIf( e -> !cards().contains(e) ); // si les cartes ne sont pas dans les mains du joueurs, on les enlève de l'ensemble
         return cardList;
     }
 

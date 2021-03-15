@@ -1,4 +1,4 @@
-package chVersionProf.epfl.tchu.game;
+package chVersionProf.epfl.tchu.game.game;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
