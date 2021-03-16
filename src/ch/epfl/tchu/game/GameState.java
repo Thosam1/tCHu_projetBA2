@@ -32,7 +32,7 @@ public final class GameState extends PublicGameState{
      */
     private GameState(Deck<Ticket> ticketsList, CardState cardState, PlayerId currentPlayerId,
             Map<PlayerId, PlayerState> playerState, PlayerId lastPlayer) {
-        super(ticketsList.size(), cardState, currentPlayerId, playerState, lastPlayer);
+        super(ticketsList.size(), cardState, currentPlayerId, makePublic(playerState), lastPlayer);
         this.tickets = ticketsList;
         this.cardState = cardState;
         this.playerState = playerState;
@@ -41,8 +41,11 @@ public final class GameState extends PublicGameState{
         // pas si la classe resterait immuable
         this.lastPlayer= lastPlayer;
     }
-    private static makePublic() {   // lol c'est quoi ça
-        
+    private static Map<PlayerId, PublicPlayerState> makePublic(Map<PlayerId, PlayerState> playerState) {
+        Map<PlayerId, PublicPlayerState> playerStateMap = new EnumMap<>(PlayerId.class); 
+        playerStateMap.put(PlayerId.PLAYER_1, playerState.get(PlayerId.PLAYER_1));
+        playerStateMap.put(PlayerId.PLAYER_2, playerState.get(PlayerId.PLAYER_2));
+        return playerStateMap;
     }
 
     /**
@@ -57,7 +60,7 @@ public final class GameState extends PublicGameState{
         List<Card> initialPlayerCards = new ArrayList<>();
         List<Card> secondPlayerCards = new ArrayList<>();
         List<Card> deck = new ArrayList<>();
-        PlayerId premierJoueurId = PlayerId.ALL.get(rng.nextInt(2));    // et le deuxième joueur ?
+        PlayerId premierJoueurId = PlayerId.ALL.get(rng.nextInt(2));    // et le deuxième joueur ? //il  viendra après, on veut que le premier joueur
         
         for(int i = 0; i<Constants.INITIAL_CARDS_COUNT; i++) {
             initialPlayerCards.add(cards.get(i));
@@ -123,7 +126,6 @@ public final class GameState extends PublicGameState{
      * @throws IllegalArgumentException si la pioche est vide
      */
     public GameState withoutTopCard() {
-        //est ce que la carte du sommet de la pioche doit etre ajouté à bin?    - non t'inquiète pas
         return new GameState(tickets, cardState.withoutTopDeckCard(), currentPlayerId, playerState, lastPlayer);
     }
 
@@ -222,8 +224,6 @@ public final class GameState extends PublicGameState{
      * @return vrai ssi le dernier tour commence, c-à-d si l'identité du dernier joueur est actuellement inconnue mais que le joueur courant n'a plus que deux wagons ou moins
      */
     public boolean lastTurnBegins() {
-      Je met une erreur ici parcequ il faut que je vois si je ne doit pas avoir un attribut boolean qui chqnge de valeur ici
-      //TODO  
       return ((lastPlayer == null)&&(playerState.get(currentPlayerId).carCount()<=2));
     }
 
@@ -234,8 +234,8 @@ public final class GameState extends PublicGameState{
     public GameState forNextTurn() {
 
         if(lastTurnBegins()){   // comment ça le joueur courant actuel devient le dernier joueur ?
-            lastPlayer = currentPlayerId();
+            lastPlayer = currentPlayerId;
         }
-        return new GameState(tickets, cardState, lastPlayer, playerState, currentPlayerId);
+        return new GameState(tickets, cardState, currentPlayerId.next(), playerState, lastPlayer);
     }
 }
