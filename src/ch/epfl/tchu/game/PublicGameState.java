@@ -40,10 +40,11 @@ public class PublicGameState {
             PlayerId currentPlayerId, Map<PlayerId, PublicPlayerState> playerState, 
             PlayerId lastPlayer){
         Preconditions.checkArgument(ticketsCount>=0);
-        Preconditions.checkArgument(playerState.size() == PlayerId.COUNT);
-        if((cardState==null)||(currentPlayerId==null)||(playerState==null)) {    // j'ai ajouté pour playerState ?
+        if((cardState==null)||(currentPlayerId==null)||(playerState==null)) {    
             throw new NullPointerException();
         }
+        //Tres important que cette precondition soit après
+        Preconditions.checkArgument(playerState.size() == PlayerId.COUNT);
         
         this.ticketsCount = ticketsCount;
         this.cardState = cardState;
@@ -99,8 +100,9 @@ public class PublicGameState {
     public List<Route> claimedRoutes(){
         List<Route> routeNextPlayer = List.copyOf(playerState.get(PlayerId.ALL.get(0)).routes());
         List<Route> routeCurrentPlayer = List.copyOf(playerState.get(PlayerId.ALL.get(1)).routes());
-        routeCurrentPlayer.addAll(routeNextPlayer);
-        return routeCurrentPlayer;
+        List<Route> routeOutput = new ArrayList<>(routeNextPlayer);
+        routeOutput.addAll(routeCurrentPlayer);
+        return routeOutput;
     }
 
     /**
