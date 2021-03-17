@@ -1,11 +1,6 @@
 package ch.epfl.tchu.game;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
@@ -162,7 +157,10 @@ public final class GameState extends PublicGameState{
     public GameState withInitiallyChosenTickets(PlayerId playerId, SortedBag<Ticket> chosenTickets) {
         Preconditions.checkArgument(playerState.get(playerId).ticketCount()<1); // ==0
 
-        Map<PlayerId, PlayerState> playerState2 = Map.copyOf(playerState);                                                        // correct ???    Way ?   OK fonctionne, la raison est lparce qu'il faut respecter l'immuabilié, en utilisant directement .put sur une map immuable java accepte mais ça casse le principe d'immuabilité
+//        Map<PlayerId, PlayerState> playerState2 = Map.copyOf(playerState);                                                        // correct ???    Way ?   OK fonctionne, la raison est lparce qu'il faut respecter l'immuabilié, en utilisant directement .put sur une map immuable java accepte mais ça casse le principe d'immuabilité
+//        Map<PlayerId, PlayerState> playerState2 = new HashMap<>(playerState); // here we're copying the references (changes in one will affect both map)
+        Map<PlayerId, PlayerState> playerState2 = new HashMap<PlayerId, PlayerState>();
+        playerState2.putAll(playerState);
         playerState2.put(playerId, playerState.get(playerId).withAddedTickets(chosenTickets));
 
         // j'espère que la modification est effectué
@@ -178,8 +176,9 @@ public final class GameState extends PublicGameState{
      */
     public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) { // faudrai-il utiliser currentPlayerId() au lieu de currentPlayerId ? oui en général avec les opérations
         Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
-        
-        Map<PlayerId, PlayerState> playerState2 = Map.copyOf(playerState);
+
+        Map<PlayerId, PlayerState> playerState2 = new HashMap<>();
+        playerState2.putAll(playerState);
         playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedTickets(chosenTickets));
         return new GameState(tickets, cardState, currentPlayerId, playerState, lastPlayer);  
     }
@@ -193,7 +192,8 @@ public final class GameState extends PublicGameState{
      */
     public GameState withDrawnFaceUpCard(int slot) {
         Preconditions.checkArgument(canDrawCards());
-        Map<PlayerId, PlayerState> playerState2 = Map.copyOf(playerState);
+        Map<PlayerId, PlayerState> playerState2 = new HashMap<>();
+        playerState2.putAll(playerState);
         playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedCard(cardState.faceUpCard(slot)));
 
         return new GameState(tickets, cardState.withDrawnFaceUpCard(slot), currentPlayerId, playerState2, lastPlayer);
@@ -207,7 +207,8 @@ public final class GameState extends PublicGameState{
      */
     public GameState withBlindlyDrawnCard() {
         Preconditions.checkArgument(canDrawCards());
-        Map<PlayerId, PlayerState> playerState2 = Map.copyOf(playerState);
+        Map<PlayerId, PlayerState> playerState2 = new HashMap<>();
+        playerState2.putAll(playerState);
         playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedCard(cardState.topDeckCard()));
 
         return new GameState(tickets, cardState.withoutTopDeckCard(), currentPlayerId, playerState2, lastPlayer);
@@ -219,7 +220,8 @@ public final class GameState extends PublicGameState{
      * @return un état identique au récepteur mais dans lequel le joueur courant s'est emparé de la route donnée au moyen des cartes données
      */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
-        Map<PlayerId, PlayerState> playerState2 = Map.copyOf(playerState);
+        Map<PlayerId, PlayerState> playerState2 = new HashMap<>();
+        playerState2.putAll(playerState);
         playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withClaimedRoute(route, cards));
         return new GameState(tickets, cardState, currentPlayerId, playerState2, lastPlayer);
     }
