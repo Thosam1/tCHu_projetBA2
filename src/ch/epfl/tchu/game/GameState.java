@@ -16,8 +16,9 @@ import ch.epfl.tchu.SortedBag;
  * @author Aymeric de chillaz (326617)
  */
 public final class GameState extends PublicGameState{
-    private Deck<Ticket> tickets;
-    private CardState cardState;
+    public Deck<Ticket> tickets;
+    //public for test
+    public CardState cardState;
     private Map<PlayerId, PlayerState> playerState;
     private PlayerId currentPlayerId;
     private PlayerId lastPlayer;
@@ -73,7 +74,7 @@ public final class GameState extends PublicGameState{
         }
         CardState cardState = CardState.of(Deck.of(SortedBag.of(deck), rng));
         
-        Map<PlayerId, PlayerState> playerStateMap = new EnumMap<>(PlayerId.class);                          // je n'ai pas compris ces deux lignes, et il y a une erreur lié au constructeur
+        Map<PlayerId, PlayerState> playerStateMap = new EnumMap<>(PlayerId.class);                       
         playerStateMap.put(PlayerId.PLAYER_1, PlayerState.initial(SortedBag.of(initialPlayerCards)));
         playerStateMap.put(PlayerId.PLAYER_2, PlayerState.initial(SortedBag.of(secondPlayerCards)));
         
@@ -174,10 +175,9 @@ public final class GameState extends PublicGameState{
      */
     public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) { // faudrai-il utiliser currentPlayerId() au lieu de currentPlayerId ?
         Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
-        tickets = tickets.withoutTopCards(drawnTickets.size());
         playerState.put(currentPlayerId, playerState.get(currentPlayerId).withAddedTickets(chosenTickets));
 
-        return new GameState(tickets, cardState, currentPlayerId, playerState, lastPlayer); // Que fait-on des cartes non choisies ?
+        return new GameState(tickets, cardState, currentPlayerId, playerState, lastPlayer); 
     }
 
 
