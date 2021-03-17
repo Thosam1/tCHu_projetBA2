@@ -87,7 +87,7 @@ public final class GameState extends PublicGameState{
      * @return l'état complet du joueur d'identité donnée, et pas seulement sa partie publique
      */
     @Override
-    public PlayerState playerState(PlayerId playerId) {return playerState.get(playerId);}   // état complet du joueur d'identité donnée, et pas seulement sa partie publique    ???
+    public PlayerState playerState(PlayerId playerId) {return playerState.get(playerId);}   // état complet du joueur d'identité donnée, et pas seulement sa partie publique    ??? OK la méthode fonctionne
 
     /**
      * redéfinit la méthode de même nom de PublicGameState
@@ -160,24 +160,28 @@ public final class GameState extends PublicGameState{
      * @throws IllegalArgumentException si le joueur en question possède déjà au moins un billet
      */
     public GameState withInitiallyChosenTickets(PlayerId playerId, SortedBag<Ticket> chosenTickets) {
-        Preconditions.checkArgument(playerState.get(playerId).ticketCount()==0);
-        playerState.put(playerId, playerState.get(playerId).withAddedTickets(chosenTickets));
+        Preconditions.checkArgument(playerState.get(playerId).ticketCount()<1); // ==0
+
+        Map<PlayerId, PlayerState> playerState2 = Map.copyOf(playerState);                                                        // correct ???    Way ?   OK fonctionne, la raison est lparce qu'il faut respecter l'immuabilié, en utilisant directement .put sur une map immuable java accepte mais ça casse le principe d'immuabilité
+        playerState2.put(playerId, playerState.get(playerId).withAddedTickets(chosenTickets));
+
         // j'espère que la modification est effectué
-        return new GameState(tickets, cardState, currentPlayerId, playerState, lastPlayer);
+        return new GameState(tickets, cardState, currentPlayerId, playerState2, lastPlayer);
     }
 
     /**
-     *  modifie aussi la pioche des billets
+     *  ne modifie pas la pioche de billets
      * @param drawnTickets  billets tirés
      * @param chosenTickets billets gardés
      * @return un état identique au récepteur, mais dans lequel le joueur courant a tiré les billets drawnTickets du sommet de la pioche, et choisi de garder ceux contenus dans chosenTicket
      * @throws IllegalArgumentException si l'ensemble des billets gardés n'est pas inclus dans celui des billets tirés
      */
-    public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) { // faudrai-il utiliser currentPlayerId() au lieu de currentPlayerId ?
+    public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) { // faudrai-il utiliser currentPlayerId() au lieu de currentPlayerId ? oui en général avec les opérations
         Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
-        playerState.put(currentPlayerId, playerState.get(currentPlayerId).withAddedTickets(chosenTickets));
-
-        return new GameState(tickets, cardState, currentPlayerId, playerState, lastPlayer); 
+        
+        Map<PlayerId, PlayerState> playerState2 = Map.copyOf(playerState);
+        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedTickets(chosenTickets));
+        return new GameState(tickets, cardState, currentPlayerId, playerState, lastPlayer);  
     }
 
 
@@ -189,22 +193,24 @@ public final class GameState extends PublicGameState{
      */
     public GameState withDrawnFaceUpCard(int slot) {
         Preconditions.checkArgument(canDrawCards());
-        playerState.put(currentPlayerId, playerState.get(currentPlayerId).withAddedCard(cardState.faceUpCard(slot)));
-        cardState = cardState.withDrawnFaceUpCard(slot);
-        return new GameState(tickets, cardState, currentPlayerId, playerState, lastPlayer);
+        Map<PlayerId, PlayerState> playerState2 = Map.copyOf(playerState);
+        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedCard(cardState.faceUpCard(slot)));
+
+        return new GameState(tickets, cardState.withDrawnFaceUpCard(slot), currentPlayerId, playerState2, lastPlayer);
     }
 
 
     /**
      * modifie aussi les cartes
-     * @return un état identique au récepteur si ce n'est que la carte du sommet de la pioche a été placée dans la main du joueur courant 
+     * @return un état identique au récepteur si ce n'est que la carte du sommet de la pioche a été placée dans la main du joueur courant
      * @throws IllegalArgumentException s'il n'est pas possible de tirer des cartes, c-à-d si canDrawCards retourne faux
      */
     public GameState withBlindlyDrawnCard() {
         Preconditions.checkArgument(canDrawCards());
-        playerState.put(currentPlayerId, playerState.get(currentPlayerId).withAddedCard(cardState.topDeckCard()));
-        cardState = cardState.withoutTopDeckCard();
-        return new GameState(tickets, cardState, currentPlayerId, playerState, lastPlayer);
+        Map<PlayerId, PlayerState> playerState2 = Map.copyOf(playerState);
+        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedCard(cardState.topDeckCard()));
+
+        return new GameState(tickets, cardState.withoutTopDeckCard(), currentPlayerId, playerState2, lastPlayer);
     }
 
     /**
@@ -213,9 +219,9 @@ public final class GameState extends PublicGameState{
      * @return un état identique au récepteur mais dans lequel le joueur courant s'est emparé de la route donnée au moyen des cartes données
      */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
-        playerState.put(currentPlayerId, playerState.get(currentPlayerId).withClaimedRoute(route, cards));
-//        return new GameState(tickets, cardState, currentPlayerId, playerState, lastPlayer);
-        return this;    // can we use " this " ? if we can do the same in the methods above
+        Map<PlayerId, PlayerState> playerState2 = Map.copyOf(playerState);
+        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withClaimedRoute(route, cards));
+        return new GameState(tickets, cardState, currentPlayerId, playerState2, lastPlayer);
     }
 
 
@@ -234,8 +240,9 @@ public final class GameState extends PublicGameState{
     public GameState forNextTurn() {
 
         if(lastTurnBegins()){   // comment ça le joueur courant actuel devient le dernier joueur ?
-            lastPlayer = currentPlayerId;
+            return new GameState(tickets, cardState, currentPlayerId.next(), playerState, currentPlayerId);
+        }else{
+            return new GameState(tickets, cardState, currentPlayerId.next(), playerState, lastPlayer);
         }
-        return new GameState(tickets, cardState, currentPlayerId.next(), playerState, lastPlayer);
     }
 }
