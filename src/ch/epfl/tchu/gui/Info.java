@@ -100,7 +100,7 @@ public final class Info {
         if(!(count == 0 || count == 1)){
             s = "s";
         }
-        return String.format(StringsFr.KEPT_N_TICKETS, player, count, s);
+        return String.format(StringsFr.KEPT_N_TICKETS, player, count, StringsFr.plural(count));
 
     }
 
@@ -120,7 +120,7 @@ public final class Info {
         if(!(count == 0 || count == 1)){
             s = "s";
         }
-        return String.format(StringsFr.DREW_TICKETS, player, count, s);
+        return String.format(StringsFr.DREW_TICKETS, player, count, StringsFr.plural(count));
     }
 
     /**
@@ -173,7 +173,7 @@ public final class Info {
         } else {
             String s = "";
             if(additionalCost > 1){s = "s";}
-            temp = temp + String.format(StringsFr.SOME_ADDITIONAL_COST, additionalCost, s);
+            temp = temp + String.format(StringsFr.SOME_ADDITIONAL_COST, additionalCost, StringsFr.plural(additionalCost));
         }
         return temp;
 
@@ -197,7 +197,7 @@ public final class Info {
         if(!(carCount == 0 || carCount == 1)){
             s = "s";
         }
-        return String.format(StringsFr.LAST_TURN_BEGINS, player, carCount, s);
+        return String.format(StringsFr.LAST_TURN_BEGINS, player, carCount, StringsFr.plural(carCount));
 
     }
 
@@ -220,7 +220,7 @@ public final class Info {
         String secondS = "";
         if(points>1){firstS = "s";}
         if(loserPoints>1){secondS = "s";}
-        return String.format(StringsFr.WINS, player, points,firstS, loserPoints, secondS);
+        return String.format(StringsFr.WINS, player, points,StringsFr.plural(points), loserPoints, StringsFr.plural(loserPoints));
 
     }
 
