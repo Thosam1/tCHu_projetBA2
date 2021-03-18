@@ -30,28 +30,7 @@ public class PlayerStateTest {
         routes.add(ChMap.routes().get(8));
 
         PlayerState test = new PlayerState(tickets, cards, routes);
-    }
-//    @Test
-//    public void ConstructorNullTicketsTest(){
-//        SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets().get(0));
-//
-////        assertThrows()
-//        PlayerState test = new PlayerState(tickets, cards, routes);
-//    }
-//    @Test
-//    public void ConstructorNullCardsTest(){
-//        SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets().get(0));
-//
-////        assertThrows()
-//        PlayerState test = new PlayerState(tickets, cards, routes);
-//    }
-//    @Test
-//    public void ConstructorNullRoutesTest(){
-//        SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets().get(0));
-//
-////        assertThrows()
-//        PlayerState test = new PlayerState(tickets, cards, routes);
-//    }
+        }
 
     @Test
     public void InitialTest(){

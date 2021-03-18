@@ -181,7 +181,7 @@ public final class GameState extends PublicGameState{
         
         Map<PlayerId, PlayerState> playerState2 = Map.copyOf(playerState);
         playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedTickets(chosenTickets));
-        return new GameState(tickets, cardState, currentPlayerId, playerState, lastPlayer);  
+        return new GameState(tickets, cardState, currentPlayerId, playerState2, lastPlayer);  
     }
 
 
