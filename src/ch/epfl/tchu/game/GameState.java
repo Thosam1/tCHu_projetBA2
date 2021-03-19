@@ -164,7 +164,7 @@ public final class GameState extends PublicGameState{
         playerState2.put(playerId, playerState.get(playerId).withAddedTickets(chosenTickets));
 
         // j'espère que la modification est effectué
-        return new GameState(tickets, cardState, currentPlayerId, playerState2, lastPlayer);
+        return new GameState(tickets, cardState, currentPlayerId, playerState2, lastPlayer);    // remove tickets ?
     }
 
     /**
@@ -174,13 +174,13 @@ public final class GameState extends PublicGameState{
      * @return un état identique au récepteur, mais dans lequel le joueur courant a tiré les billets drawnTickets du sommet de la pioche, et choisi de garder ceux contenus dans chosenTicket
      * @throws IllegalArgumentException si l'ensemble des billets gardés n'est pas inclus dans celui des billets tirés
      */
-    public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) { // faudrai-il utiliser currentPlayerId() au lieu de currentPlayerId ? oui en général avec les opérations
+    public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) { // faudrait-il utiliser currentPlayerId() au lieu de currentPlayerId ? oui en général avec les opérations
         Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
 
         Map<PlayerId, PlayerState> playerState2 = new HashMap<>();
         playerState2.putAll(playerState);
         playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedTickets(chosenTickets));
-        return new GameState(tickets, cardState, currentPlayerId, playerState, lastPlayer);  
+        return new GameState(tickets.withoutTopCards(drawnTickets.size()), cardState, currentPlayerId, playerState, lastPlayer);  // remove tickets from tickets !!!
     }
 
 
@@ -223,7 +223,7 @@ public final class GameState extends PublicGameState{
         Map<PlayerId, PlayerState> playerState2 = new HashMap<>();
         playerState2.putAll(playerState);
         playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withClaimedRoute(route, cards));
-        return new GameState(tickets, cardState, currentPlayerId, playerState2, lastPlayer);
+        return new GameState(tickets, cardState.withMoreDiscardedCards(cards), currentPlayerId, playerState2, lastPlayer);                            // Les cartes sont ajoutées à la défausse
     }
 
 
@@ -241,7 +241,7 @@ public final class GameState extends PublicGameState{
      */
     public GameState forNextTurn() {
 
-        if(lastTurnBegins()){   // comment ça le joueur courant actuel devient le dernier joueur ?
+        if(lastTurnBegins()){   //le joueur courant actuel devient le dernier joueur
             return new GameState(tickets, cardState, currentPlayerId.next(), playerState, currentPlayerId);
         }else{
             return new GameState(tickets, cardState, currentPlayerId.next(), playerState, lastPlayer);
