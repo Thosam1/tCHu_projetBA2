@@ -8,74 +8,97 @@ import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.gui.Info;
 
-public final class Game {
-
-    private final Map<PlayerId, Player> players;
-    private final Map<PlayerId, String> playerNames;
-    private final SortedBag<Ticket> tickets;
-    private final Random rng;
-
-    private Game(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames, SortedBag<Ticket> tickets, Random rng) {
-        this.players = players;
-        this.playerNames = playerNames;
-        this.tickets = tickets;
-        this.rng = rng;
-    }
+public final class Game implements Player {
 
     public static void play(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames, 
             SortedBag<Ticket> tickets, Random rng) {
         Preconditions.checkArgument((players.size()==2)&&(playerNames.size()==2));
-
-
-        // Avant le début de la partie  -   -   -
-
+        Info player1 = new Info(playerNames.get(PlayerId.PLAYER_1));
+        Info player2 = new Info(playerNames.get(PlayerId.PLAYER_2));
+        //comment avoir accès au joueur courant? PublicPlayerState
+        //Est ce qu il faut définir les méthodes de Player?
+        
         players.forEach((c,v) -> v.initPlayers(c, playerNames));
-
+        
         //permet de choisir un joueur au hasard et d initialiser le GameState
         GameState gameState = GameState.initial(tickets, rng);
-
-        //Je ne sais pas quelle instance de info il faut passer puisqu on a pas accès au playerId
-        Info player = new Info()
-        players.forEach((c,v) -> v.receiveInfo(player.willPlayFirst()));
-
-        //est ce qu il faut donner les 5 billets du haut de tickets
-        ERROR players.forEach((c,v) ->v.setInitialTicketChoice(tickets));
-
-        //il faudrait savoir sur quoi appeler keptTickets
+        
+        
+        players.forEach((c,v) -> v.receiveInfo(.willPlayFirst()));
+        
+        //est ce qu il faut donner les 5 billets du haut de tickets et updater gameState
+       ERROR players.forEach((c,v) ->v.setInitialTicketChoice(tickets));
+        
+       //il faudrait savoir sur quoi appeler keptTickets
         players.forEach((c,v) ->{v.receiveInfo(keptTickets(chooseInitialTickets()));});
-
-        while(!gameState.lastTurnBegins()) {}
+        
+        while(!gameState.lastTurnBegins()) {
+            //comment faire pour switcher entre les deux joueurs
+            TurnKind turnKind = gameState.currentPlayerId().nextTurn();
+            if(turnKind == Player.DRAW_TICKETS) {
+                //currentPlayer.chooseTickets()
+            }
+            else if(turnKind == Player.DRAW_CARDS) {}
+            else {//j émet l'hypothèse que le joueur ne peux pas séléctionner une autre valeur
+                
+            }
+        }
         //dont forget the two last turns
-
-
-
-        // La partie commence - jusqu'à la fin  -   -   -
-
-
-
-
-
-
-
-
-
-
-
-    }
-
-    /**
-     * permettan d'envoyer une information à tous les joueurs, en appelant la méthode receiveInfo de chacun d'eux
-     */
-    private void infoToAll(String info) {
-        players.forEach((c,v) -> v.receiveInfo(info));
-    }
-
-    /**
-     * permettant d'informer tous les joueurs d'un changement d'état, en appelant la méthode updateState de chacun d'eux
-     */
-    private void stateChangeToAll(String stateChange) {
-        players.forEach((c,v) -> v.receiveInfo(stateChange));
     }
 
 
+    @Override
+    public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
+
+    }
+
+    @Override
+    public void receiveInfo(String info) {
+
+    }
+
+    @Override
+    public void updateState(PublicGameState newState, PlayerState ownState) {
+
+    }
+
+    @Override
+    public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
+
+    }
+
+    @Override
+    public SortedBag<Ticket> chooseInitialTickets() {
+        return null;
+    }
+
+    @Override
+    public TurnKind nextTurn() {
+        return null;
+    }
+
+    @Override
+    public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
+        return null;
+    }
+
+    @Override
+    public int drawSlot() {
+        return 0;
+    }
+
+    @Override
+    public Route claimedRoute() {
+        return null;
+    }
+
+    @Override
+    public SortedBag<Card> initialClaimCards() {
+        return null;
+    }
+
+    @Override
+    public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
+        return null;
+    }
 }

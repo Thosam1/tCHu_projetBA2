@@ -152,7 +152,9 @@ public final class PlayerState extends PublicPlayerState {
         SortedBag<Card> cardsWithoutInitialCards = cards.difference(initialCards);
         
         Map<Card, Integer> map = new HashMap<>(cardsWithoutInitialCards.toMap());
-
+        //SortedBag.of ne doit pas prendre des valeurs null
+        map.putIfAbsent(Card.LOCOMOTIVE, 0);
+        map.putIfAbsent(initialCardsType, 0);
         
         SortedBag<Card> cartesUtilisables;
         if(initialCardsType == Card.LOCOMOTIVE) { //le joueur a que posé des Locomotives
@@ -163,10 +165,14 @@ public final class PlayerState extends PublicPlayerState {
                     map.get(initialCardsType), initialCardsType);
         }
         
+        if(cartesUtilisables.size()<additionalCardsCount) { //return liste vide si il n'est pas possible d avoir un subset
+            return List.of();}
+        else {
         List<SortedBag<Card>> options = new ArrayList<>(cartesUtilisables.subsetsOfSize(additionalCardsCount));
         options.sort(
-          Comparator.comparingInt(cs -> cs.countOf(Card.LOCOMOTIVE)));
+        Comparator.comparingInt(cs -> cs.countOf(Card.LOCOMOTIVE)));
         return options;
+        }
 
         }
 
