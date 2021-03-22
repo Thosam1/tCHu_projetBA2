@@ -179,7 +179,7 @@ public final class PlayerState extends PublicPlayerState {
      */
     public PlayerState withClaimedRoute(Route route, SortedBag<Card> claimCards){
         SortedBag<Card> reworkCards = cards().difference(claimCards);    // just check in case
-        List<Route> reworkRoutes = routes();
+        List<Route> reworkRoutes = new ArrayList<>(routes());           // !!! this list was final ! so make it a copy of a muable list
         reworkRoutes.add(route);
 
         return new PlayerState(tickets(),reworkCards, reworkRoutes);

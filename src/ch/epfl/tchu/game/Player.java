@@ -26,7 +26,7 @@ public interface Player {
     public abstract void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames);
 
     /**
-     * appelée chaque fois qu'une information doit être communiquée au joueur au cours de la partie ; cette information est donnée sous la forme d'une chaîne de caractères, généralement produite par la classe Info
+     * appelée chaque fois qu'une information doit être communiquée au joueur au cours de la partie; cette information est donnée sous la forme d'une chaîne de caractères, généralement produite par la classe Info
      * @param info
      */
     public abstract void receiveInfo(String info);
