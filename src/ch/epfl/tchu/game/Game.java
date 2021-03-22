@@ -27,5 +27,8 @@ public final class Game {
         
        //il faudrait savoir sur quoi appeler keptTickets
         players.forEach((c,v) ->{v.receiveInfo(keptTickets(chooseInitialTickets()));});
+        
+        while(!gameState.lastTurnBegins()) {}
+        //dont forget the two last turns
     }
 }
