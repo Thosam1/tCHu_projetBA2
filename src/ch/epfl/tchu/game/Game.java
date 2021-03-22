@@ -13,8 +13,8 @@ public final class Game implements Player {
     public static void play(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames, 
             SortedBag<Ticket> tickets, Random rng) {
         Preconditions.checkArgument((players.size()==2)&&(playerNames.size()==2));
-        Info player1 = new Info(PlayerId.PLAYER_1.toString());
-        Info player2 = new Info(PlayerId.PLAYER_2.toString());
+        Info player1 = new Info(playerNames.get(PlayerId.PLAYER_1));
+        Info player2 = new Info(playerNames.get(PlayerId.PLAYER_2));
         //comment avoir accès au joueur courant? PublicPlayerState
         //Est ce qu il faut définir les méthodes de Player?
         
@@ -33,7 +33,8 @@ public final class Game implements Player {
         players.forEach((c,v) ->{v.receiveInfo(keptTickets(chooseInitialTickets()));});
         
         while(!gameState.lastTurnBegins()) {
-            TurnKind turnKind = currentPlayer.nextTurn();
+            //comment faire pour switcher entre les deux joueurs
+            TurnKind turnKind = gameState.currentPlayerId().nextTurn();
             if(turnKind == Player.DRAW_TICKETS) {
                 //currentPlayer.chooseTickets()
             }
