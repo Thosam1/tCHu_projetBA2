@@ -11,9 +11,8 @@ import ch.epfl.tchu.SortedBag;
  * @author Aymeric de chillaz (326617)
  */
 public final class GameState extends PublicGameState{
-    public Deck<Ticket> tickets;
-    //public for test
-    public CardState cardState;
+    private Deck<Ticket> tickets;
+    private CardState cardState;
     private Map<PlayerId, PlayerState> playerState;
     private PlayerId currentPlayerId;
     private PlayerId lastPlayer;
@@ -31,7 +30,7 @@ public final class GameState extends PublicGameState{
         super(ticketsList.size(), cardState, currentPlayerId, makePublic(playerState), lastPlayer);
         this.tickets = ticketsList;
         this.cardState = cardState;
-        this.playerState = playerState;
+        this.playerState = Map.copyOf(playerState);
         this.currentPlayerId = currentPlayerId; 
         //je pourrait rendre l'attribut de la superclasse protected mais je ne sais 
         // pas si la classe resterait immuable

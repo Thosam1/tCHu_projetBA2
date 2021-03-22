@@ -15,8 +15,7 @@ import java.util.*;
 public final class CardState extends PublicCardState {
 //    private List<Card> fiveFaceUp;  // cartes retournées  -> faceUpCards() de la superclasse
     
-    //public for test
-    public final Deck<Card> deck;    // pioche
+    private final Deck<Card> deck;    // pioche
     private final SortedBag<Card> bin; // défausse  -   ordre n'importe pas
     /**
      * Construit un état public des cartes dans lequel les cartes face visible

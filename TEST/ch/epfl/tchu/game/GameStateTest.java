@@ -24,30 +24,30 @@ class GameStateTest {
         assertEquals(0, playerState2.tickets().size());
         assertEquals(4, playerState1.cards().size());
         assertEquals(4, playerState2.cards().size());
+        /*Great it is random
+        System.out.println(gameState.topCard());*/
         
+        assertEquals(false, gameState.lastTurnBegins());
         
-        //Je vérifie que les cartes ont été mélangé
+        /*
+         test with carCount set to 2 (it works)
+        assertEquals(true, gameState.lastTurnBegins());*/
+        
+        GameState nextState = gameState.forNextTurn();
+        assertEquals(gameState.currentPlayerId().next(), nextState.currentPlayerId());
+        
+        //only works if lastPlayer is public
+        //assertEquals(gameState.lastPlayer, null);
+        
+        /*
+        Je vérifie que les cartes ont été mélangé
         for(Card card : playerState1.cards()) {
             System.out.println(card);
         }
         for(Card card : playerState2.cards()) {
             System.out.println(card);
-        }
-        System.out.println("number of cards in deck = "+ gameState.cardState.deck.size() + "   " + Constants.TOTAL_CARDS_COUNT);
-        //TODO Ils n ont pas l'air mélangé
-        System.out.println("nombre de tickets dans tickets = "+tickets.size());
-        System.out.println("Debut test topTickets");
-        //Je vérifie que topTicket fonctionne et que les tickets ont été mélangé
-        for(Ticket ticket : gameState.topTickets(10)) {
-            System.out.println(ticket.text());
-        }
+        }*/
         
-        System.out.println();
-        System.out.println("Debut test withoutTopTickets");
-        //Je vérifie que withoutTopTickets fonctionne et que les tickets ont été mélangé
-        for(Ticket ticket : gameState.withoutTopTickets(5).topTickets(tickets.size()-5)){
-            System.out.println(ticket);
-        }
         
         
         
