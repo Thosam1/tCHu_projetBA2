@@ -164,7 +164,7 @@ public final class GameState extends PublicGameState{
         playerState2.put(playerId, playerState.get(playerId).withAddedTickets(chosenTickets));
 
         // j'espère que la modification est effectué
-        return new GameState(tickets, cardState, currentPlayerId, playerState2, lastPlayer);    // remove tickets ?
+        return new GameState(tickets, cardState, currentPlayerId, playerState2, lastPlayer);    // remove tickets ? NO !
     }
 
     /**
@@ -246,5 +246,6 @@ public final class GameState extends PublicGameState{
         }else{
             return new GameState(tickets, cardState, currentPlayerId.next(), playerState, lastPlayer);
         }
+
     }
 }
