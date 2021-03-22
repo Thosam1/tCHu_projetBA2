@@ -432,31 +432,69 @@ public class PlayerStateTest {
         });
     }
 
-//    @Test
-//    public void possibleClaimCardsArgExceptionNullColorTest(){
-//        SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets().get(0));
-//
-//        List<Card> cardList = new ArrayList<>();
-//        cardList.add(Card.of(Color.RED)); // 2 RED
-//        cardList.add(Card.of(Color.RED));
-//        cardList.add(Card.of(null));
-//        cardList.add(Card.of(Color.GREEN));
-//        cardList.add(Card.of(Color.GREEN));
-//        cardList.add(Card.of(Color.GREEN));
-//
-//        cardList.add(Card.of(null));    // locomotive
-//        SortedBag<Card> cards = SortedBag.of(cardList);
-//
-//        List<Route> routes = new ArrayList<>();
-//        routes.add(ChMap.routes().get(2));
-//        routes.add(ChMap.routes().get(8));
-//
-//        PlayerState test = new PlayerState(tickets, cards, routes);
-//        assertFalse(test.canClaimRoute(ChMap.routes().get(2)));  // need 3 red
-//        assertThrows(IllegalArgumentException.class, () -> {
-//            test.possibleClaimCards(ChMap.routes().get(11));
-//        });
-//    }
+    @Test
+    public void possibleClaimCardsArgExceptionNullColorTest(){
+        SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets().get(0));
+
+        List<Card> cardList = new ArrayList<>();
+        cardList.add(Card.of(Color.RED)); // 2 RED
+        cardList.add(Card.of(Color.RED));
+        cardList.add(Card.of(Color.GREEN));
+        cardList.add(Card.of(Color.GREEN));
+        cardList.add(Card.of(Color.GREEN));
+
+        SortedBag<Card> cards = SortedBag.of(cardList);
+
+        List<Route> routes = new ArrayList<>();
+        routes.add(ChMap.routes().get(2));
+        routes.add(ChMap.routes().get(8));
+
+        PlayerState test = new PlayerState(tickets, cards, routes);
+        assertFalse(test.canClaimRoute(ChMap.routes().get(2)));  // need 3 red
+    }
+
+    @Test
+    public void possibleClaimCardsTestMore(){
+//        assertEquals("je met une erreur pour que tu ne l oublies pas", ""); // Merci :D
+        SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets().get(0));
+
+        List<Card> cardList = new ArrayList<>();
+        cardList.add(Card.of(Color.RED));
+        cardList.add(Card.of(Color.RED));
+        cardList.add(Card.of(Color.RED));
+        cardList.add(Card.LOCOMOTIVE);
+        cardList.add(Card.LOCOMOTIVE);
+        cardList.add(Card.LOCOMOTIVE);
+
+        SortedBag<Card> cards = SortedBag.of(cardList);
+
+        List<Route> routes = new ArrayList<>();
+        routes.add(ChMap.routes().get(2));
+        routes.add(ChMap.routes().get(8));
+
+        PlayerState test = new PlayerState(tickets, cards, routes);
+
+
+        List<Card> temp1 = new ArrayList<>();
+        temp1.add(Card.RED);temp1.add(Card.RED);temp1.add(Card.RED);
+        List<SortedBag<Card>> cardBagList1 = new ArrayList<>();
+        cardBagList1.add(SortedBag.of(temp1));
+
+        List<Card> temp2 = new ArrayList<>();
+        temp2.add(Card.LOCOMOTIVE);temp2.add(Card.RED);temp2.add(Card.RED);
+        cardBagList1.add(SortedBag.of(temp2));
+
+        List<Card> temp3 = new ArrayList<>();
+        temp3.add(Card.LOCOMOTIVE);temp3.add(Card.LOCOMOTIVE);temp3.add(Card.RED);
+        cardBagList1.add(SortedBag.of(temp3));
+
+        List<Card> temp4 = new ArrayList<>();
+        temp4.add(Card.LOCOMOTIVE);temp4.add(Card.LOCOMOTIVE);temp4.add(Card.LOCOMOTIVE);
+        cardBagList1.add(SortedBag.of(temp4));
+
+
+        assertEquals(test.possibleClaimCards(ChMap.routes().get(2)), cardBagList1);  // need 3 red
+    }
 
     @Test
     public void possibleClaimCardsTest(){

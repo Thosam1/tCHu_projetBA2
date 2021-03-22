@@ -66,7 +66,7 @@ public class InfoTest {
     public void keptTicketsSingleTest() {
         Info playerInfo = new Info("Player1");
         String test = playerInfo.keptTickets(0);
-        assertEquals(test , "Player1 a gardé 0 billet.\n");
+        assertEquals(test , "Player1 a gardé 0 billets.\n");
     }
     @Test
     public void keptTicketsMultipleTest() {
