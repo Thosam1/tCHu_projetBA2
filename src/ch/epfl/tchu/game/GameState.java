@@ -179,7 +179,7 @@ public final class GameState extends PublicGameState{
         Map<PlayerId, PlayerState> playerState2 = new HashMap<>();
         playerState2.putAll(playerState);
         playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedTickets(chosenTickets));
-        return new GameState(tickets.withoutTopCards(drawnTickets.size()), cardState, currentPlayerId, playerState, lastPlayer);  // remove tickets from tickets !!!
+        return new GameState(tickets.withoutTopCards(drawnTickets.size()), cardState, currentPlayerId, playerState2, lastPlayer);  // remove tickets from tickets !!!
     }
 
 
