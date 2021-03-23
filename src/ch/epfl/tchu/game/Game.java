@@ -44,6 +44,7 @@ public final class Game {
         Info player1 = new Info(playerNames.get(PlayerId.PLAYER_1));
         Info player2 = new Info(playerNames.get(PlayerId.PLAYER_2));
 
+        Map<PlayerId, Info> infoMap = Map.of(PlayerId.PLAYER_1, player1, PlayerId.PLAYER_2, player2);
         // Avant le début de la partie
 
         //comment avoir accès au joueur courant? PublicPlayerState
@@ -58,12 +59,15 @@ public final class Game {
          * permet de choisir un joueur au hasard, communiquer l'info et d initialiser le GameState
          */
         GameState gameState = GameState.initial(tickets, rng);
+        
         players.forEach((c,v) -> {
+            v.receiveInfo(infoMap.get(c).willPlayFirst());
+            /*
             if ((gameState.currentPlayerId() == PlayerId.PLAYER_1)) {
                 v.receiveInfo(player1.willPlayFirst());
             } else {
                 v.receiveInfo(player2.willPlayFirst());
-            }
+            }*/
         });
 
         /**
@@ -78,8 +82,8 @@ public final class Game {
 
 //            gameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
 
-            v.receiveInfo(player1.drewTickets(Constants.INITIAL_TICKETS_COUNT));
-            v.receiveInfo(player2.drewTickets(Constants.INITIAL_TICKETS_COUNT));
+            infoMap.forEach((playerId, playerInfo) -> 
+            v.receiveInfo(playerInfo.drewTickets(Constants.INITIAL_TICKETS_COUNT)));
 
         });   // ou faut-il juste mettre "tickets"
         //est ce qu il faut donner les 5 billets du haut de tickets et updater gameState
