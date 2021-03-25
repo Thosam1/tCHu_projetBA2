@@ -45,6 +45,8 @@ public final class GameState extends PublicGameState{
 
     /**
      * méthode de construction publique et statique
+     * Créé une GameState de début de jeu
+     * 4 cartes sont données aux joueurs et l'identité du premier joueur est déterminé
      * @param tickets
      * @param rng
      * @return une instante de GameState
@@ -162,12 +164,11 @@ public final class GameState extends PublicGameState{
         playerState2.putAll(playerState);
         playerState2.put(playerId, playerState.get(playerId).withAddedTickets(chosenTickets));
 
-        // j'espère que la modification est effectué
         return new GameState(tickets, cardState, currentPlayerId, playerState2, lastPlayer);    // remove tickets ? NO !
     }
 
     /**
-     *  ne modifie pas la pioche de billets
+     * modifie la pioche de billets
      * @param drawnTickets  billets tirés
      * @param chosenTickets billets gardés
      * @return un état identique au récepteur, mais dans lequel le joueur courant a tiré les billets drawnTickets du sommet de la pioche, et choisi de garder ceux contenus dans chosenTicket
@@ -184,7 +185,7 @@ public final class GameState extends PublicGameState{
 
 
     /**
-     * modifie aussi les cartes
+     * modifie aussi la pioche de carte
      * @param slot
      * @return un état identique au récepteur si ce n'est que la carte face retournée à l'emplacement donné a été placée dans la main du joueur courant, et remplacée par celle au sommet de la pioche
      * @throws IllegalArgumentException s'il n'est pas possible de tirer des cartes, c-à-d si canDrawCards retourne faux
@@ -196,11 +197,12 @@ public final class GameState extends PublicGameState{
         playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedCard(cardState.faceUpCard(slot)));
 
         return new GameState(tickets, cardState.withDrawnFaceUpCard(slot), currentPlayerId, playerState2, lastPlayer);
+        //l appel de withDrawnFaceUpCard sur cardState rend un CardState qui contient une nouvelle carte à la position slot de faceUpCards
     }
 
 
     /**
-     * modifie aussi les cartes
+     * modifie aussi la pioche de carte
      * @return un état identique au récepteur si ce n'est que la carte du sommet de la pioche a été placée dans la main du joueur courant
      * @throws IllegalArgumentException s'il n'est pas possible de tirer des cartes, c-à-d si canDrawCards retourne faux
      */
@@ -213,7 +215,7 @@ public final class GameState extends PublicGameState{
         return new GameState(tickets, cardState.withoutTopDeckCard(), currentPlayerId, playerState2, lastPlayer);
     }
 
-    /**
+    /** modifie la défausse
      * @param route
      * @param cards
      * @return un état identique au récepteur mais dans lequel le joueur courant s'est emparé de la route donnée au moyen des cartes données
