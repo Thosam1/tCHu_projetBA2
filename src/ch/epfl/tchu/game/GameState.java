@@ -52,24 +52,32 @@ public final class GameState extends PublicGameState{
      * @return une instante de GameState
      */
     public static GameState initial(SortedBag<Ticket> tickets, Random rng) {
-        List<Card> cards = Constants.ALL_CARDS.toList();
-        Collections.shuffle(cards);
-        List<Card> initialPlayerCards = new ArrayList<>();
-        List<Card> secondPlayerCards = new ArrayList<>();
-        List<Card> deck = new ArrayList<>();
+//        List<Card> cards = Constants.ALL_CARDS.toList();
+////        Collections.shuffle(cards);
+//        List<Card> initialPlayerCards = new ArrayList<>();
+//        List<Card> secondPlayerCards = new ArrayList<>();
+//        List<Card> deck = new ArrayList<>();
+//        PlayerId premierJoueurId = PlayerId.ALL.get(rng.nextInt(2));    // et le deuxième joueur ? //il  viendra après, on veut que le premier joueur
+//
+//        for(int i = 0; i<Constants.INITIAL_CARDS_COUNT; i++) {
+//            initialPlayerCards.add(cards.get(i));
+//        }
+//        for(int i = Constants.INITIAL_CARDS_COUNT; i< Constants.INITIAL_CARDS_COUNT * 2; i++) {
+//            secondPlayerCards.add(cards.get(i));
+//        }
+//        for(int i = Constants.INITIAL_CARDS_COUNT * 2; i<Constants.ALL_CARDS.size(); ++i) {
+//            deck.add(cards.get(i));
+//        }
+//        CardState cardState = CardState.of(Deck.of(SortedBag.of(deck), rng));
+
+        Deck card = Deck.of(SortedBag.of(Constants.ALL_CARDS), rng); //...   ne faire qu'un shuffle avec celui-là
         PlayerId premierJoueurId = PlayerId.ALL.get(rng.nextInt(2));    // et le deuxième joueur ? //il  viendra après, on veut que le premier joueur
-        
-        for(int i = 0; i<Constants.INITIAL_CARDS_COUNT; i++) {
-            initialPlayerCards.add(cards.get(i));
-        }
-        for(int i = Constants.INITIAL_CARDS_COUNT; i< Constants.INITIAL_CARDS_COUNT * 2; i++) {
-            secondPlayerCards.add(cards.get(i));
-        }
-        for(int i = Constants.INITIAL_CARDS_COUNT * 2; i<Constants.ALL_CARDS.size(); ++i) {
-            deck.add(cards.get(i));
-        }
-        CardState cardState = CardState.of(Deck.of(SortedBag.of(deck), rng));
-        
+        List<Card> initialPlayerCards = new ArrayList<>(card.topCards(Constants.INITIAL_CARDS_COUNT).toList());
+        card = card.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
+        List<Card> secondPlayerCards = new ArrayList<>(card.topCards(Constants.INITIAL_CARDS_COUNT).toList());
+        card = card.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
+        CardState cardState = CardState.of(card);
+
         Map<PlayerId, PlayerState> playerStateMap = new EnumMap<>(PlayerId.class);                       
         playerStateMap.put(PlayerId.PLAYER_1, PlayerState.initial(SortedBag.of(initialPlayerCards)));
         playerStateMap.put(PlayerId.PLAYER_2, PlayerState.initial(SortedBag.of(secondPlayerCards)));
@@ -223,7 +231,7 @@ public final class GameState extends PublicGameState{
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
         Map<PlayerId, PlayerState> playerState2 = new HashMap<>();
         playerState2.putAll(playerState);
-        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withClaimedRoute(route, cards));
+        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withClaimedRoute(route, cards)); // on lui enlève ses cartes utilisées de sa main
         return new GameState(tickets, cardState.withMoreDiscardedCards(cards), currentPlayerId, playerState2, lastPlayer);                            // Les cartes sont ajoutées à la défausse
     }
 

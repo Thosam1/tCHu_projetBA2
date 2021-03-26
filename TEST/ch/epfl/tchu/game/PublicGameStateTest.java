@@ -58,19 +58,46 @@ class PublicGameStateTest {
         
         //Ici il ne devrait pas y avoir d exception lancé
         PublicCardState cardStateTest1 = new PublicCardState(SortedBag.of(5,Card.BLUE).toList(),0,0);
+        PublicCardState cardStateTest2 = new PublicCardState(SortedBag.of(5,Card.BLUE).toList(), 5, 0);
+        PublicCardState cardStateTest3 = new PublicCardState(SortedBag.of(5,Card.BLUE).toList(), 0, 5);
+
         PublicGameState test = new PublicGameState(0, cardStateTest1, PlayerId.PLAYER_1, validPlayerState, PlayerId.PLAYER_1);
-        PublicGameState test2 = new PublicGameState(5, new PublicCardState(SortedBag.of(5,Card.BLUE).toList(), 5, 0), PlayerId.PLAYER_1, validPlayerState, PlayerId.PLAYER_1);
-        
+        PublicGameState test2 = new PublicGameState(5, cardStateTest2, PlayerId.PLAYER_1, validPlayerState, null);
+        PublicGameState test3 = new PublicGameState(1, cardStateTest3, PlayerId.PLAYER_2, validPlayerState, null);
+
         assertEquals(0,test.ticketsCount());
+        assertEquals(5,test2.ticketsCount());
+
         assertEquals(false, test.canDrawTickets());
         assertEquals(true, test2.canDrawTickets());
+        assertEquals(true, test3.canDrawTickets());
+
         assertEquals(cardStateTest1, test.cardState());
+        assertEquals(cardStateTest2, test2.cardState());
+        assertEquals(cardStateTest3, test3.cardState());
+
         assertEquals(false, test.canDrawCards());
         assertEquals(true, test2.canDrawCards());
+        assertEquals(true, test3.canDrawCards());
+
         assertEquals(PlayerId.PLAYER_1, test.currentPlayerId());
+        assertEquals(PlayerId.PLAYER_1, test2.currentPlayerId());
+        assertEquals(PlayerId.PLAYER_2, test3.currentPlayerId());
+
         assertEquals(playerState2, test.playerState(PlayerId.PLAYER_2));
+        assertEquals(playerState1, test2.playerState(PlayerId.PLAYER_1));
+        assertEquals(playerState2, test3.playerState(PlayerId.PLAYER_2));
+
         assertEquals(playerState1, test.currentPlayerState());
+        assertEquals(playerState1, test2.currentPlayerState());
+        assertEquals(playerState2, test3.currentPlayerState());
+
         assertEquals(List.of(route1,route2), test.claimedRoutes());
+        assertEquals(List.of(route1,route2), test2.claimedRoutes());
+        assertEquals(List.of(route1,route2), test3.claimedRoutes());
+
         assertEquals(PlayerId.PLAYER_1, test.lastPlayer());
+        assertEquals(null,  test2.lastPlayer());
+        assertEquals(null, test3.lastPlayer());
     }
     }
