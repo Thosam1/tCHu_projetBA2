@@ -152,12 +152,13 @@ public final class Game {
                     v.receiveInfo(currInf.keptTickets(chosenTickets.size()));
                 });
 
+                
             }else if(turnKind == Player.TurnKind.DRAW_CARDS){
 
                 for(int i = 0; i < 2; i++){ // tire deux fois
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     int slot = currPlayerInterf.drawSlot();
-                    //Constans.DECK_SLOT est égal à -1 et signigie que le joueur veut la carte du haut du deck
+                    //Constans.DECK_SLOT est égal à -1 et signifie que le joueur veut la carte du haut du deck
                     gameState = (slot == Constants.DECK_SLOT) ? gameState.withBlindlyDrawnCard() : gameState.withDrawnFaceUpCard(slot);
 
                     for(Map.Entry<PlayerId, Player> c : players.entrySet()){ // if a visible card, what about discards ???
@@ -178,9 +179,10 @@ public final class Game {
                 }
             }
 
-            // gameState
+            // gameState / Pourquoi gameState?
             // receive info
             // update state
+            
             
             else {  //comment vérifier que le joueur a assez de wagons
                 /**la route que le player veut*/
@@ -197,10 +199,11 @@ public final class Game {
                         }
                     SortedBag<Card> drawnCards = builder.build(); 
 
+                    int additionalCardsCount = routeDésiré.additionalClaimCardsCount(initialCards, drawnCards);
+                    
                     //Les trois cartes piochés sont rajoutés à la défausse
                     gameState = gameState.withMoreDiscardedCards(drawnCards);
                     
-                    int additionalCardsCount = routeDésiré.additionalClaimCardsCount(initialCards, drawnCards);
                     
                     List<SortedBag<Card>> possibleAdditionalCards = gameState.currentPlayerState()
                             .possibleAdditionalCards(additionalCardsCount, initialCards, drawnCards);
