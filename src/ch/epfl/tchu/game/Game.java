@@ -1,9 +1,7 @@
 package ch.epfl.tchu.game;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Random;
 
 import ch.epfl.tchu.Preconditions;
@@ -190,7 +188,7 @@ public final class Game {
                 SortedBag<Card> initialCards = currPlayerInterf.initialClaimCards();
                 
                 if (routeDésiré.level() == Route.Level.UNDERGROUND) {
-                    SortedBag.Builder builder = new SortedBag.Builder<>();
+                    SortedBag.Builder<Card> builder = new SortedBag.Builder<>();
                     
                     for(int i = 0; i<Constants.ADDITIONAL_TUNNEL_CARDS; ++i) {
                         gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);

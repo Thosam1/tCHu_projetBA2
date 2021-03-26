@@ -70,7 +70,7 @@ public final class GameState extends PublicGameState{
 //        }
 //        CardState cardState = CardState.of(Deck.of(SortedBag.of(deck), rng));
 
-        Deck card = Deck.of(SortedBag.of(Constants.ALL_CARDS), rng); //...   ne faire qu'un shuffle avec celui-là
+        Deck<Card> card = Deck.of(SortedBag.of(Constants.ALL_CARDS), rng); //...   ne faire qu'un shuffle avec celui-là
         PlayerId premierJoueurId = PlayerId.ALL.get(rng.nextInt(2));    // et le deuxième joueur ? //il  viendra après, on veut que le premier joueur
         List<Card> initialPlayerCards = new ArrayList<>(card.topCards(Constants.INITIAL_CARDS_COUNT).toList());
         card = card.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
