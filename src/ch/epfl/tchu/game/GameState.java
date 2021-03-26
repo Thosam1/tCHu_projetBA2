@@ -79,8 +79,8 @@ public final class GameState extends PublicGameState{
         CardState cardState = CardState.of(card);
 
         Map<PlayerId, PlayerState> playerStateMap = new EnumMap<>(PlayerId.class);                       
-        playerStateMap.put(PlayerId.PLAYER_1, PlayerState.initial(SortedBag.of(initialPlayerCards)));
-        playerStateMap.put(PlayerId.PLAYER_2, PlayerState.initial(SortedBag.of(secondPlayerCards)));
+        playerStateMap.put(premierJoueurId, PlayerState.initial(SortedBag.of(initialPlayerCards)));
+        playerStateMap.put(premierJoueurId.next(), PlayerState.initial(SortedBag.of(secondPlayerCards)));
         
         return new GameState(Deck.of(tickets, rng), cardState, premierJoueurId, playerStateMap, null);
     }
