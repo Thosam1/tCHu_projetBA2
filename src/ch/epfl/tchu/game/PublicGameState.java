@@ -96,7 +96,6 @@ public class PublicGameState {
     /**
      * @return la totalité des routes dont l'un ou l'autre des joueurs s'est emparé
      */
-    /* je ne sais pas si ça va fonctionner comme les listes sont immuable*/
     public List<Route> claimedRoutes(){
         List<Route> routeNextPlayer = List.copyOf(playerState.get(PlayerId.ALL.get(0)).routes());
         List<Route> routeCurrentPlayer = List.copyOf(playerState.get(PlayerId.ALL.get(1)).routes());

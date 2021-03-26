@@ -103,7 +103,7 @@ public final class Game {
         /*players.forEach((c, v) -> { // après leur choix, on les informe
         // joueur 1 reçoit l'info de l'adversaire seulement ou de lui-même aussi ? bonne question
         // c'est bien chooseInitialTickets() de la classe Player qu'il faut appeler ?
-        // je dirai que oui
+        // je dirai que oui  
             v.receiveInfo(player1.keptTickets(players.get(PlayerId.PLAYER_1).chooseInitialTickets().size()));
             v.receiveInfo(player2.keptTickets(players.get(PlayerId.PLAYER_2).chooseInitialTickets().size()));
         });*/
@@ -112,9 +112,9 @@ public final class Game {
             c.getValue().receiveInfo(player2.keptTickets(gameState.playerState(PlayerId.PLAYER_2).ticketCount())); // c'est bien chooseInitialTickets() de la classe Player qu'il faut appeler ? Non !
 
         }
-
-
-
+        
+        
+        
         /**La partie commence*/
         while(numberOfLastTurns<=2){//le loop s'arrete quand les deux joueurs ont joué une dernière fois
             //currentPlayerInterface
@@ -186,10 +186,10 @@ public final class Game {
                 /**la route que le player veut*/
                 Route routeDésiré = currPlayerInterf.claimedRoute();
                 SortedBag<Card> initialCards = currPlayerInterf.initialClaimCards();
-
+                
                 if (routeDésiré.level() == Route.Level.UNDERGROUND) {
                     SortedBag.Builder builder = new SortedBag.Builder<>();
-
+                    
                     for(int i = 0; i<Constants.ADDITIONAL_TUNNEL_CARDS; ++i) {
                         gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                         builder.add(gameState.topCard());
@@ -204,43 +204,43 @@ public final class Game {
 
                     List<SortedBag<Card>> possibleAdditionalCards = gameState.currentPlayerState()
                             .possibleAdditionalCards(additionalCardsCount, initialCards, drawnCards);
-
-
+                    
+                    
                     if((additionalCardsCount>=1) && (additionalCardsCount<=3) && (possibleAdditionalCards.size()!=0)) {
-                        SortedBag<Card> additionalCards = currPlayerInterf.chooseAdditionalCards(possibleAdditionalCards);
+                        SortedBag<Card> additionalCards = currPlayerInterf.chooseAdditionalCards(possibleAdditionalCards);   
                         //Est ce que chooseAdditionalCards retourne toutes les cartes à utiliser ou seulement les cartes additionelles?
                         gameState = (additionalCards.size()==0)? gameState :  gameState.withClaimedRoute(routeDésiré, initialCards.union(additionalCards)) ;
                     }
-
+                    
                     else if(additionalCardsCount==0) {
                         gameState = gameState.withClaimedRoute(routeDésiré, initialCards);
-
+                        
                     }
-
+                    
                     else {
                         //la route n est pas rajouté car le joueur n a pas les cartes additionelles
-
+                        
                     }
                 }
                 else {
                     gameState = gameState.withClaimedRoute(routeDésiré, initialCards);
                 }
             }
-
+            
             gameState = gameState.forNextTurn();
-
+            
             //incrémente numberOfLastTurns pour qu il y ait deux turns une fois que lastTurnBegins rend true
             if((gameState.lastTurnBegins())||(numberOfLastTurns !=0)) {
                 ++numberOfLastTurns;
             }
         }
-
+        
         int player1Score = gameState.playerState(PlayerId.PLAYER_1).finalPoints();
         int player2Score = gameState.playerState(PlayerId.PLAYER_2).finalPoints();
-
+        
         int player1LongestTrail = Trail.longest(gameState.playerState(PlayerId.PLAYER_1).routes()).length();
         int player2LongestTrail = Trail.longest(gameState.playerState(PlayerId.PLAYER_2).routes()).length();
-
+        
         PlayerId playerLongestTrail;
         switch(Integer.compare(player1LongestTrail, player2LongestTrail)) {
         case 1:
@@ -259,7 +259,7 @@ public final class Game {
         default:
             break;
         }
-
+        
         PlayerId playerWinner;
         switch(Integer.compare(player1Score, player2Score)) {
         case 1:
@@ -274,7 +274,7 @@ public final class Game {
         default:
             break;
         }
-
+       
     }
 
 
