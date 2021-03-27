@@ -80,14 +80,15 @@ public final class Game {
         /**
          *  Pour chaque joueur doit être appelée pour savoir quels billets chaque joueur a décidé de garder
          */
-        /*players.forEach((c, v) -> {
-            SortedBag<Tickets> chosenTickets = v.chooseInitialTickets();
-            gameState.withInitiallyChosenTickets(c, chosenTickets);
-        });*/
+        /*
         for(Map.Entry<PlayerId, Player> c : players.entrySet()){
             c.getValue().updateState(gameState, gameState.playerState(PlayerId.PLAYER_1));  // faut-il aussi informer de l'état du joueur adverse ???
             c.getValue().updateState(gameState, gameState.playerState(PlayerId.PLAYER_2));
-        }
+        } Il ne faut pas communiquer le playerState aux adversaires
+        */
+        Game.updateStateForAll(players, gameState); 
+        //vérifier qu il ne faut pas l appeler dans le loop avant d appeler chooseInitialTickets
+        
         for(Map.Entry<PlayerId, Player> c : players.entrySet()){
             SortedBag<Ticket> chosenTickets = c.getValue().chooseInitialTickets();
             gameState.withInitiallyChosenTickets(c.getKey(), chosenTickets);  //withInitiallyChosenTickets ne modife pas la pioche de billets
@@ -119,13 +120,15 @@ public final class Game {
             Player currPlayerInterf = players.get(gameState.currentPlayerId());  // lisibilité
             Info currInf = infoMap.get(gameState.currentPlayerId());
 
-            for(Map.Entry<PlayerId, Player> c : players.entrySet()){
+           /* for(Map.Entry<PlayerId, Player> c : players.entrySet()){
                 c.getValue().receiveInfo(currInf.canPlay());
-
+/*
                 c.getValue().updateState(gameState, gameState.playerState(PlayerId.PLAYER_1));
                 c.getValue().updateState(gameState, gameState.playerState(PlayerId.PLAYER_2)); // Aussi celui du deuxième joueur ??? ou chacun reçoit les infos de sa propre main et pas de son adversaire ?
 //                v.updateState(gameState, gameState.playerState(c));
-            }
+            }*/
+            Game.infoToAll(players, currInf.canPlay());
+            Game.updateStateForAll(players, gameState);
 
             /**
              *  Savoir quelle action le joueur courant désire effectuer parmi les trois possibles
@@ -138,17 +141,19 @@ public final class Game {
                 //faut il verifier qu il reste des tickets
                 SortedBag<Ticket> drawnTickets = gameState.topTickets(Constants.IN_GAME_TICKETS_COUNT);
                 
-                players.forEach((c, v) -> {
+               /* players.forEach((c, v) -> {
                     v.receiveInfo(currInf.drewTickets(Constants.IN_GAME_TICKETS_COUNT));   // Avant qu'il choisisse
-                });
+                });*/
+                Game.infoToAll(players, currInf.drewTickets(Constants.IN_GAME_TICKETS_COUNT));
 
                 SortedBag<Ticket> chosenTickets = currPlayerInterf.chooseTickets(drawnTickets);
 
                 gameState.withChosenAdditionalTickets(drawnTickets, chosenTickets); // playerState et tickets changent
 
-                players.forEach((c, v) -> {
+               /* players.forEach((c, v) -> {
                     v.receiveInfo(currInf.keptTickets(chosenTickets.size()));
-                });
+                });*/
+                Game.infoToAll(players, currInf.keptTickets(chosenTickets.size());
 
                 
             }else if(turnKind == Player.TurnKind.DRAW_CARDS){
@@ -156,16 +161,24 @@ public final class Game {
                 for(int i = 0; i < 2; i++){ // tire deux fois
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     int slot = currPlayerInterf.drawSlot();
+                    Card pickedFaceUpCard = gameState.()
                     //Constans.DECK_SLOT est égal à -1 et signifie que le joueur veut la carte du haut du deck
                     gameState = (slot == Constants.DECK_SLOT) ? gameState.withBlindlyDrawnCard() : gameState.withDrawnFaceUpCard(slot);
 
+                    //comment faire pour savoir quelle carte a été sélectionné si slot n est pas 1
+                    Game.infoToAll(players, (slot==Constants.Deck_SLOT)? currInf.drewBlindCard() : currInf.drewVisibleCard());
+                    /*
                     for(Map.Entry<PlayerId, Player> c : players.entrySet()){ // if a visible card, what about discards ???
                         if ((slot == Constants.DECK_SLOT)) {
                             c.getValue().receiveInfo(currInf.drewBlindCard());
                         } else {
+                            //le gameState a été changé donc il devrait y avoir une nouvelle carte à la position slot
                             c.getValue().receiveInfo(currInf.drewVisibleCard(gameState.cardState().faceUpCard(slot)));
                         }
-                    }
+                    }*/
+                    if(i==0){
+                        Game.updateStateForAll(players, gameState);
+                    }/*
                     // faut il communiquer ceci à l'autre joueur ?
                     if(i == 0){ // entre le premier et le deuxième tirage
                         for(Map.Entry<PlayerId, Player> c : players.entrySet()){
@@ -173,7 +186,7 @@ public final class Game {
 //                            v.updateState(gameState, gameState.playerState(PlayerId.PLAYER_1));
 //                            v.updateState(gameState, gameState.playerState(PlayerId.PLAYER_2));
                         }
-                    }
+                    }*/
                 }
             }
 
@@ -275,21 +288,25 @@ public final class Game {
         default:
             break;
         }
+     //on informe les joueurs du résultat final de la partie 
+     //afin qu ils connaissent l'état dans lequel la partie s'est terminé   
+        Game.updateStateForAll(players, gameState);
        
     }
 
 
     /**
-     * permettan d'envoyer une information à tous les joueurs, en appelant la méthode receiveInfo de chacun d'eux
+     * permet d'envoyer une information à tous les joueurs, en appelant la méthode receiveInfo de chacun d'eux
      */
-//    private void infoToAll(String info) {
-//        players.forEach((c,v) -> v.receiveInfo(info));
-//    }
+    private static void infoToAll(Map<PlayerId, Player> players, String info) {
+        players.forEach((c,v) -> v.receiveInfo(info));
+    }
+
 
     /**
-     * permettant d'informer tous les joueurs d'un changement d'état, en appelant la méthode updateState de chacun d'eux
+     * permet d'informer tous les joueurs d'un changement d'état, en appelant la méthode updateState de chacun d'eux
      */
-//    private void stateChangeToAll(String stateChange) {
-//        players.forEach((c,v) -> v.receiveInfo(stateChange));
-//    }
+    private static void updateStateForAll(Map<PlayerId, Player> players, GameState gameState) {
+        players.forEach((c,v) -> v.updateState(gameState, gameState.playerState(c)));
+    }
 }
