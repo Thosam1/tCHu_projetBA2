@@ -153,7 +153,7 @@ public final class Game {
                /* players.forEach((c, v) -> {
                     v.receiveInfo(currInf.keptTickets(chosenTickets.size()));
                 });*/
-                Game.infoToAll(players, currInf.keptTickets(chosenTickets.size());
+                Game.infoToAll(players, currInf.keptTickets(chosenTickets.size()));
 
                 
             }else if(turnKind == Player.TurnKind.DRAW_CARDS){
@@ -161,12 +161,14 @@ public final class Game {
                 for(int i = 0; i < 2; i++){ // tire deux fois
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     int slot = currPlayerInterf.drawSlot();
-                    Card pickedFaceUpCard = gameState.()
+  
+                    Card pickedVisibleCard = (slot != Constants.DECK_SLOT) ? gameState.cardState().faceUpCard(slot) : null ;
+                    
                     //Constans.DECK_SLOT est égal à -1 et signifie que le joueur veut la carte du haut du deck
                     gameState = (slot == Constants.DECK_SLOT) ? gameState.withBlindlyDrawnCard() : gameState.withDrawnFaceUpCard(slot);
 
                     //comment faire pour savoir quelle carte a été sélectionné si slot n est pas 1
-                    Game.infoToAll(players, (slot==Constants.Deck_SLOT)? currInf.drewBlindCard() : currInf.drewVisibleCard());
+                    Game.infoToAll(players, (slot == Constants.DECK_SLOT) ? currInf.drewBlindCard() : currInf.drewVisibleCard(pickedVisibleCard));
                     /*
                     for(Map.Entry<PlayerId, Player> c : players.entrySet()){ // if a visible card, what about discards ???
                         if ((slot == Constants.DECK_SLOT)) {
@@ -201,6 +203,8 @@ public final class Game {
                 SortedBag<Card> initialCards = currPlayerInterf.initialClaimCards();
                 
                 if (routeDésiré.level() == Route.Level.UNDERGROUND) {
+                    Game.infoToAll(players, currInf.attemptsTunnelClaim(routeDésiré, initialCards));
+                    
                     SortedBag.Builder<Card> builder = new SortedBag.Builder<>();
                     
                     for(int i = 0; i<Constants.ADDITIONAL_TUNNEL_CARDS; ++i) {
@@ -212,6 +216,8 @@ public final class Game {
 
                     int additionalCardsCount = routeDésiré.additionalClaimCardsCount(initialCards, drawnCards);
                     
+                    Game.infoToAll(players, currInf.drewAdditionalCards(drawnCards, additionalCardsCount));
+                    
                     //Les trois cartes piochés sont rajoutés à la défausse
                     gameState = gameState.withMoreDiscardedCards(drawnCards);
                     
@@ -219,9 +225,13 @@ public final class Game {
                     List<SortedBag<Card>> possibleAdditionalCards = gameState.currentPlayerState()
                             .possibleAdditionalCards(additionalCardsCount, initialCards, drawnCards);
                     
-                    
-                    if((additionalCardsCount>=1) && (additionalCardsCount<=3) && (possibleAdditionalCards.size()!=0)) {
-                        SortedBag<Card> additionalCards = currPlayerInterf.chooseAdditionalCards(possibleAdditionalCards);   
+                    //est ce que c'est bien d'avoir mis dans le if que possibleAdditionalCards doit etre différent que 0
+                    if((additionalCardsCount>=1) && (additionalCardsCount<=3)/* && (possibleAdditionalCards.size()!=0)*/) {
+                        SortedBag<Card> additionalCards = currPlayerInterf.chooseAdditionalCards(possibleAdditionalCards);  
+                        
+                        if(additionalCards.size() == 0){
+                            Game.infoToAll(players, currInf.didNotClaimRoute(routeDésiré));
+                        }
                         //Est ce que chooseAdditionalCards retourne toutes les cartes à utiliser ou seulement les cartes additionelles?
                         gameState = (additionalCards.size()==0)? gameState :  gameState.withClaimedRoute(routeDésiré, initialCards.union(additionalCards)) ;
                     }
@@ -241,49 +251,56 @@ public final class Game {
                 }
             }
             
-            gameState = gameState.forNextTurn();
+            if(gameState.lastTurnBegins()) {
+                Game.infoToAll(players, currInf.lastTurnBegins(gameState.currentPlayerState().carCount()));
+            }
             
             //incrémente numberOfLastTurns pour qu il y ait deux turns une fois que lastTurnBegins rend true
             if((gameState.lastTurnBegins())||(numberOfLastTurns !=0)) {
                 ++numberOfLastTurns;
             }
+            gameState = gameState.forNextTurn();//doit etre appelé en dernier
         }
         
         int player1Score = gameState.playerState(PlayerId.PLAYER_1).finalPoints();
         int player2Score = gameState.playerState(PlayerId.PLAYER_2).finalPoints();
         
-        int player1LongestTrail = Trail.longest(gameState.playerState(PlayerId.PLAYER_1).routes()).length();
-        int player2LongestTrail = Trail.longest(gameState.playerState(PlayerId.PLAYER_2).routes()).length();
+        Trail player1LongestTrail = Trail.longest(gameState.playerState(PlayerId.PLAYER_1).routes());
+        Trail player2LongestTrail = Trail.longest(gameState.playerState(PlayerId.PLAYER_2).routes());
         
-        PlayerId playerLongestTrail;
-        switch(Integer.compare(player1LongestTrail, player2LongestTrail)) {
+        
+        switch(Integer.compare(player1LongestTrail.length(), player2LongestTrail.length())) {
         case 1:
-            playerLongestTrail = PlayerId.PLAYER_1;
             player1Score += 10;
+            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_1).getsLongestTrailBonus(player1LongestTrail));
             break;
+            
         case 0:
-            playerLongestTrail = null; //bonus donné aux deux joueurs
+            //bonus donné aux deux joueurs
             player1Score += 10;
             player2Score += 10;
+            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_1).getsLongestTrailBonus(player1LongestTrail));
+            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_2).getsLongestTrailBonus(player2LongestTrail));
             break;
+            
         case -1:
-            playerLongestTrail = PlayerId.PLAYER_2;
             player2Score += 10;
+            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_2).getsLongestTrailBonus(player2LongestTrail));
             break;
         default:
             break;
         }
         
-        PlayerId playerWinner;
         switch(Integer.compare(player1Score, player2Score)) {
         case 1:
-            playerWinner = PlayerId.PLAYER_1;
+            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_1).won(player1Score, player2Score));
             break;
         case 0:
-            playerWinner = null;
+            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_1).won(player1Score, player2Score));
+            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_2).won(player2Score, player1Score));
             break;
         case -1:
-            playerWinner = PlayerId.PLAYER_2;
+            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_2).won(player2Score, player1Score));
             break;
         default:
             break;
