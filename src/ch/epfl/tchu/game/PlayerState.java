@@ -95,12 +95,7 @@ public final class PlayerState extends PublicPlayerState {
      * @return vrai ssi le joueur peut s'emparer de la route donnée, c-à-d s'il lui reste assez de wagons et s'il possède les cartes nécessaires
      */
     public boolean canClaimRoute(Route route){  // si wagon ET cartes
-        if(carCount() >= route.length()) {
-            if (possibleClaimCards(route).size() > 0) {
-                return true;
-            }else{return false;}
-        }else{
-            return false;}
+        return (carCount() >= route.length() && possibleClaimCards(route).size() > 0);
     }
 
     /**
