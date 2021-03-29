@@ -53,11 +53,10 @@ public final class Game {
         /**
          *  Pour chaque joueur, communiquer les billets qu'il reçoit initialement
          */
-//        List<SortedBag<Ticket>> firstTickets = new ArrayList<>();
         for(Map.Entry<PlayerId, Player> c : players.entrySet()){
             c.getValue().setInitialTicketChoice(gameState.topTickets(Constants.INITIAL_TICKETS_COUNT));    // les deux joueurs pourront donc consulter leur choix en parallèle, et même utiliser l'interface graphique
-//            firstTickets.add(gameState.topTickets(Constants.INITIAL_TICKETS_COUNT));
-            gameState = gameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);       // est-ce une bonne idée d'enlever les tickets à ce moment-là ?
+            // faut-il enregistrer les tickets avant ?
+            gameState = gameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);       // est-ce une bonne idée d'enlever les tickets à ce moment-là ? -> oui
         }
 
 
@@ -66,13 +65,16 @@ public final class Game {
          */
 
         Game.updateStateForAll(players, gameState);     //vérifier qu il ne faut pas l appeler dans le loop avant d appeler chooseInitialTickets
-        
+
+        List<String> ticketInitial = new ArrayList<>();   // enregistrer le nombre    !!!!!!!!!
+
         for(Map.Entry<PlayerId, Player> c : players.entrySet()){
             SortedBag<Ticket> chosenTickets = c.getValue().chooseInitialTickets();      // Comment Sait-on quelle carte il garde si on enlève les tickets du haut de la pile dans la loop avant ??? Ou faut-il les sauvegarder ?
-            gameState = gameState.withInitiallyChosenTickets(c.getKey(), chosenTickets);  //withInitiallyChosenTickets ne modife pas la pioche de billets... 
+            ticketInitial.add(infoMap.get(c).keptTickets(chosenTickets.size()));
+
+            gameState = gameState.withInitiallyChosenTickets(c.getKey(), chosenTickets);  //withInitiallyChosenTickets ne modife pas la pioche de billets...
             
-            c.getValue().updateState(gameState, gameState.playerState(c.getKey()));
-            // faudrait-il laisser l'update directement après le choix ou à la fin quand les deux joueurs ont finit leur choix ? c'est pas précisé donc facultatif ? Il faudrait utiliser updateForAll
+            Game.updateStateForAll(players, gameState); // facultatif
         }
 
 
@@ -81,10 +83,9 @@ public final class Game {
          */
         // après leur choix, on les informe -> équitable
        // joueur 1 reçoit l'info de l'adversaire seulement ou de lui-même aussi ? Oui !
-        Game.infoToAll(players, player1.keptTickets(gameState.playerState(PlayerId.PLAYER_1).ticketCount()));   // une bonne façon ou y aurait-il une meilleure approche ? par exemple enregister les chosenTickets
-        Game.infoToAll(players, player2.keptTickets(gameState.playerState(PlayerId.PLAYER_2).ticketCount()));   // dans une liste et calculer la taille au lieu de partir du principe que les joueurs commencent avec 0 ticket ?
-
-
+        for(String s : ticketInitial){  // peut être 3,4,5,6 joueurs donc il faut que le code fonctionne toujours
+            Game.infoToAll(players, s);
+        }
 
 
         /**La partie commence*/
@@ -150,7 +151,7 @@ public final class Game {
                     Game.infoToAll(players, currInf.attemptsTunnelClaim(routeDésiré, initialCards));
                     
                     SortedBag.Builder<Card> builder = new SortedBag.Builder<>();
-                    
+
                     for(int i = 0; i<Constants.ADDITIONAL_TUNNEL_CARDS; ++i) {
                         gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                         builder.add(gameState.topCard());
