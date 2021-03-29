@@ -64,7 +64,7 @@ public final class Game {
          *  Pour chaque joueur doit être appelée pour savoir quels billets chaque joueur a décidé de garder
          */
 
-        Game.updateStateForAll(players, gameState);     //vérifier qu il ne faut pas l appeler dans le loop avant d appeler chooseInitialTickets
+        Game.updateStateForAll(players, gameState);
 
         List<String> ticketInitial = new ArrayList<>();   // enregistrer le nombre    !!!!!!!!!
 
