@@ -64,7 +64,7 @@ public class GameTest {
         private PlayerId id;
         private String name;
         private PlayerId otherPlayerId;
-
+        private TurnKind nextTurnKind;
         private static final int TURN_LIMIT = 1000;
 
         private final Random rng;
@@ -89,6 +89,7 @@ public class GameTest {
             this.id = id;
             otherPlayerId = id.next();
             this.name = name;
+            this.nextTurnKind = TurnKind.DRAW_CARDS;
         }
 
         @Override
@@ -155,9 +156,17 @@ public class GameTest {
             if (claimableRoutes.isEmpty()) {    // tire cartes si le joueur ne peut pas capturer de routes
                 
                 /**TODO Implémenter la prise de tickets*/
-                
-                System.out.println("    Le joueur : " + name + " va tirer des cartes");
-                return TurnKind.DRAW_CARDS;
+             /* if(gameState.canDrawTickets() && nextTurnKind == TurnKind.DRAW_TICKETS) {
+                    System.out.println("    Le joueur : " + name + " va tirer des tickets");
+                    nextTurnKind = TurnKind.DRAW_CARDS;
+                    return TurnKind.DRAW_TICKETS;
+              }
+              
+              else {*/
+                  System.out.println("    Le joueur : " + name + " va tirer des cartes");
+                  nextTurnKind = TurnKind.DRAW_TICKETS;
+                  return TurnKind.DRAW_CARDS;
+                  //}
                 
             } else {
                 System.out.println("    Le joueur : " + name + " va s'emparer d'une route");
@@ -167,7 +176,7 @@ public class GameTest {
                 
                 Route route = claimableRoutes.get(routeIndex);
                 
-                //TEST J aimerai des routes de longueurs différentes ce qui n est pas le case du rng = 1
+                //TEST J aimerai des routes de longueurs différentes ce qui n est pas le cas avec rng = 1
                 System.out.println("routesize: " + route.length());
                 
                 List<SortedBag<Card>> cards = ownState.possibleClaimCards(route);
@@ -182,11 +191,19 @@ public class GameTest {
 
         @Override
         public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
-            return null;
+            int randomInt = rng.nextInt(3) + 1;
+            
+            SortedBag.Builder<Ticket> chosenTickets = new SortedBag.Builder<>();
+            for(int i = 0; i<randomInt; ++i) {
+                chosenTickets.add(options.get(i));
+            }
+            
+            return chosenTickets.build();
         }
 
         @Override
         public int drawSlot() {
+            //TODO implémenter les deux
             return -1;
         }   // on peut par défaut dire que les joueurs vont seulement prendre des cartes de la pioche
 
