@@ -73,7 +73,7 @@ public class GameTest {
 
         private int turnCounter;
         private PlayerState ownState;
-        private GameState gameState;
+        private PublicGameState gameState;
 
         // Lorsque nextTurn retourne CLAIM_ROUTE
         private Route routeToClaim;
@@ -87,7 +87,7 @@ public class GameTest {
             this.allRoutes = List.copyOf(allRoutes);
             this.turnCounter = 0;
             this.id = id;
-            otherPlayerId = (id == PlayerId.PLAYER_1) ? PlayerId.PLAYER_2 : PlayerId.PLAYER_1;
+            otherPlayerId = id.next();
             this.name = name;
         }
 
@@ -103,9 +103,10 @@ public class GameTest {
             System.out.println(" -   -   -   -   -");
         }
 
+        
         @Override
         public void updateState(PublicGameState newState, PlayerState ownState) {
-            this.gameState = gameState;
+            this.gameState = newState;
             this.ownState = ownState;
             System.out.println(name + " has received the updateState : | " + ownState.toString());
             System.out.println(" -   -   -   -   -");
@@ -152,8 +153,12 @@ public class GameTest {
             }
 
             if (claimableRoutes.isEmpty()) {    // tire cartes si le joueur ne peut pas capturer de routes
+                
+                /**TODO Implémenter la prise de tickets*/
+                
                 System.out.println("    Le joueur : " + name + " va tirer des cartes");
                 return TurnKind.DRAW_CARDS;
+                
             } else {
                 System.out.println("    Le joueur : " + name + " va s'emparer d'une route");
 
@@ -189,6 +194,8 @@ public class GameTest {
             return initialClaimCards;
         }
 
+        
+        /**TODO implémenter le scénario ou il y a des cartes additionnelles à jouer*/
         @Override
         public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
             return null;
