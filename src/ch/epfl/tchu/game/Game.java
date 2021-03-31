@@ -125,7 +125,6 @@ public final class Game {
                     Card pickedVisibleCard = (slot != Constants.DECK_SLOT) ? gameState.cardState().faceUpCard(slot) : null ;    //Constans.DECK_SLOT est égal à -1 et signifie que le joueur veut la carte du haut du deck
                     gameState = (slot == Constants.DECK_SLOT) ? gameState.withBlindlyDrawnCard() : gameState.withDrawnFaceUpCard(slot);
 
-                    //comment faire pour savoir quelle carte a été sélectionné si slot n est pas 1
                     Game.infoToAll(players, (slot == Constants.DECK_SLOT) ? currInf.drewBlindCard() : currInf.drewVisibleCard(pickedVisibleCard));
 
                     if(i==0){
@@ -134,13 +133,10 @@ public final class Game {
                 }
             }
             
-            else {  //comment vérifier que le joueur a assez de wagons ??? -> regarde la ligne en bas, il y a une méthode canClaimRoute() dans la classe PlayerState
-//                gameState.currentPlayerState().canClaimRoute(route);     On estime que le joueur fait que des trucs qui ne lancent pas d exceptions
-                // Devrait-on faire une do while loop ? en mode while canClaimRoute == false ... ? Non ducoup
-                // que ce passe-t-il si le joueur choisit de s'emparer d'une route, puis découvre qu'il ne peut s'emparer d'aucune route ? ou change d'avis ?
+            else {  //comment vérifier que le joueur a assez de wagons ??? On estime que le joueur fait que des trucs qui ne lancent pas d exceptions
+                
                 /**Si ce n est pas un tunnel ou que c'est un tunnel et qu on ne lui impose pas de cartes en plus, il prend la route et ne peux pas changer d'avis, 
                  * parcontre si c'est un tunnel et qu on lui impose des cartes en plus alors il peut changer d avis mais alors ça saute son tour ce qui est géré par gameState.nextTurn() a la fin du while loop*/
-                // Doit-il dans ce cas sauter son tour ? y a t-il une méthode pour sauter son tour ?? ou revenir en arrière ?
 
 
                 /**la route que le player veut*/
@@ -173,7 +169,7 @@ public final class Game {
                     //est ce que c'est bien d'avoir mis dans le if que possibleAdditionalCards doit etre différent que 0? Est ce que l'argument de chooseAdditionalCards peut etre vide? si oui c est bon
                     
                     //si le joueur a des cartes additionnelles à poser
-                    if((additionalCardsCount>=1) && (additionalCardsCount<=3)/* && (possibleAdditionalCards.size()!=0)*/) {
+                    if((additionalCardsCount>=1) && (additionalCardsCount<=3) && (possibleAdditionalCards.size()!=0)) {
                         //les cartes additionnelles que le joueur décide de poser
                         SortedBag<Card> additionalCards = currPlayerInterf.chooseAdditionalCards(possibleAdditionalCards);  
                         
@@ -182,7 +178,6 @@ public final class Game {
                             Game.infoToAll(players, currInf.didNotClaimRoute(routeDésiré));
                         }
                         
-                        //Est ce que chooseAdditionalCards retourne toutes les cartes à utiliser ou seulement les cartes additionelles?
                         gameState = (additionalCards.size()==0)? gameState :  gameState.withClaimedRoute(routeDésiré, initialCards.union(additionalCards)) ;
                     }
                     //si le joueur n a pas de cartes additionnelles à poser alors il s'empare de la route
@@ -194,7 +189,8 @@ public final class Game {
                     //ce else n'est pas utile si on ne met pas (possibleAdditionalCards.size()!=0) comme condition dans le if
                     else {
                         //la route n est pas rajouté car le joueur n a pas les cartes additionelles
-                        
+                        Game.infoToAll(players, currInf.didNotClaimRoute(routeDésiré));
+                    
                     }
                 }
                 else {  // pas un tunnel donc il faut seulement prendre le controle de la route
@@ -242,13 +238,16 @@ public final class Game {
             break;
         }
         
+      //on informe les joueurs du résultat final de la partie 
+        //afin qu ils connaissent l'état dans lequel la partie s'est terminé   
+           Game.updateStateForAll(players, gameState);
+           
         switch(Integer.compare(player1Score, player2Score)) {
         case 1:
             Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_1).won(player1Score, player2Score));
             break;
         case 0:
-            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_1).won(player1Score, player2Score));
-            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_2).won(player2Score, player1Score));
+            Info.draw(List.of(playerNames.get(PlayerId.PLAYER_1), playerNames.get(PlayerId.PLAYER_2)), player1Score);
             break;
         case -1:
             Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_2).won(player2Score, player1Score));
@@ -256,10 +255,6 @@ public final class Game {
         default:
             break;
         }
-     //on informe les joueurs du résultat final de la partie 
-     //afin qu ils connaissent l'état dans lequel la partie s'est terminé   
-        Game.updateStateForAll(players, gameState);
-       
     }
 
 
