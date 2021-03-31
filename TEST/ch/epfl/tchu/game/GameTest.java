@@ -168,6 +168,8 @@ public class GameTest {
                 List<SortedBag<Card>> cards = ownState.possibleClaimCards(route);
 
                 routeToClaim = route;
+                
+                //TODO essayer de mettre plus d'une carte quand c'est possible
                 initialClaimCards = cards.get(0);
                 return TurnKind.CLAIM_ROUTE;
             }

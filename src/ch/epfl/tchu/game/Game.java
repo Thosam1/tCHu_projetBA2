@@ -170,10 +170,14 @@ public final class Game {
                     //Les trois cartes piochés sont rajoutés à la défausse
                     gameState = gameState.withMoreDiscardedCards(drawnCards);
                     
+                    //TEST
+                    System.out.println(additionalCardsCount);
+                    List<SortedBag<Card>> possibleAdditionalCards = List.of(SortedBag.of());
                     
-                    List<SortedBag<Card>> possibleAdditionalCards = gameState.currentPlayerState()
+                    if(additionalCardsCount!=0) { //possibleAdditionalCards ne doit pas prendre de additionalCardsCount égal à 0
+                        possibleAdditionalCards = gameState.currentPlayerState()
                             .possibleAdditionalCards(additionalCardsCount, initialCards, drawnCards);
-                    
+                    }
                     //est ce que c'est bien d'avoir mis dans le if que possibleAdditionalCards doit etre différent que 0? Est ce que l'argument de chooseAdditionalCards peut etre vide? si oui c est bon
                     
                     //si le joueur a des cartes additionnelles à poser
