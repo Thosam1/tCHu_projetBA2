@@ -164,12 +164,16 @@ public class GameTest {
 
                 // choisir une route au hasard
                 int routeIndex = rng.nextInt(claimableRoutes.size());
+                
                 Route route = claimableRoutes.get(routeIndex);
+                
+                //TEST J aimerai des routes de longueurs différentes ce qui n est pas le case du rng = 1
+                System.out.println("routesize: " + route.length());
+                
                 List<SortedBag<Card>> cards = ownState.possibleClaimCards(route);
 
                 routeToClaim = route;
                 
-                //TODO essayer de mettre plus d'une carte quand c'est possible
                 initialClaimCards = cards.get(0);
                 return TurnKind.CLAIM_ROUTE;
             }

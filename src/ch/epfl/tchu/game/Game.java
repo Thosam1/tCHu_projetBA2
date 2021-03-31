@@ -172,13 +172,13 @@ public final class Game {
                     
                     //TEST
                     System.out.println(additionalCardsCount);
+                    
                     List<SortedBag<Card>> possibleAdditionalCards = List.of(SortedBag.of());
                     
                     if(additionalCardsCount!=0) { //possibleAdditionalCards ne doit pas prendre de additionalCardsCount égal à 0
                         possibleAdditionalCards = gameState.currentPlayerState()
                             .possibleAdditionalCards(additionalCardsCount, initialCards, drawnCards);
                     }
-                    //est ce que c'est bien d'avoir mis dans le if que possibleAdditionalCards doit etre différent que 0? Est ce que l'argument de chooseAdditionalCards peut etre vide? si oui c est bon
                     
                     //si le joueur a des cartes additionnelles à poser
                     if((additionalCardsCount>=1) && (additionalCardsCount<=3) && (possibleAdditionalCards.size()!=0)) {
