@@ -70,6 +70,7 @@ public final class Game {
 
         for(Map.Entry<PlayerId, Player> c : players.entrySet()){
             SortedBag<Ticket> chosenTickets = c.getValue().chooseInitialTickets();      // Comment Sait-on quelle carte il garde si on enlève les tickets du haut de la pile dans la loop avant ??? Ou faut-il les sauvegarder ?
+//            System.out.println(chosenTickets.size());
             ticketInitial.add(infoMap.get(c).keptTickets(chosenTickets.size()));
 
             gameState = gameState.withInitiallyChosenTickets(c.getKey(), chosenTickets);  //withInitiallyChosenTickets ne modife pas la pioche de billets...
