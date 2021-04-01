@@ -170,8 +170,6 @@ public final class Game {
                     //Les trois cartes piochés sont rajoutés à la défausse
                     gameState = gameState.withMoreDiscardedCards(drawnCards);
                     
-                    //TEST
-                    System.out.println(additionalCardsCount);
                     
                     List<SortedBag<Card>> possibleAdditionalCards = List.of(SortedBag.of());
                     
@@ -181,16 +179,20 @@ public final class Game {
                     }
                     
                     //si le joueur a des cartes additionnelles à poser
-                    if((additionalCardsCount>=1) && (additionalCardsCount<=3) && (possibleAdditionalCards.size()!=0)) {
+                    if((additionalCardsCount>=1) && (additionalCardsCount<=3) && (possibleAdditionalCards.size()!=0)) {                  
                         //les cartes additionnelles que le joueur décide de poser
                         SortedBag<Card> additionalCards = currPlayerInterf.chooseAdditionalCards(possibleAdditionalCards);  
                         
+                        
                         //si il décide de ne pas pas poser plus de cartes ou ne peut pas plus en poser additionalCards est vide 
-                        if(additionalCards.size() == 0){
+                        
+                        //je ne sait pas si chooseAdditionalCards peut retourner une valeur null ou vide donc je teste les deux 
+                        //en faisant attention de vérifier dabord que ce n'est pas null pour ne pas lancer d exception
+                        if(additionalCards == null || additionalCards.size() == 0){
                             Game.infoToAll(players, currInf.didNotClaimRoute(routeDésiré));
                         }
                         
-                        gameState = (additionalCards.size()==0)? gameState :  gameState.withClaimedRoute(routeDésiré, initialCards.union(additionalCards)) ;
+                        gameState = (additionalCards == null || additionalCards.size() == 0)? gameState :  gameState.withClaimedRoute(routeDésiré, initialCards.union(additionalCards)) ;
                     }
                     //si le joueur n a pas de cartes additionnelles à poser alors il s'empare de la route
                     else if(additionalCardsCount==0) {

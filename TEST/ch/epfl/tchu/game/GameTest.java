@@ -65,8 +65,11 @@ public class GameTest {
         private String name;
         private PlayerId otherPlayerId;
         private TurnKind nextTurnKind;
+        private int drawSlot;
+        private int additionalCardsIndex;
         private static final int TURN_LIMIT = 1000;
-
+        private int drawCards10TimesOutOf20 = 0;
+        
         private final Random rng;
         // Toutes les routes de la carte
         private final List<Route> allRoutes;
@@ -90,6 +93,8 @@ public class GameTest {
             otherPlayerId = id.next();
             this.name = name;
             this.nextTurnKind = TurnKind.DRAW_CARDS;
+            this.drawSlot = 0;
+            this.additionalCardsIndex = 0;
         }
 
         @Override
@@ -137,6 +142,7 @@ public class GameTest {
             return chosenInitialTickets;
         }   // va retourner les 3 premiers tickets à choix
 
+        
         @Override
         public TurnKind nextTurn() {
             turnCounter += 1;
@@ -152,39 +158,46 @@ public class GameTest {
                     claimableRoutes.add(r);
                 }
             }
-
-            if (claimableRoutes.isEmpty()) {    // tire cartes si le joueur ne peut pas capturer de routes
-                
-                /**TODO Implémenter la prise de tickets*/
-             /* if(gameState.canDrawTickets() && nextTurnKind == TurnKind.DRAW_TICKETS) {
-                    System.out.println("    Le joueur : " + name + " va tirer des tickets");
-                    nextTurnKind = TurnKind.DRAW_CARDS;
-                    return TurnKind.DRAW_TICKETS;
-              }
+            
+            if(drawCards10TimesOutOf20 % 20 <=10) {
+                ++drawCards10TimesOutOf20;
+                return TurnKind.DRAW_CARDS;
+            }
+            
+            else {
+                ++drawCards10TimesOutOf20;
+                if (claimableRoutes.isEmpty()) {    // tire cartes si le joueur ne peut pas capturer de routes
+                    
+                    if(gameState.canDrawTickets() && nextTurnKind == TurnKind.DRAW_TICKETS) {
+                        System.out.println("    Le joueur : " + name + " va tirer des tickets");
+                        nextTurnKind = TurnKind.DRAW_CARDS;
+                        return TurnKind.DRAW_TICKETS;
+                  }
               
-              else {*/
-                  System.out.println("    Le joueur : " + name + " va tirer des cartes");
-                  nextTurnKind = TurnKind.DRAW_TICKETS;
-                  return TurnKind.DRAW_CARDS;
-                  //}
+                  else {
+                      System.out.println("    Le joueur : " + name + " va tirer des cartes");
+                      nextTurnKind = TurnKind.DRAW_TICKETS;
+                      return TurnKind.DRAW_CARDS;
+                      }
                 
-            } else {
-                System.out.println("    Le joueur : " + name + " va s'emparer d'une route");
+                } else {
+                    System.out.println("    Le joueur : " + name + " va s'emparer d'une route");
 
-                // choisir une route au hasard
-                int routeIndex = rng.nextInt(claimableRoutes.size());
+                    // choisir une route au hasard
+                    int routeIndex = rng.nextInt(claimableRoutes.size());
                 
-                Route route = claimableRoutes.get(routeIndex);
+                    Route route = claimableRoutes.get(routeIndex);
                 
-                //TEST J aimerai des routes de longueurs différentes ce qui n est pas le cas avec rng = 1
-                System.out.println("routesize: " + route.length());
+                    //TEST J aimerai des routes de longueurs différentes ce qui n est pas le cas avec rng = 1
+                    System.out.println("routesize: " + route.length());
                 
-                List<SortedBag<Card>> cards = ownState.possibleClaimCards(route);
+                    List<SortedBag<Card>> cards = ownState.possibleClaimCards(route);
 
-                routeToClaim = route;
+                    routeToClaim = route;
                 
-                initialClaimCards = cards.get(0);
-                return TurnKind.CLAIM_ROUTE;
+                    initialClaimCards = cards.get(0);
+                    return TurnKind.CLAIM_ROUTE;
+            }
             }
         }
 
@@ -203,9 +216,9 @@ public class GameTest {
 
         @Override
         public int drawSlot() {
-            //TODO implémenter les deux
-            return -1;
-        }   // on peut par défaut dire que les joueurs vont seulement prendre des cartes de la pioche
+            ++drawSlot;
+            return (drawSlot)%2;
+        }   //On cherche a alterner entre 0 et 1; //voir pourquoi les cartes sont toujours visible
 
         @Override
         public Route claimedRoute() {
@@ -221,8 +234,10 @@ public class GameTest {
         /**TODO implémenter le scénario ou il y a des cartes additionnelles à jouer*/
         @Override
         public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
-            return null;
-        }   // ???
+            if (additionalCardsIndex % 2 == 0) System.out.println(options.get(0).toString());
+            ++additionalCardsIndex;
+            return (additionalCardsIndex % 2 == 0) ? options.get(0) : SortedBag.of();
+        }   
 
         // définir des getter pour voir à la fin de l'éxecution
 
