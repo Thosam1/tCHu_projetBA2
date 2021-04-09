@@ -55,8 +55,7 @@ public final class Game {
          */
         for(Map.Entry<PlayerId, Player> c : players.entrySet()){
             c.getValue().setInitialTicketChoice(gameState.topTickets(Constants.INITIAL_TICKETS_COUNT));    // les deux joueurs pourront donc consulter leur choix en parallèle, et même utiliser l'interface graphique
-            // faut-il enregistrer les tickets avant ?
-            gameState = gameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);       // est-ce une bonne idée d'enlever les tickets à ce moment-là ? -> oui
+            gameState = gameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
         }
 
 
@@ -79,10 +78,9 @@ public final class Game {
                          
                      }});
                      
-           // ticketInitial.add(infoMap.get())
             gameState = gameState.withInitiallyChosenTickets(c.getKey(), chosenTickets);  //withInitiallyChosenTickets ne modife pas la pioche de billets...
             
-            Game.updateStateForAll(players, gameState); // facultatif
+  //          Game.updateStateForAll(players, gameState); // facultatif
         }
 
 
@@ -191,11 +189,13 @@ public final class Game {
                         if(additionalCards == null || additionalCards.size() == 0){
                             Game.infoToAll(players, currInf.didNotClaimRoute(routeDésiré));
                         }
+                        else Game.infoToAll(players, currInf.claimedRoute(routeDésiré,initialCards.union(additionalCards))); //info la route a été prise par le joueur
                         
                         gameState = (additionalCards == null || additionalCards.size() == 0)? gameState :  gameState.withClaimedRoute(routeDésiré, initialCards.union(additionalCards)) ;
                     }
                     //si le joueur n a pas de cartes additionnelles à poser alors il s'empare de la route
                     else if(additionalCardsCount==0) {
+                        Game.infoToAll(players, currInf.claimedRoute(routeDésiré,initialCards)); //info la route a été prise par le joueur
                         gameState = gameState.withClaimedRoute(routeDésiré, initialCards);
                         
                     }
@@ -208,6 +208,7 @@ public final class Game {
                     }
                 }
                 else {  // pas un tunnel donc il faut seulement prendre le controle de la route
+                    Game.infoToAll(players, currInf.claimedRoute(routeDésiré, initialCards)); //info la route a été prise par le joueur
                     gameState = gameState.withClaimedRoute(routeDésiré, initialCards);
                 }
             }

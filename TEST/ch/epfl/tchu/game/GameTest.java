@@ -189,7 +189,7 @@ public class GameTest {
                     Route route = claimableRoutes.get(routeIndex);
                 
                     //TEST J aimerai des routes de longueurs différentes ce qui n est pas le cas avec rng = 1
-                    System.out.println("routesize: " + route.length());
+            //        System.out.println("routesize: " + route.length());
                 
                     List<SortedBag<Card>> cards = ownState.possibleClaimCards(route);
 
@@ -234,7 +234,7 @@ public class GameTest {
         /**TODO implémenter le scénario ou il y a des cartes additionnelles à jouer*/
         @Override
         public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
-            if (additionalCardsIndex % 2 == 0) System.out.println(options.get(0).toString());
+            if (additionalCardsIndex % 2 == 0) //System.out.println(options.get(0).toString());
             ++additionalCardsIndex;
             return (additionalCardsIndex % 2 == 0) ? options.get(0) : SortedBag.of();
         }   

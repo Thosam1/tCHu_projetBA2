@@ -220,9 +220,9 @@ public final class PlayerState extends PublicPlayerState {
     /**
      * @param color
      * @return le nombre de cartes de la couleur donnée que le joueur possède
-     */
+     
     private int howMuchCardsOf(Color color, SortedBag<Card> cardSortedBag){
         return cardSortedBag.countOf(Card.of(color));
-    }
+    }*/
 
 }
