@@ -119,10 +119,8 @@ public final class Route {
             for (int i = 0; i<length; ++i) {
                 if (color() == null) {//c'est une route neutre
                     //if (Card.of(color))    
-                    for(Card card : Card.ALL) {
-                        if (!(card.equals(Card.LOCOMOTIVE))) {
-                            output.add(SortedBag.of(length-i, card, i, Card.LOCOMOTIVE));}
-                    }
+                    for(Card card : Card.CARS) {
+                        output.add(SortedBag.of(length-i, card, i, Card.LOCOMOTIVE));}
                 }
                 //route de couleur
                 else {
@@ -136,11 +134,9 @@ public final class Route {
         //Pour les routes OVERGROUND nous ne voulons pas de LOCOMOTIVES dans l'output
         else {
             if(color()==null) {
-                for(Card card : Card.ALL) {
-                    if (card!=Card.LOCOMOTIVE) {
-                        output.add(SortedBag.of(length,card));}
-                }
-            }
+                for(Card card : Card.CARS) {
+                    output.add(SortedBag.of(length,card));}
+        }
             else {
                 output.add(SortedBag.of(length, Card.of(color)));
             }

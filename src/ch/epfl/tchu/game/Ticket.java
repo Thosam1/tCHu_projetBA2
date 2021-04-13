@@ -28,9 +28,7 @@ public final class Ticket implements Comparable<Ticket> {
         //vérification que toutes les gares de départ sont les meme
         if (trips!=null) {
             String firstInitialStationName = trips.get(0).from().name();
-            for (Trip trip : trips) { 
-                Preconditions.checkArgument(trip.from().name().equals(firstInitialStationName));
-            }
+            trips.forEach(trip -> Preconditions.checkArgument(trip.from().name().equals(firstInitialStationName)));
         }
         text = (trips.size()!=0) ? computeText(trips) : "";
     }
@@ -72,17 +70,16 @@ public final class Ticket implements Comparable<Ticket> {
         TreeSet<String> destinations = new TreeSet<>();
         String output;
 
-        for (Trip trip : trips) {
-            destinations.add(trip.to() + " (" + trip.points() +")");
-            }
+        
+        trips.forEach(trip -> destinations.add(trip.to() + " (" + trip.points() +")"));
         output = String.join(", ", destinations);
         //met des accolades si il y a plus qu une gare de destination
         
         if (destinations.size()>1) {
             output = String.format("{%s}", output);
             }
-        output = String.format("%s - %s", initialStation, output);
-        return output;
+        return String.format("%s - %s", initialStation, output);
+        
         }
     
     /**
@@ -95,8 +92,12 @@ public final class Ticket implements Comparable<Ticket> {
      */
     public int points(StationConnectivity connectivity) {
         int maxPositivePoints = 0;
-        int maxNegativePoints = -100; //ce nombre est arbitraire, il en faut juste un très bas
+        int maxNegativePoints = -100; //ce nombre est arbitraire, il en faut juste un très bas pour etre sur qu aucun ticket peut faire perdre plus de point que cette valeur
+        
         for (Trip trip : trips) {
+            /**regarde tous les trip dans trips pour déterminer si il en existe qui font gagner des points
+            si oui, on veut que maxPositivePoints contienne le plus grand bonus 
+            sinon on veut que maxNegativePoints contiennent le malus le plus proche de 0 (malus le moins pénalisant)*/
             int tripPoints = trip.points(connectivity);
             if (tripPoints>=0) {
                     maxPositivePoints = Math.max(tripPoints, maxPositivePoints);

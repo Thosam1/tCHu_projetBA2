@@ -120,7 +120,7 @@ public final class Game {
 
                     Game.infoToAll(players, (slot == Constants.DECK_SLOT) ? currInf.drewBlindCard() : currInf.drewVisibleCard(pickedVisibleCard));
 
-                    if(i==0){
+                    if(i==0){//nous voulons une update après que la première carte aie été tirée pour que le joueur est accès au gameState courant
                         Game.updateStateForAll(players, gameState);
                     }
                 }

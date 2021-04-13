@@ -31,33 +31,14 @@ public final class StationPartition implements StationConnectivity{
     public boolean connected(Station s1, Station s2) {
         if((s1.id()>=tableauDesLiens.length)||(s2.id()>=tableauDesLiens.length)
             ||(s1.id()<0)||(s2.id()<0)) {
+            //la méthode connected doit également accepter des gares dont l'identité est hors des bornes du tableau passé à son constructeur.
+            //dans ce cas la elle compare directement l identite des deux stations
             return s1.id()==s2.id();
         }
         else {
-            return tableauDesLiens[s1.id()]==tableauDesLiens[s2.id()];}
+            return tableauDesLiens[s1.id()]==tableauDesLiens[s2.id()];}//true si les valeurs correspondant aux deux stations sont égales, false sinon
     }
-    
-    /*//TEST
-    public static void main(String[] args) {
-        StationPartition.Builder builder = new StationPartition.Builder(16);
-        
-        builder.connect(new Station(0,"station0"), new Station(3,"station1"));
-        builder.connect(new Station(1,"station1"), new Station(2, "station2"));
-        builder.connect(new Station(2,"station1"), new Station(6, "station2"));
-        builder.connect(new Station(6,"station1"), new Station(0, "station2"));
-        builder.connect(new Station(0,"station1"), new Station(6, "station2"));
-        builder.connect(new Station(7,"station1"), new Station(6, "station2"));
-        builder.connect(new Station(9,"station1"), new Station(10, "station2"));
-        builder.connect(new Station(9,"station1"), new Station(11, "station2"));
-        builder.connect(new Station(13,"station1"), new Station(9, "station2"));
-        builder.connect(new Station(12,"station1"), new Station(14, "station2"));
-        builder.connect(new Station(1,"station1"), new Station(4, "station2"));
-        StationPartition partition = builder.build();
-        for (int i=0; i<partition.tableauDesLiens.length; ++i) {
-            System.out.println(i + "   " + partition.tableauDesLiens[i]);
-        }
-    }*/
-    
+
     /**
      * Classe imbriquée dans la classe StationPartition qui représente un batisseur 
      * de partition de gare
@@ -81,7 +62,7 @@ public final class StationPartition implements StationConnectivity{
             partition = new int[stationCount];
                 
             for(int i = 0; i<stationCount; ++i) {
-                partition[i] = i;
+                partition[i] = i;//chaque élément est égal à son index dans le tableau partition
                 }
             }
         
@@ -93,9 +74,9 @@ public final class StationPartition implements StationConnectivity{
          * @return le batisseur (this)
          */
         public Builder connect(Station s1, Station s2) {
-            int representativeS1 = this.representative(s1.id());
-            int representativeS2 = this.representative(s2.id());
-            partition[representativeS1] = representativeS2;
+            int representativeS1 = this.representative(s1.id());//représentant de la premiere station
+            int representativeS2 = this.representative(s2.id());//pareil pour la deuxieme
+            partition[representativeS1] = representativeS2;//pour joindre les deux sous ensembles, nous décidons que le représentant du représentant de la première station n'est plus soit meme
             return this;
             }
             
