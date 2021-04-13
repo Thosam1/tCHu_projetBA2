@@ -22,14 +22,14 @@ public class PublicCardState {
     /**
      * Construit un état public des cartes dans lequel les cartes face visible
      * sont celles données
-     * Lance IllegalArgumentException si faceUpCards ne contient pas 5 éléments
-     * ou si la taille de la pioche ou de la défausse sont négatives
      * @param faceUpCards Liste contenant les cartes face visible
      * @param deckSize nombre de cartes dans la pioche
      * @param discardsSize nombre de cartes dans la défausse
+     * @throws IllegalArgumentException si faceUpCards ne contient pas 5 éléments ou si la taille de la pioche ou de la défausse sont négatives
+     *
      */
     public PublicCardState(List<Card> faceUpCards, int deckSize, int discardsSize){
-        Preconditions.checkArgument((faceUpCards.size() == 5)&&(deckSize>=0)&&(discardsSize>=0));
+        Preconditions.checkArgument((faceUpCards.size() == Constants.FACE_UP_CARDS_COUNT)&&(deckSize>=0)&&(discardsSize>=0));
         this.deckSize = deckSize;
         this.discardsSize = discardsSize;
         this.faceUpCards = List.copyOf(faceUpCards);
@@ -47,10 +47,9 @@ public class PublicCardState {
     public List<Card> faceUpCards() {return faceUpCards;}
     
     /**
-     * Lève IndexOutOfBoundsException si slot n'est pas compris entre
-     * 0(inclus) et 5(exclus)
      * @param slot index de la carte visible que nous voulons
      * @return la carte face visible à l'index donné
+     * @throws IndexOutOfBoundsException si slot n'est pas compris entre 0(inclus) et 5(exclus)
      */
     public Card faceUpCard(int slot) {
         Objects.checkIndex(slot, 5);

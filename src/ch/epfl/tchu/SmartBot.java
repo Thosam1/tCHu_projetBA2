@@ -4,6 +4,12 @@ import ch.epfl.tchu.game.*;
 
 import java.util.*;
 
+
+/**
+ * @author Thösam Norlha-Tsang (330163)
+ * class SmartBot, représente un "joueur" joué par l'ordinateur suivant un algorithme
+ */
+
 public class SmartBot implements Player {
 
     private PlayerId id;

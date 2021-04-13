@@ -59,8 +59,8 @@ public final class Deck<C extends Comparable<C>> {
     public boolean isEmpty() {return isEmpty;}
     
     /**
-     * méthode qui lance une IllegalArgumentException si le tas est vide
      * @return la carte en haut du deck (à la position 0)
+     * @throws IllegalArgumentException si le tas est vide
      */
     public C topCard() {
         Preconditions.checkArgument(!isEmpty);
@@ -101,7 +101,7 @@ public final class Deck<C extends Comparable<C>> {
      */
     public Deck<C> withoutTopCards(int count){
         Preconditions.checkArgument((0<=count)&&(count<=size));
-        List<C> newDeckList = List.copyOf(deck);
+        List<C> newDeckList = List.copyOf(deck);                                // il y avait pas un truc avec " respecter l'immuabilité " ?
         List<C> outputList = new ArrayList<>();
         
         for (int i = count; i< newDeckList.size(); ++i) {

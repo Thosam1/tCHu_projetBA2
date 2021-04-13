@@ -17,8 +17,15 @@ public enum Color {
     RED,
     WHITE;
 
-    //liste immuable
-    public static final List<Color> ALL = List.of(Color.values());  // contient toutes les valeurs du type enum, dans leur ordre de def
-    public static final int COUNT = Color.ALL.size();   //contient le nombre de valeurs du type enum
+    /**
+     *  Liste immuable contenant toutes les valeurs/couleurs de la classe enum Color, dans leur ordre de définition
+     */
+    public static final List<Color> ALL = List.of(Color.values());
+
+    /**
+     *  Nombre de valeurs/couleurs dans la classe enum Color
+     */
+    public static final int COUNT = Color.ALL.size();
+
 
 }

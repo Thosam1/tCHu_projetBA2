@@ -5,17 +5,29 @@ import ch.epfl.tchu.game.Route.Level;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *  Classe contenant les stations, routes, billets du jeu
+ */
 public final class ChMap {
     private ChMap() { }
 
+    /**
+     * @return toutes les stations du jeu
+     */
     public static List<Station> stations() {
         return ALL_STATIONS;
     }
 
+    /**
+     * @return toutes les routes du jeu
+     */
     public static List<Route> routes() {
         return ALL_ROUTES;
     }
 
+    /**
+     * @return tous les billets du jeu
+     */
     public static List<Ticket> tickets() {
         return ALL_TICKETS;
     }

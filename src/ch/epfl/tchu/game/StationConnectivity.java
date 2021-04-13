@@ -10,6 +10,6 @@ public interface StationConnectivity {
      * @param s2    deuxième station
      * @return     true si les deux sont reliées
      */
-    public abstract boolean connected(Station s1, Station s2);  // return true iff s1 and s2 are connected by the player
+    public abstract boolean connected(Station s1, Station s2);
 
 }

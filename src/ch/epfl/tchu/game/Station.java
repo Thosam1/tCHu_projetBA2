@@ -6,19 +6,19 @@ import ch.epfl.tchu.Preconditions;
  * @author Thösam Norlha-Tsang (330163)
  * class Station : représente une gare  -   immuable
  */
-public final class Station {    // immuable veut dire "final"   -> tous les attributs sont finaux
+public final class Station {
 
-    private final int id; // between 0-50 - maybe use a map ? a name and a tag for countries ?
+    private final int id;
     private final String name;
 
     /**
-     * Constructor
+     * Constructeur
      * @param id
      * @param name
      * @throws IllegalArgumentException si le numéro d'identification est strictement négatif (<0)
      */
-    public Station(int id, String name){    // const
-        Preconditions.checkArgument(id >= 0);  //peut lever une IllegalArgumentException
+    public Station(int id, String name){
+        Preconditions.checkArgument(id >= 0);
         this.id = id;
         this.name = name; 
     }
@@ -37,6 +37,9 @@ public final class Station {    // immuable veut dire "final"   -> tous les attr
         return name;
     }
 
+    /**
+     * @return the name of the Station
+     */
     @Override
     public String toString() {
         return name;

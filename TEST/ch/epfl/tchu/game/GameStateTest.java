@@ -71,10 +71,10 @@ class GameStateTest {
             gameState2 = gameState2.withMoreDiscardedCards(SortedBag.of(gameState2.topCard()));
             gameState2 = gameState2.withoutTopCard();
 
-            System.out.println(gameState2.cardState().deckSize());
+//            System.out.println(gameState2.cardState().deckSize());
         }
 
-        System.out.println(gameState2.cardState().deckSize());
+//        System.out.println(gameState2.cardState().deckSize());
 
         assertEquals(gameState2.cardState().isDeckEmpty(), true);
         int expected = Constants.ALL_CARDS.size() - 2 * Constants.INITIAL_CARDS_COUNT - Constants.FACE_UP_CARDS_COUNT;

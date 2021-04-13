@@ -31,9 +31,7 @@ public final class GameState extends PublicGameState{
         this.tickets = ticketsList;
         this.cardState = cardState;
         this.playerState = Map.copyOf(playerState);
-        this.currentPlayerId = currentPlayerId; 
-        //je pourrait rendre l'attribut de la superclasse protected mais je ne sais 
-        // pas si la classe resterait immuable
+        this.currentPlayerId = currentPlayerId;
         this.lastPlayer= lastPlayer;
     }
     private static Map<PlayerId, PublicPlayerState> makePublic(Map<PlayerId, PlayerState> playerState) {
@@ -52,33 +50,25 @@ public final class GameState extends PublicGameState{
      * @return une instante de GameState
      */
     public static GameState initial(SortedBag<Ticket> tickets, Random rng) {
-//        List<Card> cards = Constants.ALL_CARDS.toList();
-////        Collections.shuffle(cards);
-//        List<Card> initialPlayerCards = new ArrayList<>();
-//        List<Card> secondPlayerCards = new ArrayList<>();
-//        List<Card> deck = new ArrayList<>();
-//        PlayerId premierJoueurId = PlayerId.ALL.get(rng.nextInt(2));    // et le deuxième joueur ? //il  viendra après, on veut que le premier joueur
-//
-//        for(int i = 0; i<Constants.INITIAL_CARDS_COUNT; i++) {
-//            initialPlayerCards.add(cards.get(i));
-//        }
-//        for(int i = Constants.INITIAL_CARDS_COUNT; i< Constants.INITIAL_CARDS_COUNT * 2; i++) {
-//            secondPlayerCards.add(cards.get(i));
-//        }
-//        for(int i = Constants.INITIAL_CARDS_COUNT * 2; i<Constants.ALL_CARDS.size(); ++i) {
-//            deck.add(cards.get(i));
-//        }
-//        CardState cardState = CardState.of(Deck.of(SortedBag.of(deck), rng));
 
-        Deck<Card> card = Deck.of(SortedBag.of(Constants.ALL_CARDS), rng); //...   ne faire qu'un shuffle avec celui-là
-        PlayerId premierJoueurId = PlayerId.ALL.get(rng.nextInt(2));    // et le deuxième joueur ? //il  viendra après, on veut que le premier joueur
-        List<Card> initialPlayerCards = new ArrayList<>(card.topCards(Constants.INITIAL_CARDS_COUNT).toList());
-        card = card.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
-        List<Card> secondPlayerCards = new ArrayList<>(card.topCards(Constants.INITIAL_CARDS_COUNT).toList());
-        card = card.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
-        CardState cardState = CardState.of(card);
+        /**
+         *  Création du deck - mélanger - distribuer
+         */
+        Deck<Card> deck = Deck.of(SortedBag.of(Constants.ALL_CARDS), rng); //mélanger les cartes
 
-        Map<PlayerId, PlayerState> playerStateMap = new EnumMap<>(PlayerId.class);                       
+        List<Card> initialPlayerCards = new ArrayList<>(deck.topCards(Constants.INITIAL_CARDS_COUNT).toList());
+        deck = deck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
+
+        List<Card> secondPlayerCards = new ArrayList<>(deck.topCards(Constants.INITIAL_CARDS_COUNT).toList());
+        deck = deck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
+
+        CardState cardState = CardState.of(deck);
+
+        /**
+         *  Création de la map, des playerstates, choix aléatoire du premier joueur
+         */
+        Map<PlayerId, PlayerState> playerStateMap = new EnumMap<>(PlayerId.class);
+        PlayerId premierJoueurId = PlayerId.ALL.get(rng.nextInt(2));
         playerStateMap.put(premierJoueurId, PlayerState.initial(SortedBag.of(initialPlayerCards)));
         playerStateMap.put(premierJoueurId.next(), PlayerState.initial(SortedBag.of(secondPlayerCards)));
         
@@ -91,7 +81,7 @@ public final class GameState extends PublicGameState{
      * @return l'état complet du joueur d'identité donnée, et pas seulement sa partie publique
      */
     @Override
-    public PlayerState playerState(PlayerId playerId) {return playerState.get(playerId);}   // état complet du joueur d'identité donnée, et pas seulement sa partie publique    ??? OK la méthode fonctionne
+    public PlayerState playerState(PlayerId playerId) {return playerState.get(playerId);}
 
     /**
      * redéfinit la méthode de même nom de PublicGameState
@@ -147,11 +137,8 @@ public final class GameState extends PublicGameState{
      * @return un état identique au récepteur sauf si la pioche de cartes est vide, auquel cas elle est recréée à partir de la défausse, mélangée au moyen du générateur aléatoire donné
      */
     public GameState withCardsDeckRecreatedIfNeeded(Random rng) {
-        if(cardState.isDeckEmpty()) {
-            return new GameState(tickets, cardState.withDeckRecreatedFromDiscards(rng), currentPlayerId, playerState, lastPlayer);
-        } else {
-            return this;}
-        }
+        return (cardState.isDeckEmpty()) ? new GameState(tickets, cardState.withDeckRecreatedFromDiscards(rng), currentPlayerId, playerState, lastPlayer) : this;
+    }
 
 
     //  -   -   -   -   - Second groupe de méthodes permettant d'obtenir un état dérivé de l'état courant en réponse à des actions entreprises par un joueur    -   -   -   -   -
@@ -164,15 +151,10 @@ public final class GameState extends PublicGameState{
      * @throws IllegalArgumentException si le joueur en question possède déjà au moins un billet
      */
     public GameState withInitiallyChosenTickets(PlayerId playerId, SortedBag<Ticket> chosenTickets) {
-        Preconditions.checkArgument(playerState.get(playerId).ticketCount()<1); // ==0
-
-//        Map<PlayerId, PlayerState> playerState2 = Map.copyOf(playerState);                                                        // correct ???    Way ?   OK fonctionne, la raison est lparce qu'il faut respecter l'immuabilié, en utilisant directement .put sur une map immuable java accepte mais ça casse le principe d'immuabilité
-//        Map<PlayerId, PlayerState> playerState2 = new HashMap<>(playerState); // here we're copying the references (changes in one will affect both map)
-        Map<PlayerId, PlayerState> playerState2 = new HashMap<PlayerId, PlayerState>();
-        playerState2.putAll(playerState);
+        Preconditions.checkArgument(playerState.get(playerId).ticketCount()<1);
+        Map<PlayerId, PlayerState> playerState2 = cloneMap();
         playerState2.put(playerId, playerState.get(playerId).withAddedTickets(chosenTickets));
-
-        return new GameState(tickets, cardState, currentPlayerId, playerState2, lastPlayer);    // remove tickets ? NO !
+        return new GameState(tickets, cardState, currentPlayerId, playerState2, lastPlayer);
     }
 
     /**
@@ -182,13 +164,12 @@ public final class GameState extends PublicGameState{
      * @return un état identique au récepteur, mais dans lequel le joueur courant a tiré les billets drawnTickets du sommet de la pioche, et choisi de garder ceux contenus dans chosenTicket
      * @throws IllegalArgumentException si l'ensemble des billets gardés n'est pas inclus dans celui des billets tirés
      */
-    public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) { // faudrait-il utiliser currentPlayerId() au lieu de currentPlayerId ? oui en général avec les opérations
+    public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) {
         Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
 
-        Map<PlayerId, PlayerState> playerState2 = new HashMap<>();
-        playerState2.putAll(playerState);
-        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedTickets(chosenTickets));
-        return new GameState(tickets.withoutTopCards(drawnTickets.size()), cardState, currentPlayerId, playerState2, lastPlayer);  // remove tickets from tickets !!!
+        Map<PlayerId, PlayerState> playerState2 = cloneMap();
+        playerState2.put(currentPlayerId(), playerState.get(currentPlayerId()).withAddedTickets(chosenTickets));
+        return new GameState(tickets.withoutTopCards(drawnTickets.size()), cardState, currentPlayerId(), playerState2, lastPlayer);
     }
 
 
@@ -200,12 +181,9 @@ public final class GameState extends PublicGameState{
      */
     public GameState withDrawnFaceUpCard(int slot) {
         Preconditions.checkArgument(canDrawCards());
-        Map<PlayerId, PlayerState> playerState2 = new HashMap<>();
-        playerState2.putAll(playerState);
+        Map<PlayerId, PlayerState> playerState2 = cloneMap();
         playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedCard(cardState.faceUpCard(slot)));
-
         return new GameState(tickets, cardState.withDrawnFaceUpCard(slot), currentPlayerId, playerState2, lastPlayer);
-        //l appel de withDrawnFaceUpCard sur cardState rend un CardState qui contient une nouvelle carte à la position slot de faceUpCards
     }
 
 
@@ -216,10 +194,8 @@ public final class GameState extends PublicGameState{
      */
     public GameState withBlindlyDrawnCard() {
         Preconditions.checkArgument(canDrawCards());
-        Map<PlayerId, PlayerState> playerState2 = new HashMap<>();
-        playerState2.putAll(playerState);
+        Map<PlayerId, PlayerState> playerState2 = cloneMap();
         playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedCard(cardState.topDeckCard()));
-
         return new GameState(tickets, cardState.withoutTopDeckCard(), currentPlayerId, playerState2, lastPlayer);
     }
 
@@ -229,10 +205,9 @@ public final class GameState extends PublicGameState{
      * @return un état identique au récepteur mais dans lequel le joueur courant s'est emparé de la route donnée au moyen des cartes données
      */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
-        Map<PlayerId, PlayerState> playerState2 = new HashMap<>();
-        playerState2.putAll(playerState);
-        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withClaimedRoute(route, cards)); // on lui enlève ses cartes utilisées de sa main
-        return new GameState(tickets, cardState.withMoreDiscardedCards(cards), currentPlayerId, playerState2, lastPlayer);                            // Les cartes sont ajoutées à la défausse
+        Map<PlayerId, PlayerState> playerState2 = cloneMap();
+        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withClaimedRoute(route, cards));     // on lui enlève ses cartes utilisées de sa main
+        return new GameState(tickets, cardState.withMoreDiscardedCards(cards), currentPlayerId, playerState2, lastPlayer);      // Les cartes sont ajoutées à la défausse
     }
 
 
@@ -249,12 +224,16 @@ public final class GameState extends PublicGameState{
      * @return un état identique au récepteur si ce n'est que le joueur courant est celui qui suit le joueur courant actuel; de plus, si lastTurnBegins retourne vrai, le joueur courant actuel devient le dernier joueur
      */
     public GameState forNextTurn() {
-
-        if(lastTurnBegins()){   //le joueur courant actuel devient le dernier joueur
-            return new GameState(tickets, cardState, currentPlayerId.next(), playerState, currentPlayerId);
-        }else{
-            return new GameState(tickets, cardState, currentPlayerId.next(), playerState, lastPlayer);
-        }
-
+        return (lastTurnBegins()) ? new GameState(tickets, cardState, currentPlayerId.next(), playerState, currentPlayerId) : new GameState(tickets, cardState, currentPlayerId.next(), playerState, lastPlayer);
     }
+
+    /**
+     * @return une nouvelle map/la même, non-finale donc qu'on peut modifier
+     */
+    private Map<PlayerId, PlayerState> cloneMap(){
+        Map<PlayerId, PlayerState> playerState2 = new HashMap<PlayerId, PlayerState>();
+        playerState2.putAll(playerState);                                                   // si on utilise pas .putAll, on brise l'immuabilité
+        return playerState2;
+    }
+
 }

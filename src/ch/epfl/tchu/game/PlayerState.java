@@ -20,7 +20,7 @@ public final class PlayerState extends PublicPlayerState {
 
     private final SortedBag<Ticket> tickets;
     private final SortedBag<Card> cards;
-    private final List<Route> routes;
+
     /**
      * Constructeur de la classe: construit l'état d'un joueur possédant les billets, cartes et routes donnés.
      * @param tickets
@@ -31,10 +31,9 @@ public final class PlayerState extends PublicPlayerState {
         super(tickets.size(), cards.size(), routes);
         this.tickets = tickets;
         this.cards = cards;
-        this.routes = routes;
     }
-    
-    
+
+
     /**
      * méthode de construction statique :
      * @param initialCards
@@ -43,9 +42,8 @@ public final class PlayerState extends PublicPlayerState {
      */
     public static PlayerState initial(SortedBag<Card> initialCards){
         Preconditions.checkArgument(initialCards.size() == 4);
+        return new PlayerState(SortedBag.of(), initialCards, new ArrayList<>());
 
-        return new PlayerState(SortedBag.of(), initialCards, new ArrayList<>());   // do we have to initialize to 0 ? YES !!!
-//        return new PlayerState(SortedBag.of(new ArrayList<Ticket>()), initialCards, new ArrayList<Routes>());
     }
 
     /**
@@ -53,6 +51,12 @@ public final class PlayerState extends PublicPlayerState {
      */
     public SortedBag<Ticket> tickets(){
         return tickets;
+    }
+    /**
+     * @return les cartes wagon/locomotive du joueur
+     */
+    public SortedBag<Card> cards(){
+        return cards;
     }
 
     /**
@@ -65,21 +69,12 @@ public final class PlayerState extends PublicPlayerState {
     }
 
     /**
-     * @return les cartes wagon/locomotive du joueur
-     */
-    public SortedBag<Card> cards(){
-        return cards;
-    }
-
-    /**
      * @param card
      * @return un état identique au récepteur, si ce n'est que le joueur possède en plus la carte donnée
      */
-    public PlayerState withAddedCard(Card card){    // à revoir
-        SortedBag<Card> addedCard = cards();
-        SortedBag<Card> single = SortedBag.of(Collections.singletonList(card));
-        addedCard = addedCard.union(single);
-        return new PlayerState(tickets(), addedCard, routes());
+    public PlayerState withAddedCard(Card card){
+        return new PlayerState(tickets(), cards().union(
+                SortedBag.of(Collections.singletonList(card))), routes());
     }
 
     /**
@@ -105,17 +100,8 @@ public final class PlayerState extends PublicPlayerState {
      * @throws IllegalArgumentException si le joueur n'a pas assez de wagons pour s'emparer de la route
      */
     public List<SortedBag<Card>> possibleClaimCards(Route route){
-        Preconditions.checkArgument(carCount() >= route.length()); // WAGONS CHECK !!! wagons (pièces) =/= cartes wagons - locomotives
+        Preconditions.checkArgument(carCount() >= route.length()); // wagons (pièces) =/= cartes wagons - locomotives
 
-//        List<SortedBag<Card>> cardList = new ArrayList<>();           !! ne pas effacer !!
-//
-//        // utiliser la class route, puis filtrer
-//        List<SortedBag<Card>> allPossible = route.possibleClaimCards();
-//        for(SortedBag<Card> c: allPossible){
-//            if(cards().contains(c)){
-//                cardList.add(c);
-//            }
-//        }
         List<SortedBag<Card>> cardList = new ArrayList<>(route.possibleClaimCards());
         cardList.removeIf( e -> !cards().contains(e) ); // si les cartes ne sont pas dans les mains du joueurs, on les enlève de l'ensemble
         return cardList;
@@ -143,14 +129,14 @@ public final class PlayerState extends PublicPlayerState {
             }
         }
 
-      //On retire les cartes initialCards des cartes détenus par le joueur
+        //On retire les cartes initialCards des cartes détenus par le joueur
         SortedBag<Card> cardsWithoutInitialCards = cards.difference(initialCards);
-        
+
         Map<Card, Integer> map = new HashMap<>(cardsWithoutInitialCards.toMap());
         //SortedBag.of ne doit pas prendre des valeurs null
         map.putIfAbsent(Card.LOCOMOTIVE, 0);
         map.putIfAbsent(initialCardsType, 0);
-        
+
         SortedBag<Card> cartesUtilisables;
         if(initialCardsType == Card.LOCOMOTIVE) { //le joueur a que posé des Locomotives
             cartesUtilisables = SortedBag.of(map.get(Card.LOCOMOTIVE), Card.LOCOMOTIVE);
@@ -159,17 +145,17 @@ public final class PlayerState extends PublicPlayerState {
             cartesUtilisables = SortedBag.of(map.get(Card.LOCOMOTIVE), Card.LOCOMOTIVE,
                     map.get(initialCardsType), initialCardsType);
         }
-        
+
         if(cartesUtilisables.size()<additionalCardsCount) { //return liste vide si il n'est pas possible d avoir un subset
             return List.of();}
         else {
-        List<SortedBag<Card>> options = new ArrayList<>(cartesUtilisables.subsetsOfSize(additionalCardsCount));
-        options.sort(
-        Comparator.comparingInt(cs -> cs.countOf(Card.LOCOMOTIVE)));
-        return options;
+            List<SortedBag<Card>> options = new ArrayList<>(cartesUtilisables.subsetsOfSize(additionalCardsCount));
+            options.sort(
+                    Comparator.comparingInt(cs -> cs.countOf(Card.LOCOMOTIVE)));
+            return options;
         }
 
-        }
+    }
 
 
     /**
@@ -179,36 +165,33 @@ public final class PlayerState extends PublicPlayerState {
      * @return un état identique au récepteur, si ce n'est que le joueur s'est de plus emparé de la route donnée au moyen des cartes données
      */
     public PlayerState withClaimedRoute(Route route, SortedBag<Card> claimCards){
-        SortedBag<Card> reworkCards = cards().difference(claimCards);    // just check in case
         List<Route> reworkRoutes = new ArrayList<>(routes());           // !!! this list was final ! so make it a copy of a muable list
         reworkRoutes.add(route);
-
-        return new PlayerState(tickets(),reworkCards, reworkRoutes);
+        return new PlayerState(tickets(), cards().difference(claimCards), reworkRoutes);
     }
 
     /**
-     *
-     * @return
+     * @return le nombre de points gagné ou perdu avec les tickets
      */
     public int ticketPoints(){
         int idMax = -1;
         int ticketPoints = 0;
         for(Route r : routes()){
             idMax = Math.max(Math.max(r.station1().id(), r.station2().id()), idMax);
-            }
+        }
 
         StationPartition.Builder builder = new StationPartition.Builder(idMax+1);
 
-        for (Route r : routes) {
+        for (Route r : routes()) {
             builder.connect(r.station1(), r.station2());
         }
         StationPartition partition = builder.build();
 
-        for (Ticket ticket : tickets) {
+        for (Ticket ticket : tickets()) {
             ticketPoints += ticket.points(partition);
         }
         return ticketPoints;
-        }
+    }
 
     /**
      * @return la totalité des points obtenus par le joueur à la fin de la partie, à savoir la somme des points retournés par les méthodes claimPoints et ticketPoints
@@ -216,13 +199,5 @@ public final class PlayerState extends PublicPlayerState {
     public int finalPoints(){
         return claimPoints() + ticketPoints();
     }
-
-    /**
-     * @param color
-     * @return le nombre de cartes de la couleur donnée que le joueur possède
-     
-    private int howMuchCardsOf(Color color, SortedBag<Card> cardSortedBag){
-        return cardSortedBag.countOf(Card.of(color));
-    }*/
 
 }

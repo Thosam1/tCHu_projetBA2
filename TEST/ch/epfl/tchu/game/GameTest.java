@@ -1,5 +1,6 @@
 package ch.epfl.tchu.game;
 
+import ch.epfl.tchu.SmartBot;
 import ch.epfl.tchu.SortedBag;
 
 import org.junit.jupiter.api.Test;
@@ -7,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 public class GameTest {
-//    @Test
+    //    @Test
     @Test
     void testingIllegalExceptionFirstLessPlay(){
 
@@ -36,7 +37,7 @@ public class GameTest {
 
     @Test
     void testingPlay(){
-        Map<PlayerId, Player> players = Map.of(PlayerId.PLAYER_1, new TestPlayer(1, ChMap.routes(), PlayerId.PLAYER_1, "Thösam"), PlayerId.PLAYER_2, new TestPlayer(1, ChMap.routes(), PlayerId.PLAYER_2, "Aymeric"));
+        Map<PlayerId, Player> players = Map.of(PlayerId.PLAYER_1, new SmartBot(1, ChMap.routes(), PlayerId.PLAYER_1, "Thösam"), PlayerId.PLAYER_2, new TestPlayer(1, ChMap.routes(), PlayerId.PLAYER_2, "Aymeric"));
         Map<PlayerId, String> playerNames = Map.of(PlayerId.PLAYER_1, "Thösam", PlayerId.PLAYER_2, "Aymeric");
         SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets());
         Random rng = new Random(1);
@@ -69,7 +70,7 @@ public class GameTest {
         private int additionalCardsIndex;
         private static final int TURN_LIMIT = 1000;
         private int drawCards10TimesOutOf20 = 0;
-        
+
         private final Random rng;
         // Toutes les routes de la carte
         private final List<Route> allRoutes;
@@ -109,12 +110,12 @@ public class GameTest {
             System.out.println(" -   -   -   -   -");
         }
 
-        
+
         @Override
         public void updateState(PublicGameState newState, PlayerState ownState) {
             this.gameState = newState;
             this.ownState = ownState;
-            System.out.println(name + " has received the updateState : | " + ownState.toString());
+            System.out.println(name + " has received the updateState : | " + ownState);
             System.out.println(" -   -   -   -   -");
         }
 
@@ -142,9 +143,9 @@ public class GameTest {
             return chosenInitialTickets;
         }   // va retourner les 3 premiers tickets à choix
 
-        
+
         @Override
-        public TurnKind nextTurn() {
+        public TurnKind nextTurn() { // savoir quelle action le joueur courant désire effectuer parmi les trois possibles
             turnCounter += 1;
             if (turnCounter > TURN_LIMIT)
                 throw new Error("Trop de tours joués !");
@@ -158,46 +159,51 @@ public class GameTest {
                     claimableRoutes.add(r);
                 }
             }
-            
-            if(drawCards10TimesOutOf20 % 20 <=10) {
-                ++drawCards10TimesOutOf20;
+
+            if(drawCards10TimesOutOf20 % 20 <=10) { // prends des tickets 10 tours d'affilées avant de tirer des cartes 10 tours d'affilées ?
+                ++drawCards10TimesOutOf20;          // je vois que les joueurs ne font que tirer des cartes au début même lorsqu'ils peuvent s'emparer d'une route
                 return TurnKind.DRAW_CARDS;
             }
-            
+
             else {
                 ++drawCards10TimesOutOf20;
                 if (claimableRoutes.isEmpty()) {    // tire cartes si le joueur ne peut pas capturer de routes
-                    
+
                     if(gameState.canDrawTickets() && nextTurnKind == TurnKind.DRAW_TICKETS) {
                         System.out.println("    Le joueur : " + name + " va tirer des tickets");
                         nextTurnKind = TurnKind.DRAW_CARDS;
                         return TurnKind.DRAW_TICKETS;
-                  }
-              
-                  else {
-                      System.out.println("    Le joueur : " + name + " va tirer des cartes");
-                      nextTurnKind = TurnKind.DRAW_TICKETS;
-                      return TurnKind.DRAW_CARDS;
-                      }
-                
+                    }
+
+                    else {
+//                      if(gameState.canDrawCards())  -> mettre ce truc - facultatif
+                        System.out.println("    Le joueur : " + name + " va tirer des cartes");
+                        nextTurnKind = TurnKind.DRAW_TICKETS;
+                        return TurnKind.DRAW_CARDS;
+                    }
+
                 } else {
                     System.out.println("    Le joueur : " + name + " va s'emparer d'une route");
 
                     // choisir une route au hasard
                     int routeIndex = rng.nextInt(claimableRoutes.size());
-                
+
                     Route route = claimableRoutes.get(routeIndex);
-                
+
                     //TEST J aimerai des routes de longueurs différentes ce qui n est pas le cas avec rng = 1
-            //        System.out.println("routesize: " + route.length());
-                
+
+                    System.out.println("    routesize: " + route.length());
+
+                    //        System.out.println("routesize: " + route.length());
+
+
                     List<SortedBag<Card>> cards = ownState.possibleClaimCards(route);
 
                     routeToClaim = route;
-                
+
                     initialClaimCards = cards.get(0);
                     return TurnKind.CLAIM_ROUTE;
-            }
+                }
             }
         }
 
@@ -205,20 +211,20 @@ public class GameTest {
         @Override
         public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
             int randomInt = rng.nextInt(3) + 1;
-            
+
             SortedBag.Builder<Ticket> chosenTickets = new SortedBag.Builder<>();
             for(int i = 0; i<randomInt; ++i) {
                 chosenTickets.add(options.get(i));
             }
-            
+
             return chosenTickets.build();
         }
 
         @Override
         public int drawSlot() {
             ++drawSlot;
-            return (drawSlot)%2;
-        }   //On cherche a alterner entre 0 et 1; //voir pourquoi les cartes sont toujours visible
+            return ((drawSlot)%2 == 1) ? Constants.DECK_SLOT : 0;
+        }   //On cherche a alterner entre 0 et 1; //voir pourquoi les cartes sont toujours visible  -> parce que pour les blind cartes c'est -1 :D -> si le reste est 1 alors tire à l'index -1
 
         @Override
         public Route claimedRoute() {
@@ -230,14 +236,14 @@ public class GameTest {
             return initialClaimCards;
         }
 
-        
+
         /**TODO implémenter le scénario ou il y a des cartes additionnelles à jouer*/
         @Override
         public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
             if (additionalCardsIndex % 2 == 0) //System.out.println(options.get(0).toString());
-            ++additionalCardsIndex;
+                ++additionalCardsIndex;
             return (additionalCardsIndex % 2 == 0) ? options.get(0) : SortedBag.of();
-        }   
+        }
 
         // définir des getter pour voir à la fin de l'éxecution
 
@@ -248,3 +254,11 @@ public class GameTest {
         // dans cette simulation le joueur ne tire jamais de ticket, comment vérifier ça ???
     }
 }
+
+/**
+ * Thösam
+ * 1) le receive info des tickets choisis n'est pas appelée !!! à voir absolument avec un assistant !!!
+ * 2) l'algorithme avec les cartes faces visibles et non-visibles à refaire
+ * 3) ce serait bien de créer un algorithme pour piocher des cartes, genre pour regarder les cartes faces visibles et prendre si une permet de completer pour s'emparer d'une route au prochain tour
+ * 4)
+ */

@@ -8,7 +8,7 @@ import ch.epfl.tchu.Preconditions;
  * @author Thösam Norlha-Tsang (330163)
  * class PublicPlayerState, représente la partie publique de l'état d'un joueur, à savoir le nombre de billets, de cartes et de wagons qu'il possède, les routes dont il s'est emparé, et le nombre de points de construction qu'il a ainsi obtenu.
  */
-public class PublicPlayerState {    // immuable ??? héritage problème
+public class PublicPlayerState {
 
     private final int ticketCount;  // nbre de billets
     private final int cardCount;    // nbre de cartes

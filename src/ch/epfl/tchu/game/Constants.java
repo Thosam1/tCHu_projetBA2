@@ -4,6 +4,9 @@ import ch.epfl.tchu.SortedBag;
 
 import java.util.List;
 
+/**
+ *  Classe regroupants les principales constantes qui définissent le jeu
+ */
 public final class Constants {
     private Constants() {}
 

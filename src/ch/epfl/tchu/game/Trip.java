@@ -11,7 +11,7 @@ import ch.epfl.tchu.Preconditions;
  *
  */
 
-public final class Trip {   // immuable
+public final class Trip {
     private final Station from;
     private final Station to;
     private final int points;
@@ -23,6 +23,7 @@ public final class Trip {   // immuable
      *          Station d arrivée
      * @param points
      *          Points associés à ce trajet
+     * @throws IllegalArgumentException si les points sont égaux à 0 ou négatifs
      */
     public Trip(Station from, Station to, int points) {
             this.from = Objects.requireNonNull(from);

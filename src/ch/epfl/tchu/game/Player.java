@@ -15,6 +15,10 @@ public interface Player {
         DRAW_TICKETS,
         DRAW_CARDS,
         CLAIM_ROUTE;
+
+        /**
+         *  Liste immuable contenant toutes les valeurs de la classe enum TurnKind, dans leur ordre de définition
+         */
         public static final List<TurnKind> ALL = List.of(TurnKind.values());
     }
 
