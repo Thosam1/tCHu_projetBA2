@@ -44,7 +44,7 @@ public final class Trip {
      *          Liste contenant des Trips (from.size() * to.size() Trips pour etre exact)
      */
     public static List<Trip> all(List<Station> from, List<Station> to, int points){
-        Preconditions.checkArgument(points > 0 && !from.isEmpty() && !to.isEmpty());    // j'ai rajouté les deux dedans si ça joue pour toi
+        Preconditions.checkArgument(points > 0 && !from.isEmpty() && !to.isEmpty());
 
         ArrayList<Trip> output = new ArrayList<Trip>();
 

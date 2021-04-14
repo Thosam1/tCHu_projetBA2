@@ -89,7 +89,7 @@ public final class PlayerState extends PublicPlayerState {
      * @param route
      * @return vrai ssi le joueur peut s'emparer de la route donnée, c-à-d s'il lui reste assez de wagons et s'il possède les cartes nécessaires
      */
-    public boolean canClaimRoute(Route route){  // si wagon ET cartes
+    public boolean canClaimRoute(Route route){ 
         return (carCount() >= route.length() && possibleClaimCards(route).size() > 0);
     }
 
@@ -165,7 +165,7 @@ public final class PlayerState extends PublicPlayerState {
      * @return un état identique au récepteur, si ce n'est que le joueur s'est de plus emparé de la route donnée au moyen des cartes données
      */
     public PlayerState withClaimedRoute(Route route, SortedBag<Card> claimCards){
-        List<Route> reworkRoutes = new ArrayList<>(routes());           // !!! this list was final ! so make it a copy of a muable list
+        List<Route> reworkRoutes = new ArrayList<>(routes());
         reworkRoutes.add(route);
         return new PlayerState(tickets(), cards().difference(claimCards), reworkRoutes);
     }
@@ -176,20 +176,24 @@ public final class PlayerState extends PublicPlayerState {
     public int ticketPoints(){
         int idMax = -1;
         int ticketPoints = 0;
+        
+        //nous cherchons l'identité maximale des stations qui relient les routes du joueur
+        //Ceci est utile juste après pour la création du StationPartition.Builder
+        
         for(Route r : routes()){
             idMax = Math.max(Math.max(r.station1().id(), r.station2().id()), idMax);
         }
-
+        
         StationPartition.Builder builder = new StationPartition.Builder(idMax+1);
 
-        for (Route r : routes()) {
-            builder.connect(r.station1(), r.station2());
-        }
+        //nous connectons toutes les stations pour obtenir la StationPartition du joueur
+        routes().forEach(r -> builder.connect(r.station1(), r.station2()));
         StationPartition partition = builder.build();
 
         for (Ticket ticket : tickets()) {
             ticketPoints += ticket.points(partition);
         }
+        
         return ticketPoints;
     }
 

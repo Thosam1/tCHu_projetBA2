@@ -111,32 +111,44 @@ public final class Route {
      * retourne la liste de tous les ensembles de cartes qui pourraient etre joués pour s'emparer
      * de la route
      * Trié par ordre croissant de nombre de cartes locomotive, puis par couleur
+     * Notez que si la couleur est null cela veut dire que la route est neutre et donc que toutes les couleurs
+     * de cartes peuvent etre utiliser (a condition de respecter certaines règles)
+     * 1) un seul type de carte wagon peut etre utilisé (meme si la route est null)
+     * 2) si la route est un tunnel (UNDERGROUND) alors des locomotives peuvent etre utilisé
      * @return liste décrite au-dessus
      */
     public List<SortedBag<Card>> possibleClaimCards(){
         List<SortedBag<Card>> output = new ArrayList<SortedBag<Card>>();
+        
+        
         if(level==Level.UNDERGROUND) {
             for (int i = 0; i<length; ++i) {
+                
                 if (color() == null) {//c'est une route neutre
                     //if (Card.of(color))    
-                    for(Card card : Card.CARS) {
+                    for(Card card : Card.CARS) {//Card.CARS est une liste qui contient toutes les cartes wagons (pas LOCOMOTIVE)
                         output.add(SortedBag.of(length-i, card, i, Card.LOCOMOTIVE));}
                 }
+                
                 //route de couleur
                 else {
                     output.add(SortedBag.of(length-i, Card.of(color), i, Card.LOCOMOTIVE));
                 }
                 }
+            
             //SortedBag contenant un nombre de locomotives égale à length
+            //nous le mettons endehors du for loop pour etre sur que une seul sortedbag avec un nombre length de Locomotives est rajouté à output
             output.add(SortedBag.of(length, Card.LOCOMOTIVE));
             }
+        
         
         //Pour les routes OVERGROUND nous ne voulons pas de LOCOMOTIVES dans l'output
         else {
             if(color()==null) {
                 for(Card card : Card.CARS) {
                     output.add(SortedBag.of(length,card));}
-        }
+            }
+            
             else {
                 output.add(SortedBag.of(length, Card.of(color)));
             }
@@ -164,6 +176,11 @@ public final class Route {
                 claimCardsType = claimCard;
             }
         }
+        
+        //si claimCardsType est une Locomotive, alors il faut que les drawnCards soient des Locomotives pour incrémenter additionalCards
+        //si ce n'est pas une locomotive, alors toutes les cartes de drawnCards qui sont pareil que claimCardsType ou sont des locomotives incrément additionalCards
+        
+        
         /*si les cartes de drawnCards sont des Locomotive alors on ajoute une carte
         à additionalCards, sinon il faut que ces cartes soient égales à claimCardsType*/
         for (Card card : drawnCards) {

@@ -206,8 +206,8 @@ public final class GameState extends PublicGameState{
      */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
         Map<PlayerId, PlayerState> playerState2 = cloneMap();
-        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withClaimedRoute(route, cards));     // on lui enlève ses cartes utilisées de sa main
-        return new GameState(tickets, cardState.withMoreDiscardedCards(cards), currentPlayerId, playerState2, lastPlayer);      // Les cartes sont ajoutées à la défausse
+        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withClaimedRoute(route, cards));     // on enlève les cartes utilisées de la main du joueur
+        return new GameState(tickets, cardState.withMoreDiscardedCards(cards), currentPlayerId, playerState2, lastPlayer);      // puis ces cartes sont ajoutées à la défausse
     }
 
 

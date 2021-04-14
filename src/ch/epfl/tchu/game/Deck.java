@@ -101,15 +101,13 @@ public final class Deck<C extends Comparable<C>> {
      */
     public Deck<C> withoutTopCards(int count){
         Preconditions.checkArgument((0<=count)&&(count<=size));
-        List<C> newDeckList = List.copyOf(deck);                                // il y avait pas un truc avec " respecter l'immuabilité " ?
+        List<C> newDeckList = List.copyOf(deck);                             
         List<C> outputList = new ArrayList<>();
         
         for (int i = count; i< newDeckList.size(); ++i) {
             outputList.add(newDeckList.get(i));
         }
-        return new Deck<C>(outputList);
-        //return new Deck<C>(newDeckList.subList(count, size));
-        
+        return new Deck<C>(outputList);     
     }
     
 }

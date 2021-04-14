@@ -84,7 +84,7 @@ public final class Game {
 
         /**La partie commence*/
         while(numberOfLastTurns<=2){//le loop s'arrete quand les deux joueurs ont joué une dernière fois
-            // lisibilité
+            
             Player currPlayerInterf = players.get(gameState.currentPlayerId());  //currentPlayerInterface
             Info currInf = infoMap.get(gameState.currentPlayerId());
 
@@ -188,8 +188,9 @@ public final class Game {
                                 .possibleAdditionalCards(additionalCardsCount, initialCards, drawnCards);
                     }
 
-                    //si le joueur a des cartes additionnelles à poser
-                    if((additionalCardsCount>=1) && (additionalCardsCount<=3) && (possibleAdditionalCards.size()!=0)) {
+                    //si le joueur a des cartes additionnelles à poser (entre 1 et 3, autrement dit, différent que 0) 
+                    //et qu il est capable d'en poser plus(possibleAdditionalCards n'est pas vide)
+                    if((additionalCardsCount != 0) && (possibleAdditionalCards.size()!=0)) {
                         //les cartes additionnelles que le joueur décide de poser
                         SortedBag<Card> additionalCards = currPlayerInterf.chooseAdditionalCards(possibleAdditionalCards);
 

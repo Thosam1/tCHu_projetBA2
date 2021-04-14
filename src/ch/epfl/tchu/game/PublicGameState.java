@@ -1,10 +1,8 @@
 package ch.epfl.tchu.game;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import ch.epfl.tchu.Preconditions;
 
@@ -97,10 +95,10 @@ public class PublicGameState {
      * @return la totalité des routes dont l'un ou l'autre des joueurs s'est emparé
      */
     public List<Route> claimedRoutes(){
-        List<Route> routeNextPlayer = List.copyOf(playerState.get(PlayerId.ALL.get(0)).routes());
-        List<Route> routeCurrentPlayer = List.copyOf(playerState.get(PlayerId.ALL.get(1)).routes());
-        List<Route> routeOutput = new ArrayList<>(routeNextPlayer);
-        routeOutput.addAll(routeCurrentPlayer);
+        List<Route> routeFirstPlayer = List.copyOf(playerState.get(PlayerId.PLAYER_1).routes());
+        List<Route> routeSecondPlayer = List.copyOf(playerState.get(PlayerId.PLAYER_2).routes());
+        List<Route> routeOutput = new ArrayList<>(routeFirstPlayer);
+        routeOutput.addAll(routeSecondPlayer);
         return routeOutput;
     }
 
