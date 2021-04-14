@@ -92,61 +92,86 @@ public final class Game {
             Game.updateStateForAll(players, gameState);
 
             /**
-             *  Savoir quelle action le joueur courant désire effectuer parmi les trois possibles, on estime que le joueur ne fait pas des choses qui lancent des exceptions
+             *  L'appel à nextTurn permet de savoir quelle action le joueur courant désire effectuer parmi les trois possibles, on estime que le joueur ne fait pas des choses qui lancent des exceptions
              */
 
             Player.TurnKind turnKind = currPlayerInterf.nextTurn();
 
+            /**
+             * Le joueur a décidé de piocher 3 tickets (c'est un nombre constant)
+             * */
             if(turnKind == Player.TurnKind.DRAW_TICKETS) {
                 SortedBag<Ticket> drawnTickets = gameState.topTickets(Constants.IN_GAME_TICKETS_COUNT);
 
+                //les deux joueurs sont informés du fait que trois tickets ont été pioché (donc retiré de la pioche)
                 Game.infoToAll(players, currInf.drewTickets(Constants.IN_GAME_TICKETS_COUNT));
 
-                SortedBag<Ticket> chosenTickets = currPlayerInterf.chooseTickets(drawnTickets); // il choisit
+                //le joueur choisi au moins un tickets parmis les trois tickets qui ont été retiré de la pioche de Tickets
+                SortedBag<Ticket> chosenTickets = currPlayerInterf.chooseTickets(drawnTickets); 
 
-                gameState = gameState.withChosenAdditionalTickets(drawnTickets, chosenTickets); // playerState et tickets changent
+                gameState = gameState.withChosenAdditionalTickets(drawnTickets, chosenTickets);
 
+                //les deux joueurs sont informés du nombre de tickets qui ont été gardé par le joueur courant
                 Game.infoToAll(players, currInf.keptTickets(chosenTickets.size()));
 
 
+            /**
+             * Le joueur a décidé de piocher 2 cartes (il a le choix entre les cartes de la pioche ou entre les 5 cartes qui sont face visible)
+             * */
             }else if(turnKind == Player.TurnKind.DRAW_CARDS){
 
                 for(int i = 0; i < 2; i++){ // tire deux fois
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     int slot = currPlayerInterf.drawSlot();
-
-                    Card pickedVisibleCard = (slot != Constants.DECK_SLOT) ? gameState.cardState().faceUpCard(slot) : null ;    //Constans.DECK_SLOT est égal à -1 et signifie que le joueur veut la carte du haut du deck
+                    
+                    //Constans.DECK_SLOT est égal à -1 et signifie que le joueur veut la carte du haut du deck
+                    Card pickedVisibleCard = (slot != Constants.DECK_SLOT) ? gameState.cardState().faceUpCard(slot) : null ;
+                    
+                    //gameState doit etre updaté soit en retirant la carte du haut de la pioche ou en échangeant la carte face visible sélectionné par le joueur
                     gameState = (slot == Constants.DECK_SLOT) ? gameState.withBlindlyDrawnCard() : gameState.withDrawnFaceUpCard(slot);
 
+                    //Les deux joueurs sont informés du type de carte qui a été sélectionné (visible ou pioche)
                     Game.infoToAll(players, (slot == Constants.DECK_SLOT) ? currInf.drewBlindCard() : currInf.drewVisibleCard(pickedVisibleCard));
 
-                    if(i==0){//nous voulons une update après que la première carte aie été tirée pour que le joueur est accès au gameState courant
+                    if(i==0){//nous voulons une update après que la première carte aie été tirée pour que le joueur est accès au gameState courant avant de faire sa deuxieme séléction
                         Game.updateStateForAll(players, gameState);
                     }
                 }
 
+            /***
+             * Le joueur décide d'essayer de prendre possession d'une route
+             * Celle ci peut etre un tunnel(UNDERGROUND) ou pas (OVERGROUND)
+             * Dans le premier cas le joueur doit potentiellement poser des cartes additionnelles
+             * dans le second il prend possession de la route
+             */
             } else {
 
                 /**Si ce n est pas un tunnel ou que c'est un tunnel et qu on ne lui impose pas de cartes en plus, il prend la route et ne peux pas changer d'avis,
                  * parcontre si c'est un tunnel et qu on lui impose des cartes en plus alors il peut changer d avis mais alors ça saute son tour ce qui est géré par gameState.nextTurn() a la fin du while loop*/
 
 
-                /**la route que le player veut*/
+                /**la route que le player veut est communiqué par l appel à claimedRoute
+                 * et les cartes qu il veut utiliser pour s en emparer sont communiquées à travers l appel à initialClaimCards
+                 * */
                 Route routeDésirée = currPlayerInterf.claimedRoute();
                 SortedBag<Card> initialCards = currPlayerInterf.initialClaimCards();
 
+                //Si la route est un tunnel
                 if (routeDésirée.level() == Route.Level.UNDERGROUND) {
+                    //Les joueurs reçoivent l information que le joueur  courant cherche à s'emparer d'un tunnel
                     Game.infoToAll(players, currInf.attemptsTunnelClaim(routeDésirée, initialCards));
 
                     SortedBag.Builder<Card> builder = new SortedBag.Builder<>();
 
+                    //les trois cartes du haut de la pioche sont retirées et mises dans le builder pour obtenir un SortedBag avec les trois cartes du haut de la pioche
                     for(int i = 0; i<Constants.ADDITIONAL_TUNNEL_CARDS; ++i) {
-                        gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
+                        gameState = gameState.withCardsDeckRecreatedIfNeeded(rng); //vérifie que l'on ne retire pas de carte à un deck vide (le recréé si il est vide)
                         builder.add(gameState.topCard());
                         gameState = gameState.withoutTopCard(); //retourne un nouveau gameState sans la carte du haut
                     }
                     SortedBag<Card> drawnCards = builder.build();
 
+                    //cet appel permet de savoir combien de cartes additionnelles le joueur va devoir poser pour s'emparer de la route
                     int additionalCardsCount = routeDésirée.additionalClaimCardsCount(initialCards, drawnCards);
 
                     Game.infoToAll(players, currInf.drewAdditionalCards(drawnCards, additionalCardsCount));
@@ -157,6 +182,7 @@ public final class Game {
 
                     List<SortedBag<Card>> possibleAdditionalCards = List.of(SortedBag.of());
 
+                    //si le joueur doit poser plus de cartes, possibleAdditionalCards, calcule toutes les combinaisons possible de cartes que le joueur peut poser
                     if(additionalCardsCount!=0) { //possibleAdditionalCards ne doit pas prendre de additionalCardsCount égal à 0
                         possibleAdditionalCards = gameState.currentPlayerState()
                                 .possibleAdditionalCards(additionalCardsCount, initialCards, drawnCards);
@@ -168,37 +194,46 @@ public final class Game {
                         SortedBag<Card> additionalCards = currPlayerInterf.chooseAdditionalCards(possibleAdditionalCards);
 
 
-                        //si il décide de ne pas pas poser plus de cartes ou ne peut pas plus en poser additionalCards est vide
+                        //si il décide de ne pas pas poser plus de cartes ou ne peut pas plus en poser, additionalCards est vide
 
                         //je ne sait pas si chooseAdditionalCards peut retourner une valeur null ou vide donc je teste les deux
                         //en faisant attention de vérifier dabord que ce n'est pas null pour ne pas lancer d exception
                         if(additionalCards == null || additionalCards.size() == 0){
                             Game.infoToAll(players, currInf.didNotClaimRoute(routeDésirée));
                         }
-                        else Game.infoToAll(players, currInf.claimedRoute(routeDésirée,initialCards.union(additionalCards))); //info la route a été prise par le joueur
+                        
+                      //info la route a été prise par le joueur
+                        else Game.infoToAll(players, currInf.claimedRoute(routeDésirée,initialCards.union(additionalCards)));
 
-                        gameState = (additionalCards == null || additionalCards.size() == 0)? gameState :  gameState.withClaimedRoute(routeDésirée, initialCards.union(additionalCards)) ;
+                        /**si le joueur ne rajoute pas de cartes alors il garde toutes ses cartes et saute son tour (gameState ne change pas) 
+                         * sinon on lui retir ses cartes et il prend possession de la route
+                         * */
+                        gameState = (additionalCards == null || additionalCards.size() == 0)? gameState :  
+                            gameState.withClaimedRoute(routeDésirée, initialCards.union(additionalCards)) ;
                     }
+                    
                     //si le joueur n a pas de cartes additionnelles à poser alors il s'empare de la route
                     else if(additionalCardsCount==0) {
                         Game.infoToAll(players, currInf.claimedRoute(routeDésirée,initialCards)); //info la route a été prise par le joueur
                         gameState = gameState.withClaimedRoute(routeDésirée, initialCards);
 
                     }
-
-                    //ce else n'est pas utile si on ne met pas (possibleAdditionalCards.size()!=0) comme condition dans le if
+                    
                     else {
                         //la route n est pas rajouté car le joueur n a pas les cartes additionelles
                         Game.infoToAll(players, currInf.didNotClaimRoute(routeDésirée));
 
                     }
                 }
-                else {  // pas un tunnel donc il faut seulement prendre le controle de la route
+                
+                /**La route n'est pas un tunnel donc il faut seulement prendre le controle de la route*/
+                else {
                     Game.infoToAll(players, currInf.claimedRoute(routeDésirée, initialCards)); //info la route a été prise par le joueur
                     gameState = gameState.withClaimedRoute(routeDésirée, initialCards);
                 }
             }
 
+            //Lorsque le dernier tour commence, l'info est passé aux deux joueurs
             if(gameState.lastTurnBegins()) {
                 Game.infoToAll(players, currInf.lastTurnBegins(gameState.currentPlayerState().carCount()));
             }
