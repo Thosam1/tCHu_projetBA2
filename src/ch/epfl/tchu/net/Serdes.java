@@ -21,28 +21,15 @@ import java.util.Base64;
 
 public final class Serdes {
 
-//    public static final Map<List<Object>, Serde<Object>> mapEnumerations;
     
     public static final Serde<Integer> serdeInt = Serde.of(
             i -> Integer.toString(i),
             Integer::parseInt);
-    /*
-    public static final Serde<String> serdeString = Serde.of(
-            i -> Base64.getEncoder().encodeToString((byte[]) i), 
-            j -> Base64.getDecoder().decode(j));*/
     
-    //TODO A verifier
-    public static final Serde<String> serdeString = new Serde<String>() {
-        @Override
-        public String serialize(String objet) {
-            return Base64.getEncoder().encodeToString(objet.getBytes());
-        }
-        @Override
-        public String deserialize(String string) {
-            return Base64.getDecoder().decode(string).toString();            
-        }
-        
-    };
+    public static final Serde<String> serdeString = Serde.of(
+            i -> Base64.getEncoder().encodeToString(i.getBytes()), 
+            j -> Base64.getDecoder().decode(j).toString());
+    
     
     
     public static final Serde<PlayerId> serdePlayerId = Serde.oneOf(PlayerId.ALL);
