@@ -77,10 +77,7 @@ public final class Info {
      */
     public static String draw(List<String> playerNames, int points) {
         Preconditions.checkArgument(playerNames.size() == 2);
-
-        String bothNames = "";
-        bothNames = playerNames.get(0) + StringsFr.AND_SEPARATOR + playerNames.get(1);
-
+        String bothNames = playerNames.get(0) + StringsFr.AND_SEPARATOR + playerNames.get(1);
         return String.format(StringsFr.DRAW, bothNames, points);
     }
 
@@ -96,12 +93,7 @@ public final class Info {
      * @return le message déclarant que le joueur a gardé le nombre de billets donné
      */
     public String keptTickets(int count) {
-        String s = "";
-        if(!(count == 0 || count == 1)){
-            s = "s";
-        }
         return String.format(StringsFr.KEPT_N_TICKETS, player, count, StringsFr.plural(count));
-
     }
 
     /**
@@ -116,10 +108,6 @@ public final class Info {
      * @return le message déclarant que le joueur a tiré le nombre donné de billets
      */
     public String drewTickets(int count) {
-        String s = "";
-        if(!(count == 0 || count == 1)){
-            s = "s";
-        }
         return String.format(StringsFr.DREW_TICKETS, player, count, StringsFr.plural(count));
     }
 
@@ -143,11 +131,7 @@ public final class Info {
      * @param cards
      * @return le message déclarant que le joueur s'est emparé de la route donnée au moyen des cartes données
      */
-    public String claimedRoute(Route route, SortedBag<Card> cards){ // ??   how does it work with lists ?
-        // Route name
-
-        // List of cards
-        String cardList = "";
+    public String claimedRoute(Route route, SortedBag<Card> cards){
         return String.format(StringsFr.CLAIMED_ROUTE, player, routeString(route), cardListString(cards));
     }
 
@@ -156,7 +140,7 @@ public final class Info {
      * @param initialCards
      * @return le message déclarant que le joueur désire s'emparer de la route en tunnel donnée en utilisant initialement les cartes données
      */
-    public String attemptsTunnelClaim(Route route, SortedBag<Card> initialCards){   // ??
+    public String attemptsTunnelClaim(Route route, SortedBag<Card> initialCards){
         return String.format(StringsFr.ATTEMPTS_TUNNEL_CLAIM, player, routeString(route), cardListString(initialCards));
     }
 
@@ -171,8 +155,6 @@ public final class Info {
         if(additionalCost == 0) {
             temp = temp + String.format(StringsFr.NO_ADDITIONAL_COST);
         } else {
-            String s = "";
-            if(additionalCost > 1){s = "s";}
             temp = temp + String.format(StringsFr.SOME_ADDITIONAL_COST, additionalCost, StringsFr.plural(additionalCost));
         }
         return temp;
@@ -193,10 +175,6 @@ public final class Info {
      */
     public String lastTurnBegins(int carCount){
         Preconditions.checkArgument(carCount <= 2);
-        String s = "";
-        if(!(carCount == 0 || carCount == 1)){
-            s = "s";
-        }
         return String.format(StringsFr.LAST_TURN_BEGINS, player, carCount, StringsFr.plural(carCount));
 
     }
@@ -205,7 +183,7 @@ public final class Info {
      * @param longestTrail
      * @return le message déclarant que le joueur obtient le bonus de fin de partie grâce au chemin donné, qui est le plus long, ou l'un des plus longs
      */
-    public String getsLongestTrailBonus(Trail longestTrail){ // ??? EN_DASH_SEPARATOR ?
+    public String getsLongestTrailBonus(Trail longestTrail){
         String trailStations = longestTrail.station1() + StringsFr.EN_DASH_SEPARATOR + longestTrail.station2();
         return String.format(StringsFr.GETS_BONUS, player, trailStations);
     }
@@ -216,10 +194,6 @@ public final class Info {
      * @return le message déclarant que le joueur remporte la partie avec le nombre de points donnés, son adversaire n'en ayant obtenu que loserPoints
      */
     public String won(int points, int loserPoints){
-        String firstS = "";
-        String secondS = "";
-        if(points>1){firstS = "s";}
-        if(loserPoints>1){secondS = "s";}
         return String.format(StringsFr.WINS, player, points,StringsFr.plural(points), loserPoints, StringsFr.plural(loserPoints));
 
     }
@@ -250,14 +224,9 @@ public final class Info {
             }else{
                 cardList = cardList + n + " " + cardName(c, n) + ", ";
             }
-
             i += 1;
         }
         return cardList;
     }
-
-//    private static String trailString(Trail trail){
-//
-//    }
 
 }
