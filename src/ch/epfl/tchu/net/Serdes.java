@@ -19,6 +19,11 @@ import ch.epfl.tchu.game.Ticket;
 import java.util.ArrayList;
 import java.util.Base64;
 
+/**
+ * Classe contenant des attributs static public qui permettent de serialiser ou deserialiser
+ * des messages (grace aux appels des méthodes serialize et deserialize qui sont spécifiques à chaque Serde)
+ * @author Aymeric de chillaz (326617)
+ * */
 public final class Serdes {
 
     

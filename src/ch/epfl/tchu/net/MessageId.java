@@ -2,7 +2,10 @@ package ch.epfl.tchu.net;
 
 import java.util.List;
 
-
+/**
+ * Enumeration désignant les messages que le serveur peut envoyer aux clients
+ * @author Aymeric de chillaz (326617)
+ * */
 public enum MessageId {
     //énumère les types de messages que le serveut peut envoyer aux clients
     //Correspondent directement aux méthodes de l'interface Player

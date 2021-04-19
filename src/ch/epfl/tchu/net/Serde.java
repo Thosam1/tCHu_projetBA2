@@ -9,6 +9,7 @@ import ch.epfl.tchu.SortedBag;
 
 /**
  * Interface générique qui représente le serializer-deserializer
+ * @author Aymeric de chillaz (326617)
     */
 public interface Serde<T> {
     //Une interface ne peut pas avoir des attributs à moins qu ils soient static
