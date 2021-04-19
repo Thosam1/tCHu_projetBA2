@@ -1,6 +1,7 @@
 package ch.epfl.tchu;
 
 import ch.epfl.tchu.game.*;
+import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
 
 import java.util.*;
 
@@ -11,6 +12,9 @@ import java.util.*;
  */
 
 public class SmartBot implements Player {
+
+    private final List<Integer> DIFFICULTY = List.of(0, 1, 2);  // ajouter dans la classe constante
+    private int difficulty = 1;
 
     private PlayerId id;
     private String name;
@@ -23,7 +27,7 @@ public class SmartBot implements Player {
     private int drawCards10TimesOutOf20 = 0;
 
     private int ticketTurn = 0;
-    private final int MAX_TICKET_TURN = 5;
+    private final int MAX_TICKET_TURN = 5;  // maximum de fois qu'on tire un ticket
 
     private final Random rng;
     // Toutes les routes de la carte
@@ -41,6 +45,7 @@ public class SmartBot implements Player {
     private SortedBag<Ticket> chosenInitialTickets = SortedBag.of();
 
     public SmartBot(long randomSeed, List<Route> allRoutes, PlayerId id, String name) {
+        //precondition bound pour la difficulté
         this.rng = new Random(randomSeed);
         this.allRoutes = List.copyOf(allRoutes);
         this.turnCounter = 0;
@@ -76,7 +81,7 @@ public class SmartBot implements Player {
 
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) { // communiquer les billets qu'il reçoit initialement
-        System.out.println("Pour " + name + ", voici les " + tickets.size() + " tickets reçu initialement : " + tickets.toList().toString());
+        System.out.println("Pour " + name + ", voici les " + tickets.size() + " tickets reçu initialement : " + tickets.toList().toString());               // choix stratégique possible...
 
         List<Ticket> allTicketList = tickets.toList();
         List<Ticket> ticketList = new ArrayList<>();
@@ -99,77 +104,49 @@ public class SmartBot implements Player {
 
 
     @Override
-    public TurnKind nextTurn() { // savoir quelle action le joueur courant désire effectuer parmi les trois possibles
+    public TurnKind nextTurn() {
         turnCounter += 1;
-        if (turnCounter > TURN_LIMIT)
-            throw new Error("Trop de tours joués !");
+        /**
+         *  décider l'action à effectuer parmi les trois possibles
+         */
 
-        // Détermine les routes dont ce joueur peut s'emparer
 
+        /**
+         *  Détermine les routes dont le bot peut s'emparer
+         */
         List<Route> claimableRoutes = new ArrayList<>();
-
         for(Route r : allRoutes){
             if(ownState.canClaimRoute(r) && !ownState.routes().contains(r) && !gameState.playerState(otherPlayerId).routes().contains(r)){    // avec le "contient" ???
                 claimableRoutes.add(r);
             }
         }
-        if(drawCards10TimesOutOf20 % 20 <=9) { // prends des tickets 10 tours d'affilées avant de tirer des cartes 10 tours d'affilées ?
+
+        /**
+         *  Le bot prends des cartes 10 tours d'affilées, pour avoir de quoi prendre des routes
+         */
+        if(drawCards10TimesOutOf20 % 20 <=9) {
             ++drawCards10TimesOutOf20;
             return TurnKind.DRAW_CARDS;
         }
         ++drawCards10TimesOutOf20;
+
+        /**
+         *  Ensuite le bot va se décider de quelle action faire entre 1) se saisir d'une route, tirer des cartes ou prendre un ticket
+         */
         if(!claimableRoutes.isEmpty()) {    // s'emparer d'une route
             System.out.println("    Le joueur : " + name + " va s'emparer d'une route");
 
-//            // choisir une route au hasard
-//            int routeIndex = rng.nextInt(claimableRoutes.size());
-//
-//            Route route = claimableRoutes.get(routeIndex);
-
-                // choisir une route en fonction des tickets    !!!!!!!!!!!
-            //version basique, juste regarder les gares et les tickets
-            Route route = ChMap.routes().get(4);    // or null - here overground one yellow
-            int maxPoints = -1000;   // because sometimes the ticket points is negative
-
-            List<Route> longestRoutes = new ArrayList<>();
-            int maxLength = 0;
-            for(Route r : claimableRoutes){ // to get the longest distance
-                if(maxLength < r.length()){
-                    maxLength = r.length();
-                }
-            }
-            for(Route r : claimableRoutes){
-                if(maxLength == r.length()){
-                    longestRoutes.add(r);
-                }
-            }
-            route = longestRoutes.get(0);
-
-            for(Route r : longestRoutes){
-                int curPoints = possibleTicketPoints(r);
-                maxPoints = (curPoints > maxPoints) ? curPoints : maxPoints;
-                route = (curPoints > maxPoints) ? r : route;
-            }
-
+            Route route = getNextRouteToClaim(difficulty, claimableRoutes);
             List<SortedBag<Card>> cards = ownState.possibleClaimCards(route);
 
-            if(cards.size() == 0){
-                // choisir une route au hasard
-                int routeIndex = rng.nextInt(claimableRoutes.size());
-                route = claimableRoutes.get(routeIndex);
-                cards = ownState.possibleClaimCards(route);
-            }
-
-            //TEST J aimerai des routes de longueurs différentes ce qui n est pas le cas avec rng = 1
-            System.out.println("    routesize: " + route.length());
             routeToClaim = route;
-//            System.out.println("Size : " + cards.size());
-            initialClaimCards = cards.get(0);   // get an error and size = 0
-
+            initialClaimCards = cards.get(0);   // get an error and size = 0    // TODO retourner les initialClaimCards en fonction de la difficulté (le bot décide quelles cartes il veut joueur, ex en regardant les couleurs des routes de ses tickets, ou du joueur adverse par exemple)
+            //TODO grosse diff entre (0) et (rng.nextInt(cards.size()))
             return TurnKind.CLAIM_ROUTE;
         } else {
-//            nextTurnKind = ((turnCounter)%3 == 0) ? TurnKind.DRAW_TICKETS : TurnKind.DRAW_CARDS;  // lol sans piocher des tickets on perd :(
-
+//            return DrawTicketOrCard(difficulty);
+//            nextTurnKind = ((turnCounter)%3 == 0) ? TurnKind.DRAW_TICKETS : TurnKind.DRAW_CARDS;  // lol en piochant trop de ticket on perd :(
+            //TODO selon la difficulté, différents behavior pour la pioche des tickets (checker si on possède plusieurs routes reliées par exemple et pas de ticket, (piocher seulement vers tour 15))
             if(gameState.canDrawTickets() && nextTurnKind == TurnKind.DRAW_TICKETS) {
                 System.out.println("    Le joueur : " + name + " va tirer des tickets");
                 nextTurnKind = TurnKind.DRAW_CARDS;
@@ -318,6 +295,98 @@ public class SmartBot implements Player {
         // now we should return the card with the most counts for this route
         return toReturn;
     }
+
+
+    /**
+     *      -   -   -   -   -   -   - Méthodes principales utilisées dans nextTurn  -   -   -   -   -   -   -   -   -   -   -
+     */
+
+    /**
+     * Le rôle est de retourner/choisir une route selon la difficulté voulue par le joueur
+     * @param difficulty
+     * @param claimableRoutes
+     * @return
+     */
+     private Route getNextRouteToClaim(int difficulty, List<Route> claimableRoutes){
+            Preconditions.checkArgument(DIFFICULTY.contains(difficulty));
+            Route route = ChMap.routes().get(4);    // or null - here overground one yellow
+
+            if(difficulty == 0){
+                /**
+                 *  here we just pick one random route in the claimable routes
+                 */
+                int routeIndex = rng.nextInt(claimableRoutes.size());
+                route = claimableRoutes.get(routeIndex);
+
+            }else if(difficulty == 1){
+                /**
+                 *  Içi on choisit la route qui rapporte le plus de points (en fonction des tickets détenus par le joueur) parmis les routes les plus longues qu'on peut saisir
+                 */
+                List<Route> longestRoutes = longestRoutesInList(claimableRoutes);
+                route = longestRoutes.get(rng.nextInt(longestRoutes.size()));   // choisit une route random parmi les plus longues
+                //TODO grosse diff entre (0) < rng.nextInt(longestRoutes.size())
+
+                /**
+                 *  Si une route pourrait rapporter plus de points (qui fait partie des tickets détenu par le joueur)
+                 */
+                int maxPoints = -1000;   // parce que parfois les points rapportés par les tickets sont négatif
+                for(Route r : longestRoutes){
+                    int curPoints = possibleTicketPoints(r);
+                    maxPoints = (curPoints > maxPoints) ? curPoints : maxPoints;
+                    route = (curPoints > maxPoints) ? r : route;
+                }
+
+            }else{
+                //TODO à faire le niveau 2 - hard
+
+                int routeIndex = rng.nextInt(claimableRoutes.size());
+                route = claimableRoutes.get(routeIndex);
+            }
+            return route;
+        }
+
+    private TurnKind DrawTicketOrCard(int difficulty){
+         if(difficulty == 0){
+             if(gameState.canDrawTickets() && nextTurnKind == TurnKind.DRAW_TICKETS) {
+                 System.out.println("    Le joueur : " + name + " va tirer des tickets");
+                 nextTurnKind = TurnKind.DRAW_CARDS;
+                 return TurnKind.DRAW_TICKETS;
+             }else{
+                 System.out.println("    Le joueur : " + name + " va tirer des cartes");
+                 nextTurnKind = (ticketTurn <= MAX_TICKET_TURN) ? TurnKind.DRAW_TICKETS : TurnKind.DRAW_CARDS;   // une tirer un maximum de 4 fois par partie
+                 return TurnKind.DRAW_CARDS;
+             }
+         }else if(difficulty == 1){
+             if(gameState.canDrawTickets() && nextTurnKind == TurnKind.DRAW_TICKETS) {
+                 System.out.println("    Le joueur : " + name + " va tirer des tickets");
+                 nextTurnKind = TurnKind.DRAW_CARDS;
+                 return TurnKind.DRAW_TICKETS;
+             }else{
+                 System.out.println("    Le joueur : " + name + " va tirer des cartes");
+                 nextTurnKind = (ticketTurn <= MAX_TICKET_TURN) ? TurnKind.DRAW_TICKETS : TurnKind.DRAW_CARDS;   // une tirer un maximum de 4 fois par partie
+                 return TurnKind.DRAW_CARDS;
+             }
+         }else{
+             if(gameState.canDrawTickets() && nextTurnKind == TurnKind.DRAW_TICKETS) {
+                 System.out.println("    Le joueur : " + name + " va tirer des tickets");
+                 nextTurnKind = TurnKind.DRAW_CARDS;
+                 return TurnKind.DRAW_TICKETS;
+             }else{
+                 System.out.println("    Le joueur : " + name + " va tirer des cartes");
+                 nextTurnKind = (ticketTurn <= MAX_TICKET_TURN) ? TurnKind.DRAW_TICKETS : TurnKind.DRAW_CARDS;   // une tirer un maximum de 4 fois par partie
+                 return TurnKind.DRAW_CARDS;
+             }
+         }
+    }
+
+    /**
+     *      -   -   -   -   -   -   - Méthodes secondaires utilisées dans nextTurn  -   -   -   -   -   -   -   -   -   -
+     */
+
+    /**
+     * @param route
+     * @return Le nombre de points que pourrait rapporter la route, si le joueur s'en empare
+     */
     private int possibleTicketPoints(Route route){
         List<Route> routes = new ArrayList<>(ownState.routes());
         routes.add(route);
@@ -339,16 +408,23 @@ public class SmartBot implements Player {
             ticketPoints += ticket.points(partition);
         }
         return ticketPoints;
-
     }
 
+
+    /**
+     *  ---------------------------------------
+     */
+
+    /**
+     * @param t
+     * @return Le nombre de points que rapporterait le ticket en fonction des routes détenus actuellement
+     */
     private int chooseTicketPoints(Ticket t){
         int idMax = -1;
         int ticketPoints = 0;
         for(Route r : ownState.routes()){
             idMax = Math.max(Math.max(r.station1().id(), r.station2().id()), idMax);
         }
-
         StationPartition.Builder builder = new StationPartition.Builder(idMax+1);
 
         for (Route r : ownState.routes()) {
@@ -357,6 +433,30 @@ public class SmartBot implements Player {
         StationPartition partition = builder.build();
         ticketPoints += t.points(partition);
         return ticketPoints;
+    }
+
+    /**
+     *  -   -   -   -   -   -   -   -   -   -   -   -   -   -   - Quelques méthodes utiles, pour rendre le code plus lisible en haut -   -   -   -   -   -   -   -
+     */
+
+    /**
+     * @param routeList
+     * @return Les routes les plus longues de la liste donnée
+     */
+    private List<Route> longestRoutesInList(List<Route> routeList){
+        List<Route> longestRoutes = new ArrayList<>(routeList);
+        int maxLength = 0;
+        for(Route r : routeList){ // to get the longest distance/length
+            if(maxLength < r.length()){
+                maxLength = r.length();
+            }
+        }
+        for(Route r : routeList){
+            if(maxLength == r.length()){
+                longestRoutes.add(r);
+            }
+        }
+        return longestRoutes;
     }
 
     // définir des getter pour voir à la fin de l'éxecution

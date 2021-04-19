@@ -48,7 +48,7 @@ public final class RemotePlayerProxy implements Player{
     private void messageOut(String messageId, String argument1, String argument2) {
         ArrayList<String> liste = new ArrayList<>();
         liste.add(messageId);
-        liste.add(argument1);
+        liste.add(argument1);   //TODO je pense que si argument2 vaut null par exemple, il y aura une nullpointer exception
         liste.add(argument2);
         
         //créé un stream à partir des trois String, retire les valeurs null et les join en mettant un espace au mileu
@@ -104,7 +104,7 @@ public final class RemotePlayerProxy implements Player{
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
         String argument1 = Serdes.serdePlayerId.serialize(ownId);
         String argument2 = Serdes.serdeListeOfString
-                .serialize(List.of(playerNames.get(PlayerId.PLAYER_1), 
+                .serialize(List.of(playerNames.get(PlayerId.PLAYER_1),  //TODO à revérifier comment on passe la map
                         playerNames.get(PlayerId.PLAYER_2)));
         
         this.messageOut(MessageId.INIT_PLAYERS.name(), argument1, argument2);
@@ -119,7 +119,7 @@ public final class RemotePlayerProxy implements Player{
 
     @Override
     public void updateState(PublicGameState newState, PlayerState ownState) {
-        String argument1 = Serdes.serdePublicGameState.serialize(newState);
+        String argument1 = Serdes.serdePublicGameState.serialize(newState); //TODO @1360 vérifier lastPlayer est ""
         String argument2 = Serdes.serdePlayerState.serialize(ownState);
         
         this.messageOut(MessageId.UPDATE_STATE.name(), argument1, argument2);
