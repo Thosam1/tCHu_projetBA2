@@ -7,11 +7,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.net.Socket;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import java.util.stream.Collectors;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Player;
@@ -42,16 +42,26 @@ public final class RemotePlayerProxy implements Player{
      * est que le premier est un type d'exception checked, le second pas.
      * 
      * @param messageId : l'identité du message (de type MessageId)
-     * @param string : la chaine de caractère à transmettre
+     * @param argument1 : la chaine de caractère correspondant au premier argument de la classe (peut etre null)
+     * @param argument2 : la chaine de caractère correspondant au deuxieme argument de la classe (peut aussi etre null)
      * */
-    private void messageOut(String string) {
+    private void messageOut(String messageId, String argument1, String argument2) {
+        ArrayList<String> liste = new ArrayList<>();
+        liste.add(messageId);
+        liste.add(argument1);
+        liste.add(argument2);
+        
+        //créé un stream à partir des trois String, retire les valeurs null et les join en mettant un espace au mileu
+        String string = liste.stream().filter(value -> value != null)
+                         .collect(Collectors.joining(" "));
+        
         try (BufferedWriter w =
                 new BufferedWriter(
                     new OutputStreamWriter(socket.getOutputStream(),
                                StandardCharsets.US_ASCII))) {
             
-            w.write(string);
-            w.write('\n');
+            //rajoute le string avec un retour à la ligne
+            w.write(string + '\n');
             w.flush();
             } catch (IOException e) {
             
@@ -84,10 +94,12 @@ public final class RemotePlayerProxy implements Player{
   * 1) les éventuels arguments de la méthode sont sérialisés individuellement au moyen des serdes écrits à l'étape précédente
   * 2) le texte du message est construit en séparant au moyen du caractère d'espacement les éléments suivants, dans l'ordre :
   *     MessageId, les arguments dans le meme ordre que la méthode les accepte, un retour à la ligne
-  * 3) le message est envoy sur le réseau via la méthode messageOut qui passe par la "prise"
+  * 3) le message est envoyé sur le réseau via la méthode messageOut qui passe par la "prise"
   * 4) si la méthode retourne une valeur, alors une ligne est lue grace à la méthode messageIn
   *     puis elle est déserialisée et retournée
   * */
+    
+    
     @Override
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
         String argument1 = Serdes.serdePlayerId.serialize(ownId);
@@ -95,19 +107,14 @@ public final class RemotePlayerProxy implements Player{
                 .serialize(List.of(playerNames.get(PlayerId.PLAYER_1), 
                         playerNames.get(PlayerId.PLAYER_2)));
         
-        String output = MessageId.INIT_PLAYERS.name() + " " + argument1 + " " + argument2;
-        
-        this.messageOut(output);
-        //est ce que je doit remettre un retour à la ligne si je le fait dans la méthode messageOut?
+        this.messageOut(MessageId.INIT_PLAYERS.name(), argument1, argument2);
     }
 
     @Override
     public void receiveInfo(String info) {
         String argument1 = Serdes.serdeString.serialize(info);
         
-        String output = MessageId.RECEIVE_INFO.name() + " " + argument1;
-        
-        this.messageOut(output);
+        this.messageOut(MessageId.RECEIVE_INFO.name(), argument1, null);
     }
 
     @Override
@@ -115,75 +122,52 @@ public final class RemotePlayerProxy implements Player{
         String argument1 = Serdes.serdePublicGameState.serialize(newState);
         String argument2 = Serdes.serdePlayerState.serialize(ownState);
         
-        String output = MessageId.UPDATE_STATE.name() + " " + argument1 + " " + argument2;
-        
-        this.messageOut(output);
+        this.messageOut(MessageId.UPDATE_STATE.name(), argument1, argument2);
     }
 
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
         String argument1 = Serdes.serdeSortedBagOfTicket.serialize(tickets);
         
-        String output = MessageId.SET_INITIAL_TICKETS.name() + " " + argument1;
-        
-        this.messageOut(output);
+        this.messageOut(MessageId.SET_INITIAL_TICKETS.name(), argument1, null);
     }
 
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {  
-        this.messageOut(MessageId.CHOOSE_INITIAL_TICKETS.name());
-        
-        String input = this.messageIn();
-        
-        return Serdes.serdeSortedBagOfTicket.deserialize(input);
+        this.messageOut(MessageId.CHOOSE_INITIAL_TICKETS.name(), null, null);
+        return Serdes.serdeSortedBagOfTicket.deserialize(this.messageIn());
     }
 
     @Override
     public TurnKind nextTurn() {
-        this.messageOut(MessageId.NEXT_TURN.name());
-        
-        String input = this.messageIn();
-        
-        return Serdes.serdeTurnKind.deserialize(input);
+        this.messageOut(MessageId.NEXT_TURN.name(), null, null);
+        return Serdes.serdeTurnKind.deserialize(this.messageIn());
     }
 
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
         String argument1 = Serdes.serdeSortedBagOfTicket.serialize(options);
-        String output = MessageId.CHOOSE_TICKETS.name() + " " + argument1;
         
-        this.messageOut(output);
-        
-        String input = this.messageIn();
-        
-        return Serdes.serdeSortedBagOfTicket.deserialize(input);
+        this.messageOut(MessageId.CHOOSE_TICKETS.name(), argument1, null);
+        return Serdes.serdeSortedBagOfTicket.deserialize(this.messageIn());
     }
 
     @Override
     public int drawSlot() {
-        this.messageOut(MessageId.DRAW_SLOT.name());
-        
-        String input = this.messageIn();
-        
-        return Serdes.serdeInt.deserialize(input);
+        this.messageOut(MessageId.DRAW_SLOT.name(), null, null);
+        return Serdes.serdeInt.deserialize(this.messageIn());
     }
 
     @Override
     public Route claimedRoute() {
-        this.messageOut(MessageId.ROUTE.name()); //est ce que ROUTE correspond à claimedRoute?
-
-        String input = this.messageIn();
-        
-        return Serdes.serdeRoute.deserialize(input);
+        this.messageOut(MessageId.ROUTE.name(), null, null);
+        return Serdes.serdeRoute.deserialize(this.messageIn());
     }
 
     @Override
     public SortedBag<Card> initialClaimCards() {
-        this.messageOut(MessageId.CARDS.name()); //est ce que CARDS correspond au initialClaimCards?
-        
-        String input = this.messageIn();
-        
-        return Serdes.serdeSortedBagOfCard.deserialize(input);
+        this.messageOut(MessageId.CARDS.name(), null, null);
+        return Serdes.serdeSortedBagOfCard.deserialize(this.messageIn());
     }
 
     @Override
@@ -191,12 +175,8 @@ public final class RemotePlayerProxy implements Player{
             List<SortedBag<Card>> options) {
         String argument1 = Serdes.serdeListeOfSortedBagOfCard.serialize(options);
         
-        String output = MessageId.CHOOSE_ADDITIONAL_CARDS.name() + " " + argument1;
-        this.messageOut(output);
-        
-        String input = this.messageIn();
-        
-        return Serdes.serdeSortedBagOfCard.deserialize(input);
+        this.messageOut(MessageId.CHOOSE_ADDITIONAL_CARDS.name(), argument1, null);
+        return Serdes.serdeSortedBagOfCard.deserialize(this.messageIn());
     }
     
 }
