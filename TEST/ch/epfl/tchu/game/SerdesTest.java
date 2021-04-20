@@ -9,17 +9,189 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SerdesTest {
     @Test
-    void PublicCardState(){
+    void PublicCardStateSerialize1(){
+        List<Card> fu = List.of(Card.of(Color.RED), Card.of(Color.WHITE), Card.of(Color.BLUE), Card.of(Color.BLACK), Card.of(Color.RED));
+        PublicCardState cs = new PublicCardState(fu, 30, 31);
+        String encoded = "6,7,2,0,6;30;31";
+        assertEquals(Serdes.serdePublicCardState.serialize(cs), encoded);
+    }
+    @Test
+    void PublicCardStateDeserialize1(){
+        String encoded = "6,7,2,0,6;30;31";
+        PublicCardState test = Serdes.serdePublicCardState.deserialize(encoded);
+
+        assertEquals(test.faceUpCards().size(), 5);
+        assertTrue(test.faceUpCards().contains(Card.of(Color.RED)));
+        assertTrue(test.faceUpCards().contains(Card.of(Color.BLACK)));
+
+        assertEquals(test.deckSize(), 30);
+        assertEquals(test.discardsSize(), 31);
 
     }
     @Test
-    void PublicPlayerState(){
+    void PublicCardStateSerialize2(){
+        PublicCardState cardStateTest1 = new PublicCardState(SortedBag.of(5,Card.BLUE).toList(),0,0);
+        PublicCardState cardStateTest2 = new PublicCardState(SortedBag.of(5,Card.BLUE).toList(), 5, 0);
+        PublicCardState cardStateTest3 = new PublicCardState(SortedBag.of(5,Card.BLUE).toList(), 0, 5);
+
+        String encoded1 = "2,2,2,2,2;0;0";
+        String encoded2 = "2,2,2,2,2;5;0";
+        String encoded3 = "2,2,2,2,2;0;5";
+
+        assertEquals(Serdes.serdePublicCardState.serialize(cardStateTest1), encoded1);
+        assertEquals(Serdes.serdePublicCardState.serialize(cardStateTest2), encoded2);
+        assertEquals(Serdes.serdePublicCardState.serialize(cardStateTest3), encoded3);
+    }
+    @Test
+    void PublicCardStateDeserialize2(){
+        String encoded1 = "2,2,2,2,2;0;0";
+        String encoded2 = "2,2,2,2,2;5;0";
+        String encoded3 = "2,2,2,2,2;0;5";
+
+        PublicCardState test1 = Serdes.serdePublicCardState.deserialize(encoded1);
+        PublicCardState test2 = Serdes.serdePublicCardState.deserialize(encoded2);
+        PublicCardState test3 = Serdes.serdePublicCardState.deserialize(encoded3);
+
+        assertEquals(test1.faceUpCards().size(), 5);
+        assertTrue(test1.faceUpCards().contains(Card.of(Color.BLUE)));
+        assertTrue(!test1.faceUpCards().contains(Card.of(Color.GREEN)));
+        assertEquals(test1.deckSize(), 0);
+        assertEquals(test1.discardsSize(), 0);
+
+        assertEquals(test2.faceUpCards().size(), 5);
+        assertTrue(test2.faceUpCards().contains(Card.of(Color.BLUE)));
+        assertTrue(!test2.faceUpCards().contains(Card.of(Color.GREEN)));
+        assertEquals(test2.deckSize(), 5);
+        assertEquals(test2.discardsSize(), 0);
+
+        assertEquals(test3.faceUpCards().size(), 5);
+        assertTrue(test3.faceUpCards().contains(Card.of(Color.BLUE)));
+        assertTrue(!test3.faceUpCards().contains(Card.of(Color.GREEN)));
+        assertEquals(test3.deckSize(), 0);
+        assertEquals(test3.discardsSize(), 5);
+    }
+
+    @Test
+    void PublicPlayerStateSerialize1(){
+        List<Route> rs1 = ChMap.routes().subList(0, 2);
+        PublicPlayerState test1 = new PublicPlayerState(10, 11, rs1);
+        PublicPlayerState test2 = new PublicPlayerState(20, 21, List.of());
+
+        String encoded1 = "10;11;0,1";
+        String encoded2 = "20;21";     //TODO Ici, check comment le codé sera avec une liste vide en dernier    - ou rajouter ; à la fin ???
+        assertEquals(encoded1, Serdes.serdePublicPlayerState.serialize(test1));
+        assertEquals(encoded2, Serdes.serdePublicPlayerState.serialize(test2));
+    }
+    @Test
+    void PublicPlayerStateDeserialize1(){
+        String encoded1 = "10;11;0,1";
+        String encoded2 = "20;21";     //TODO Ici, check comment le codé sera avec une liste vide en dernier
+        PublicPlayerState test1 = Serdes.serdePublicPlayerState.deserialize(encoded1);
+        PublicPlayerState test2 = Serdes.serdePublicPlayerState.deserialize(encoded2);
+
+        assertEquals(test1.ticketCount(), 10);
+        assertEquals(test1.cardCount(), 11);
+        assertEquals(test1.routes().size(), 2);
+
+        assertEquals(test2.ticketCount(), 20);
+        assertEquals(test2.cardCount(), 21);
+        assertEquals(test2.routes().size(), 0); //comment faire la diff entre un 0 et un null ??? en bas pour lastPlayer null etc.. ou liste vide ou pas de route
+
+    }
+    @Test
+    void PublicPlayerStateSerialize2(){
+        String encoded1 = "1;1;15";   // on fait séparément et pas la map toute seule ici
+        String encoded2 = "2;2;10,29";
+
+        int ticketCountPlayer1 = 1;
+        int cardCountPlayer1 = 1;
+        Route route1 = ChMap.routes().get(15);
+        List<Route> listeDeRoutes1 = List.of(route1);
+
+        int ticketCountPlayer2 = 2;
+        int cardCountPlayer2 = 2;
+        Route route2 = ChMap.routes().get(10);
+        List<Route> listeDeRoutes2 = new ArrayList<>();
+        listeDeRoutes2.add(route2);
+        listeDeRoutes2.add(ChMap.routes().get(29));
+
+        PublicPlayerState test1 = new PublicPlayerState(ticketCountPlayer1, cardCountPlayer1, listeDeRoutes1);
+        PublicPlayerState test2 = new PublicPlayerState(ticketCountPlayer2, cardCountPlayer2, listeDeRoutes2);
+
+        assertEquals(encoded1, Serdes.serdePublicPlayerState.serialize(test1));
+        assertEquals(encoded2, Serdes.serdePublicPlayerState.serialize(test2));
+    }
+    @Test
+    void PublicPlayerStateDeserialize2(){
+        String encoded1 = "1;1;15";   // on fait séparément et pas la map toute seule ici
+        String encoded2 = "2;2;10,29";
+        PublicPlayerState test1 = Serdes.serdePublicPlayerState.deserialize(encoded1);
+        PublicPlayerState test2 = Serdes.serdePublicPlayerState.deserialize(encoded2);
+
+        assertEquals(test1.ticketCount(), 1);
+        assertEquals(test1.cardCount(), 1);
+        assertEquals(test1.routes().size(), 1);
+        assertEquals(ChMap.routes().get(0), test1.routes().get(0));
+
+        assertEquals(test2.ticketCount(), 2);
+        assertEquals(test2.cardCount(), 2);
+        assertEquals(test2.routes().size(), 2);
+        assertEquals(ChMap.routes().get(10), test1.routes().get(0));
+        assertEquals(ChMap.routes().get(29), test1.routes().get(1));
 
     }
 
     @Test
-    void PlayerState(){
+    void PlayerStateSerialize(){
+        String encoded1 = "0;0,2,3,3,3,8;2,8";
 
+        SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets().get(0));
+        List<Card> cardList = new ArrayList<>();
+        cardList.add(Card.of(Color.GREEN)); // 3 greens
+        cardList.add(Card.of(Color.GREEN));
+        cardList.add(Card.of(Color.GREEN));
+        cardList.add(Card.of(Color.BLUE));  // 1 blue
+        cardList.add(Card.of(Color.BLACK)); // 1 black
+        cardList.add(Card.of(null));    // locomotive
+        SortedBag<Card> cards = SortedBag.of(cardList);
+        List<Route> routes = new ArrayList<>();
+        routes.add(ChMap.routes().get(2));
+        routes.add(ChMap.routes().get(8));
+
+        PlayerState test = new PlayerState(tickets, cards, routes);
+
+        assertEquals(encoded1, Serdes.serdePlayerState.serialize(test));
+    }
+    @Test
+    void PlayerStateDeserialize(){
+        String encoded1 = "0;0,2,3,3,3,8;2,8";
+
+        SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets().get(0));
+
+        List<Card> cardList = new ArrayList<>();
+        cardList.add(Card.of(Color.GREEN)); // 3 greens
+        cardList.add(Card.of(Color.GREEN));
+        cardList.add(Card.of(Color.GREEN));
+        cardList.add(Card.of(Color.BLUE));  // 1 blue
+        cardList.add(Card.of(Color.BLACK)); // 1 black
+        cardList.add(Card.of(null));    // locomotive
+        SortedBag<Card> cards = SortedBag.of(cardList); //-> in order so 0 2 333 8
+
+        List<Route> routes = new ArrayList<>();
+        routes.add(ChMap.routes().get(2));
+        routes.add(ChMap.routes().get(8));
+
+        PlayerState test = Serdes.serdePlayerState.deserialize(encoded1);
+
+        assertEquals(test.tickets().size(), 1);
+        assertEquals(ChMap.tickets().get(0), test.tickets().get(0));
+
+        assertEquals(6, cardList.size());
+        assertTrue(test.cards().contains(cards));
+
+        assertEquals(2, test.routes().size());
+        assertEquals(ChMap.routes().get(2), test.routes().get(0));
+        assertEquals(ChMap.routes().get(8), test.routes().get(8));
     }
 
     // j'ai pas fait ceux du haut parce que ça reprends à peu près tout ce qui est en dessous
