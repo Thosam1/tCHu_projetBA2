@@ -46,11 +46,10 @@ public final class RemotePlayerClient {
      *  si cette méthode retourne un résultat, le sérialise pour le renvoyer au mandataire en réponse
      */
     public void run(){
-        while(true) { //TODO bonne façon ?  // loop quasi infinie
 
+        while(true) { //TODO bonne façon ?  // loop quasi infinie   -> while après bufferedReader || Soit while(true) et if(line == null){break;} Soit on met la while avec la condition directement dans le try
 
-            try (Socket s = new Socket("localhost_" + name, port);
-//             Socket s = first_Socket.accept();    //TODO faut-il mettre une accept içi ? ou une  ServerSocket ??
+            try (Socket s = new Socket(name, port);
                  BufferedReader r =
                          new BufferedReader(
                                  new InputStreamReader(s.getInputStream(),
@@ -59,34 +58,22 @@ public final class RemotePlayerClient {
                          new BufferedWriter(
                                  new OutputStreamWriter(s.getOutputStream(),
                                          StandardCharsets.US_ASCII))) {
-                if (r.readLine() == null) {
+                String line = r.readLine();
+                if (line == null) {
                     break;
                 }
 
-                String[] textSplit = r.readLine().split(Pattern.quote(" "), -1);//TODO should we assume it won't be longer than a line ???
-//            Preconditions.checkArgument(textSplit.length == 3); //TODO à vérifier
+                String[] textSplit = line.split(Pattern.quote(" "), -1);//TODO should we assume it won't be longer than a line ??? Yes
                 MessageId message = MessageId.valueOf(textSplit[0]);
-
-                String arg1 = textSplit[1];
-                String arg2 = textSplit[2];
+                String arg1 = (textSplit.length >= 2) ? textSplit[1] : null;
+                String arg2 = (textSplit.length >= 3) ? textSplit[2] : null;    //ou les remettre un par un dans chaque cases -
 
                 switch (message) {
-//                    String arg1 = (textSplit.length >= 2) ? textSplit[1] : null;
-//                    String arg2 = (textSplit.length >= 3) ? textSplit[2] : null;
-                    // ---- //TODO j'arrive pas à résoudre le problème avec *variable might not have been initialized*
-//                String arg1 = "nice";
-//                String arg2 = "nice";
-//                arg1 = (textSplit.length >= 2) ? textSplit[1] : null;
-//                arg2 = (textSplit.length == 3) ? textSplit[2] : null;
-//                if(arg1.isEmpty() || arg2.isEmpty()){throw new NullPointerException();}
                     case INIT_PLAYERS:
                         PlayerId ownId = Serdes.serdePlayerId.deserialize(arg1);
-                        Map<PlayerId, String> playerNames = (Map<PlayerId, String>) Serdes.serdeListeOfString.deserialize(arg2);    //TODO à vérifier / comment on passe la map
                         List<String> names = Serdes.serdeListeOfString.deserialize(arg2);
-//                        PlayerId first = (names.indexOf(name) == 0) ? ownId : PlayerId.valueOf()
-//                        Map<PlayerId, String> playerNames = Map.of(PlayerId.valueOf(names.get(0)), names.get(0), PlayerId.valueOf(names.get(1)), names.get(1));
+                        Map<PlayerId, String> playerNames = Map.of(PlayerId.valueOf(names.get(0)), names.get(0), PlayerId.valueOf(names.get(1)), names.get(1));
                         player.initPlayers(ownId, playerNames);
-                        //TODO faut-il renvoyer qqch comme "action accomplie avec succès" ??
                     case RECEIVE_INFO:
                         String info = Serdes.serdeString.deserialize(arg1);
                         player.receiveInfo(info);
@@ -100,7 +87,7 @@ public final class RemotePlayerClient {
                     case CHOOSE_INITIAL_TICKETS:
                         SortedBag<Ticket> initChosenTickets = player.chooseInitialTickets();
                         String encoded = Serdes.serdeSortedBagOfTicket.serialize(initChosenTickets);
-                        w.write(encoded + '\n');    // TODO retour à la ligne nécessaire ?
+                        w.write(encoded + '\n');    // TODO retour à la ligne nécessaire ? Oui
                         w.flush();
                     case NEXT_TURN:
                         Player.TurnKind turn = player.nextTurn();
