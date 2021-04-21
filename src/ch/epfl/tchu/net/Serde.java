@@ -59,11 +59,14 @@ public interface Serde<T> {
     public static <T> Serde<T> oneOf(List<T> liste){
         return new Serde<T>() {
             public String serialize(T objet) {
-                return String.valueOf(liste.indexOf(objet));
+                //retourne "" si objet est null
+                return objet == null ? "" : String.valueOf(liste.indexOf(objet));
                 //trouve l index de l'objet dans la liste et le retourne en String
             }
             public T deserialize(String string) {
-                return liste.get(Integer.parseInt(string));
+                //retourne null si string est vide
+  //              System.out.println(string == "");
+                return string == "" ? null : liste.get(Integer.parseInt(string));
                 //retourne la valeur dans liste qui correspond à l index stocké dans string sous la forme de String
             }
         };
