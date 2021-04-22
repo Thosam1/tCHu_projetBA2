@@ -65,9 +65,8 @@ public interface Serde<T> {
             }
             public T deserialize(String string) {
                 //retourne null si string est vide
-  //              System.out.println(string == "");
-                return string == "" ? null : liste.get(Integer.parseInt(string));
-                //retourne la valeur dans liste qui correspond à l index stocké dans string sous la forme de String
+                return string.equals("") ? null : liste.get(Integer.parseInt(string));
+                //sinon, retourne l'élément stocké dans liste à l'index string
             }
         };
     }

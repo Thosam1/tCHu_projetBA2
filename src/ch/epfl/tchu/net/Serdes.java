@@ -141,8 +141,6 @@ public final class Serdes {
         @Override
         public PublicGameState deserialize(String string) {
             String[] stringListe = string.split(Pattern.quote(":"), -1);
-            System.out.println(stringListe[5] == "");
-            System.out.println(stringListe[5]);
             
             int ticketsCount = serdeInt.deserialize(stringListe[0]);
             PublicCardState cardState = serdePublicCardState.deserialize(stringListe[1]);
