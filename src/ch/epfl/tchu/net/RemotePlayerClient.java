@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  */
 public final class RemotePlayerClient {
     final Player player;
-    final String name;
+    final String name;  //name of the client server eg "localhost"
     final int port;
 
 //    final Socket s;
@@ -72,7 +72,7 @@ public final class RemotePlayerClient {
                     case INIT_PLAYERS:
                         PlayerId ownId = Serdes.serdePlayerId.deserialize(arg1);
                         List<String> names = Serdes.serdeListeOfString.deserialize(arg2);
-                        Map<PlayerId, String> playerNames = Map.of(PlayerId.valueOf(names.get(0)), names.get(0), PlayerId.valueOf(names.get(1)), names.get(1));
+                        Map<PlayerId, String> playerNames = Map.of(PlayerId.PLAYER_1, names.get(0), PlayerId.PLAYER_2, names.get(1));   // logically first name is the id of player number one, and the second name is the player number two.
                         player.initPlayers(ownId, playerNames);
                     case RECEIVE_INFO:
                         String info = Serdes.serdeString.deserialize(arg1);

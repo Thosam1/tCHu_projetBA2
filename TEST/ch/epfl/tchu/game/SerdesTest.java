@@ -156,18 +156,14 @@ public class SerdesTest {
         assertEquals(test1.cardCount(), 1);
         assertEquals(test1.routes().size(), 1);
         
-        //TEST
-        System.out.println(Serdes.serdeRoute.deserialize("15").id());
-        System.out.println(test1.routes().get(0).id());
         
-        
-        assertEquals(ChMap.routes().get(0).id(), test1.routes().get(0).id());//on compare les ids sinon ça retourne faux
+        assertEquals(ChMap.routes().get(15).id(), test1.routes().get(0).id());//on compare les ids sinon ça retourne faux
         //pourquoi ChMap.routes().get(0) et pas get(15)
         assertEquals(test2.ticketCount(), 2);
         assertEquals(test2.cardCount(), 2);
         assertEquals(test2.routes().size(), 2);
-        assertEquals(ChMap.routes().get(10).id(), test1.routes().get(0).id());//on compare les ids sinon ça retourne faux
-        assertEquals(ChMap.routes().get(29).id(), test1.routes().get(1).id());
+        assertEquals(ChMap.routes().get(10).id(), test2.routes().get(0).id());//on compare les ids sinon ça retourne faux
+        assertEquals(ChMap.routes().get(29).id(), test2.routes().get(1).id());
 
     }
 
@@ -226,7 +222,6 @@ public class SerdesTest {
         assertEquals(ChMap.routes().get(8), test.routes().get(1));
     }
 
-    // j'ai pas fait ceux du haut parce que ça reprends à peu près tout ce qui est en dessous
 
     @Test
     void PublicGameStateTestSerialise(){
