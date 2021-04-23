@@ -111,7 +111,9 @@ public final class RemotePlayerProxy implements Player{
         String argument2 = Serdes.serdeListeOfString
                 .serialize(List.of(playerNames.get(PlayerId.PLAYER_1),
                         playerNames.get(PlayerId.PLAYER_2)));
-        
+//        System.out.println("player1 Id " + playerNames.get(PlayerId.PLAYER_1));
+            //TODO à revérifier comment on passe la map
+
         this.messageOut(MessageId.INIT_PLAYERS.name(), argument1, argument2);
     }
 

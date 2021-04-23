@@ -1,5 +1,6 @@
 package ch.epfl.tchu.net;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -32,11 +33,19 @@ public final class Serdes {
             Integer::parseInt);
     
     public static final Serde<String> serdeString = Serde.of(
-            i -> Base64.getEncoder().encodeToString(i.getBytes()), 
-            j -> Base64.getDecoder().decode(j).toString());
-    
-    
-    
+            i -> Base64.getEncoder().encodeToString(i.getBytes(StandardCharsets.UTF_8)), //TODO écrit à la série 7, 3.3.1 mettre StandardCharsets.UTF_8 dans la méthode getByte
+//            j -> Base64.getDecoder().decode(j).toString());
+            j -> (j.length() >= 2) ? new String(Base64.getDecoder().decode(j), java.nio.charset.StandardCharsets.UTF_8) : null);
+//            j -> {
+//                System.out.println(j);
+//                return (j.length() >= 2) ? new String(Base64.getDecoder().decode(j), java.nio.charset.StandardCharsets.UTF_8) : null;
+//            });
+//            j -> {
+//                System.out.println(j);
+//                return new String(Base64.getDecoder().decode(j), java.nio.charset.StandardCharsets.UTF_8);
+//            });
+
+
     public static final Serde<PlayerId> serdePlayerId = Serde.oneOf(PlayerId.ALL);
     public static final Serde<TurnKind> serdeTurnKind = Serde.oneOf(TurnKind.ALL);
     public static final Serde<Card> serdeCard = Serde.oneOf(Card.ALL);

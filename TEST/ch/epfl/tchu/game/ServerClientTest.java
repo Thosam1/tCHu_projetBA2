@@ -40,6 +40,9 @@ public class ServerClientTest {
             System.out.println("Client done!");
         }
 
+        //les noms ils sont bien en String avant de les encoder
+        //les noms décodés sont décodés en leur références et pas en String
+
         private final static class TestPlayer implements Player {
             @Override
             public void initPlayers(PlayerId ownId,

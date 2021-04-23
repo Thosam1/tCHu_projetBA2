@@ -60,7 +60,7 @@ public class GameTest {
      * 3) sinon, choisir au hasard une route dont il peut s’emparer, et s’en emparer.
      */
 
-    private final class TestPlayer implements Player {
+    public static final class TestPlayer implements Player {
 
         private PlayerId id;
         private String name;
