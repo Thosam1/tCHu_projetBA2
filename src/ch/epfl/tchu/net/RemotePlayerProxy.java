@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Player;
@@ -26,11 +27,21 @@ import ch.epfl.tchu.game.Ticket;
  * @author Aymeric de chillaz (326617)
  * */
 public final class RemotePlayerProxy implements Player{
-    private Socket socket;
+    private Socket socket; //pour l'instant on se sert que de socket dans le constructeur
+    BufferedWriter w;
+    BufferedReader r;
     
-    public RemotePlayerProxy(Socket socket) {
+    public RemotePlayerProxy(Socket socket) throws IOException {
         this.socket = socket;
-    }
+        w = new BufferedWriter(
+                new OutputStreamWriter(socket.getOutputStream(),
+                        StandardCharsets.US_ASCII));
+        r = new BufferedReader(
+                new InputStreamReader(socket.getInputStream(),
+                        StandardCharsets.US_ASCII));
+            
+                
+        }
     
     /**
      * méthode privée qui permet d'envoyer un message étant donné son identité
@@ -48,21 +59,18 @@ public final class RemotePlayerProxy implements Player{
     private void messageOut(String messageId, String argument1, String argument2) {
         ArrayList<String> liste = new ArrayList<>();
         liste.add(messageId);
-        liste.add(argument1);   //TODO je pense que si argument2 vaut null par exemple, il y aura une nullpointer exception
+        liste.add(argument1);   //on ajoute argument1 et argument2 meme si ils sont null
         liste.add(argument2);
         
         //créé un stream à partir des trois String, retire les valeurs null et les join en mettant un espace au mileu
         String string = liste.stream().filter(value -> value != null)
                          .collect(Collectors.joining(" "));
         
-        try (BufferedWriter w =
-                new BufferedWriter(
-                    new OutputStreamWriter(socket.getOutputStream(),
-                               StandardCharsets.US_ASCII))) {
-            
+        try {
             //rajoute le string avec un retour à la ligne
             w.write(string + '\n');
             w.flush();
+            
             } catch (IOException e) {
             
                 throw new UncheckedIOException(e);
@@ -75,14 +83,11 @@ public final class RemotePlayerProxy implements Player{
      * catch à la fin de la méthode a pour but d'attraper les exceptions comme décrit dans la méthode messageOut.
      * */
     private String messageIn() {
-        try (BufferedReader r =
-                new BufferedReader(
-                    new InputStreamReader(socket.getInputStream(),
-                            StandardCharsets.US_ASCII))){
-            
+        try {    
             return r.readLine();
             
             } catch (IOException e) {
+                
                 throw new UncheckedIOException(e);
                }
         }
@@ -104,7 +109,7 @@ public final class RemotePlayerProxy implements Player{
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
         String argument1 = Serdes.serdePlayerId.serialize(ownId);
         String argument2 = Serdes.serdeListeOfString
-                .serialize(List.of(playerNames.get(PlayerId.PLAYER_1),  //TODO à revérifier comment on passe la map
+                .serialize(List.of(playerNames.get(PlayerId.PLAYER_1),
                         playerNames.get(PlayerId.PLAYER_2)));
         
         this.messageOut(MessageId.INIT_PLAYERS.name(), argument1, argument2);
@@ -119,7 +124,7 @@ public final class RemotePlayerProxy implements Player{
 
     @Override
     public void updateState(PublicGameState newState, PlayerState ownState) {
-        String argument1 = Serdes.serdePublicGameState.serialize(newState); //TODO @1360 vérifier lastPlayer est ""
+        String argument1 = Serdes.serdePublicGameState.serialize(newState);
         String argument2 = Serdes.serdePlayerState.serialize(ownState);
         
         this.messageOut(MessageId.UPDATE_STATE.name(), argument1, argument2);
