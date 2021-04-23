@@ -59,7 +59,9 @@ public class SmartBot implements Player {
 
     @Override
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
+//        System.out.println(playerNames + "playerId 1 is : " + playerNames.get(PlayerId.PLAYER_1));
         System.out.println(id.name() + " name is " + name + "; playerNames have been communicated to this player, " + "those names are : " + Collections.singletonList(playerNames));
+        //TODO parfois c'est inversé mais ça change rien au fonctionnement du programme "{PLAYER_2=Aymeric, PLAYER_1=Thösam}playerId 1 is : Thösam"
         System.out.println(" -   -   -   -   -");
     }
 

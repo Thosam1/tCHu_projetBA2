@@ -19,16 +19,20 @@ public class ServerClientGameSimulationTest {
     public static final class TestServer {
         public static void main(String[] args) throws IOException {
             System.out.println("Starting server!");
+            Player player1;
+            Player player2;
             try (ServerSocket serverSocket = new ServerSocket(5108);        // Player1
                  Socket socket = serverSocket.accept()) {
                 Player playerProxy = new RemotePlayerProxy(socket);
+                player1 = new RemotePlayerProxy(socket);
 //                var playerNames = Map.of(PlayerId.PLAYER_1, "Thösam",
 //                        PlayerId.PLAYER_2, "Aymeric");
 //                playerProxy.initPlayers(PlayerId.PLAYER_1, playerNames);
             }
-            try (ServerSocket serverSocket = new ServerSocket(5109);        //Player2
+            try (ServerSocket serverSocket = new ServerSocket(5110);        //Player2
                  Socket socket = serverSocket.accept()) {
                 Player playerProxy = new RemotePlayerProxy(socket);
+                player2 = new RemotePlayerProxy(socket);
 //                var playerNames = Map.of(PlayerId.PLAYER_1, "Thösam",
 //                        PlayerId.PLAYER_2, "Aymeric");
 //                playerProxy.initPlayers(PlayerId.PLAYER_2, playerNames);
@@ -36,15 +40,23 @@ public class ServerClientGameSimulationTest {
 
             System.out.println("Server done!");
             System.out.println("Initializing the game  ...  ...");
+//            new SmartBot(1, ChMap.routes(), PlayerId.PLAYER_1, "Thösam")
+            Map<PlayerId, Player> players = Map.of(PlayerId.PLAYER_1, player1, PlayerId.PLAYER_2, player2);
 
-            Map<PlayerId, Player> players = Map.of(PlayerId.PLAYER_1, new SmartBot(1, ChMap.routes(), PlayerId.PLAYER_1, "Thösam"), PlayerId.PLAYER_2, new GameTest.TestPlayer(1, ChMap.routes(), PlayerId.PLAYER_2, "Aymeric"));
             Map<PlayerId, String> playerNames = Map.of(PlayerId.PLAYER_1, "Thösam", PlayerId.PLAYER_2, "Aymeric");
             SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets());
             Random rng = new Random(1);
 
+            /**
+             *  1) socket
+             *  2) serialization - déserialisation -> print
+             *  3) retourner les bonnes valeurs - à partir de la dernière étape où ça a fonctionné
+             *  4) game.play -> petits à petits
+             *  5) expliquer le code à ma petite soeur
+             *  6) imprimer partout, à tous les niveaux
+             */
             System.out.println("Launching the game : ");
             Game.play(players, playerNames, tickets, rng);
-
         }
     }
 
@@ -52,7 +64,7 @@ public class ServerClientGameSimulationTest {
         public static void main(String[] args) {
             System.out.println("Starting client!");
             RemotePlayerClient playerClient =
-                    new RemotePlayerClient(new TestPlayer(),    //TODO on devrait mettre la classe SmartBot à la place de TestPlayer() ???
+                    new RemotePlayerClient(new SmartBot(1, ChMap.routes(), PlayerId.PLAYER_1, "Thösam"),    //TODO on devrait mettre la classe SmartBot à la place de TestPlayer() ???
                             "localhost",
                             5108);
             playerClient.run();
@@ -123,9 +135,9 @@ public class ServerClientGameSimulationTest {
             public static void main(String[] args) {
                 System.out.println("Starting client!");
                 RemotePlayerClient playerClient =
-                        new RemotePlayerClient(new ServerClientGameSimulationTest.TestClient1.TestPlayer(),
+                        new RemotePlayerClient(new GameTest.TestPlayer(1, ChMap.routes(), PlayerId.PLAYER_2, "Aymeric"),
                                 "localhost",
-                                5109);
+                                5110);
                 playerClient.run();
                 System.out.println("Client done!");
             }

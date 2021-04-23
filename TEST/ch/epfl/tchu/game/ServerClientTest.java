@@ -18,7 +18,7 @@ public class ServerClientTest {
     public static final class TestServer {
         public static void main(String[] args) throws IOException {
             System.out.println("Starting server!");
-            try (ServerSocket serverSocket = new ServerSocket(5108);
+            try (ServerSocket serverSocket = new ServerSocket(5110);
                  Socket socket = serverSocket.accept()) {
                 Player playerProxy = new RemotePlayerProxy(socket);
                 var playerNames = Map.of(PlayerId.PLAYER_1, "Thösam",
@@ -35,7 +35,7 @@ public class ServerClientTest {
             RemotePlayerClient playerClient =
                     new RemotePlayerClient(new TestPlayer(),
                             "localhost",
-                            5108);
+                            5110);
             playerClient.run();
             System.out.println("Client done!");
         }
@@ -49,6 +49,7 @@ public class ServerClientTest {
                                     Map<PlayerId, String> names) {
                 System.out.printf("ownId: %s\n", ownId);
                 System.out.printf("playerNames: %s\n", names);
+                System.out.println(" Teacher Tests Finished -  -  -  -  -  -");
             }
 
             @Override
