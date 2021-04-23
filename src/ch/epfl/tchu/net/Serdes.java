@@ -35,6 +35,7 @@ public final class Serdes {
     public static final Serde<String> serdeString = Serde.of(
             i -> Base64.getEncoder().encodeToString(i.getBytes(StandardCharsets.UTF_8)), //TODO écrit à la série 7, 3.3.1 mettre StandardCharsets.UTF_8 dans la méthode getByte
 //            j -> Base64.getDecoder().decode(j).toString());
+//            j -> new String(Base64.getDecoder().decode(j), StandardCharsets.UTF_8));
             j -> (j.length() >= 2) ? new String(Base64.getDecoder().decode(j), java.nio.charset.StandardCharsets.UTF_8) : null);
 //            j -> {
 //                System.out.println(j);

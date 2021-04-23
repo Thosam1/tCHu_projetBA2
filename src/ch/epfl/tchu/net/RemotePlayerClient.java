@@ -67,6 +67,10 @@ public final class RemotePlayerClient {
                 MessageId message = MessageId.valueOf(textSplit[0]);
                 String arg1 = (textSplit.length >= 2) ? textSplit[1] : null;
                 String arg2 = (textSplit.length >= 3) ? textSplit[2] : null;    //ou les remettre un par un dans chaque cases -
+//                System.out.println("message Id Updtate state example " + MessageId.valueOf("UPDATE_STATE"));
+                System.out.println("messageId arg0 : " + message);
+                System.out.println("arg 1 : " + arg1);
+                System.out.println("arg 2 : " + arg2);
 
                 switch (message) {
                     case INIT_PLAYERS:

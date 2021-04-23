@@ -110,6 +110,9 @@ public final class RemotePlayerProxy implements Player{
             //TODO à revérifier comment on passe la map
 
         this.messageOut(MessageId.INIT_PLAYERS.name(), argument1, argument2);
+        System.out.println("In player proxy, message sent : ");
+        System.out.println("argument 1 : " + argument1);
+        System.out.println("own Id is : " + ownId);
     }
 
     @Override
