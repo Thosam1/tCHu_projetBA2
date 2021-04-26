@@ -1,6 +1,13 @@
 package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
+import ch.epfl.tchu.game.Card;
+import javafx.scene.Node;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+
+import java.util.List;
 
 class MapViewCreator {
     Pane pane;
@@ -23,6 +30,6 @@ class MapViewCreator {
     @FunctionalInterface
     interface CardChooser {
       void chooseCards(List<SortedBag<Card>> options,
-               ChooseCardsHandler handler);
+                       ChooseCardsHandler handler);
     }
 }
