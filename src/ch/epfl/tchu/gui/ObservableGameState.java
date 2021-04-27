@@ -98,6 +98,7 @@ public class ObservableGameState {
           }
         
         //TODO modif routeOwners
+        createRouteOwners(routeOwners);
 
         for(PlayerId id: PlayerId.ALL) {
             PublicPlayerState state = publicGameState.playerState(id);
@@ -111,17 +112,17 @@ public class ObservableGameState {
 //            playerTickets.get //comment on fait pour ne pas créer des nouvelles instances et seulement modifier celles qui existent deja?
 //        }
         
-        //TODO modif cardsOfInHand
-        
         List<Ticket> tempPlayerTickets = createPlayerTickets();
         for(int i = 0; i < tempPlayerTickets.size(); i++){  //on ne l a pas initialisé
             playerTickets.get(i).set(tempPlayerTickets.get(i));
 
         }
+        /*
         Map<Card, Integer> tempCardsOfInHand = createCardsOfInHand();
         for(Map.Entry<Card, Integer> c : tempCardsOfInHand.entrySet()){
            cardsOfInHand.get(c).set(c.getValue());
-        }
+        }*/
+        createCardsOfInHand(cardsOfInHand);
         createCanClaimRoute(canClaimRoute);
 
         }
@@ -172,7 +173,7 @@ public class ObservableGameState {
          *  méthodes statiques privées  pour la modification
          */
     private static SimpleObjectProperty<Integer> createPercentTicketsLeft(){
-        Integer output = pourcentage(publicGameState.ticketsCount(), ChMap.tickets().size() );
+        Integer output = pourcentage(publicGameState.ticketsCount(), ChMap.tickets().size());
         return new SimpleObjectProperty<>(output);
     }
     
@@ -190,13 +191,17 @@ public class ObservableGameState {
         return temp;
     }
     
-//    private static List<ObjectProperty<Route>> createRouteOwners(){   //TODO SimpleObjectProperty<Route> or without "Simple"
-//        List<ObjectProperty<Route>> liste = new ArrayList<ObjectProperty<Route>>(); //TODO maybe putting them into a map would be a better idea, we don't know if the routes orders will change
-//        for(Route route : ChMap.routes()) {
-//            if(publicGameState)
-//            liste.add(new SimpleObjectProperty<>(publicGameState.)) ;
-//        }
-//    }
+    private static void createRouteOwners(Map<Route, ObjectProperty<PlayerId>> routeOwners){
+        for(Route route : ChMap.routes()) {
+            if(publicGameState.playerState(PlayerId.PLAYER_1).routes().contains(route)){
+                map.put(new SimpleObjectProperty<Route>(route), PlayerId.PLAYER_1);
+            }else if(publicGameState.playerState(PlayerId.PLAYER_1).routes().contains(route)){
+                map.put(new SimpleObjectProperty<Route>(route), PlayerId.PLAYER_2);
+            }else {map.put(new SimpleObjectProperty<Route>(route), null);}
+        }
+        return map;
+    }
+    /*
     private static Map<ObjectProperty<Route>, PlayerId> createRouteOwners(){
         Map<ObjectProperty<Route>, PlayerId> map = Map.of();
         for(Route route : ChMap.routes()) {
@@ -208,7 +213,7 @@ public class ObservableGameState {
         }
         return map;
     }
-
+*/
     /**
      *  -   -   -   -   -       -   -   -   -   -       -   -   -   -   -   -   -
      */
@@ -260,14 +265,12 @@ public class ObservableGameState {
 //
 //        }
 //    }
-//    private Map<Card, ObjectProperty<Integer>> createCardsOfInHand(){
-//        Map<Card, ObjectProperty<Integer>> output = Map.of();
-//        for(Card card : Card.ALL){
-//            int count = 0;
-//            output.put(card, new SimpleObjectProperty<>(playerState.cards().countOf(card)));  //TODO verify
-//        }
-//        return output;
-//    }
+    private void createCardsOfInHand(Map<Card, ObjectProperty<Integer>> cardsOfInHand){
+        for(Card card : Card.ALL){
+            cardsOfInHand.get(card).set(playerState.cards().countOf(card));  //TODO verify
+        }
+    }
+    
     private Map<Card, Integer> createCardsOfInHand(){
         Map<Card, Integer> output = Map.of();
         for(Card card : Card.ALL){
@@ -277,19 +280,6 @@ public class ObservableGameState {
         return output;
     }
     
-//    //liste dans l'ordre des routes donné par ChMap
-//    private static List<SimpleObjectProperty<Ticket>> createCanClaimRoute(){
-//        List<SimpleObjectProperty<Boolean>> output = new ArrayList<>();
-//
-//        for (Route route : ChMap.routes()) {
-//            if(publicGameState.currentPlayerId() == playerId && route appartient a personne
-//                    && playerState.canClaimRoute(route)) {
-//                output.add(new SimpleObjectProperty(true));
-//            }
-//            else output.add(new SimpleObjectProperty(false));
-//        }
-//        return output;
-//    }
     private static void createCanClaimRoute(Map<Route, ObjectProperty<Boolean>> canClaimRoute){
         List<List<Station>> listePaireStations = listePaireStations(publicGameState.claimedRoutes());
         //cette liste est créé avant le for each pour ne pas avoir à en créer une nouvelle à chaque fois
