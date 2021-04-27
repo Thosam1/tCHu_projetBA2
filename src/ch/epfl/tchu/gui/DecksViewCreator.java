@@ -12,11 +12,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.w3c.dom.css.Rect;
 
-import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -31,60 +32,86 @@ class DecksViewCreator{
 
     public HBox createHandView(ObservableGameState game){    //noeud java fx, le numéro 3
 
-        List<StackPane> allCardsPane = new ArrayList<StackPane>();
+//        final List<StackPane> allCardsPane = new ArrayList<StackPane>();
 
         /**
          *  carte + compteur
          */
-        for(Card card : Card.ALL){
-            StackPane pane = cardLayout();
-            allCardsPane.add(pane);
-        }
-        // --- ---
+        HBox cards = new HBox();
+        cards.setId("hand-pane");
 
-        HBox cards = new HBox(allCardsPane);
-        ListView tickets = new ListView(ObservableGameState.playerTickets);
-        HBox root = new HBox(tickets, cards);
+        for(Card card : Card.ALL){
+            StackPane pane = cardAndTextLayout(card.name());
+//            allCardsPane.add(pane);
+        }
+        ListView tickets = new ListView(game.playerTickets);
+        tickets.setId("tickets");   //TODO check
+
+        /**
+         *  Construction du plus bas haut plus haut de la pyramide/hiérarchie
+         */
+        HBox root = new HBox();//new HBox(tickets, cards);
+        root.getStylesheets().addAll("deck.css", "color.css");
+        root.getChildren().addAll(tickets, cards);
 
         return new HBox(pane);
     }
 
     public createCardsView(ObservableGameState game, ObjectProperty<ClaimTicketHandler> claimTicketHandler, ObjectProperty<ClaimCardsHandler> claimCardsHandler){
-        List<StackPane> faceUpCardsPane = new ArrayList<StackPane>();
+        VBox cardPane = new VBox(); //new VBox(gaugedTickets, faceUpCardsPane, gaugedDeck);
+        cardPane.getStylesheets().addAll("deck.css", "colors.css");
+        cardPane.setId("card-pane");
+
         /**
          *  carte
          */
         for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++){
-            StackPane pane = cardLayout();
-            faceUpCardsPane.add(pane);
+            StackPane pane = cardLayout(game.faceUpCard(i).name());
+            cardPane.getChildren().add(pane);
         }
         /**
-         *  Pioche billet
+         *  Pioche billets et cartes
          */
         Button gaugedTickets = gaugedButtonLayout(0.0f);
-
-        /**
-         *  Pioche cartes
-         */
         Button gaugedDeck = gaugedButtonLayout(0.0f);
 
+        //  ---
+        cardPane.getChildren().addAll(gaugedTickets, gaugedDeck);
 
-        VBox cardPane = new VBox(gaugedTickets, faceUpCardsPane, gaugedDeck);
     }
 
-    private StackPane cardLayout(){
+    private StackPane cardLayout(String cardName){
+        cardName = (cardName == Card.LOCOMOTIVE.name()) ? "NEUTRAL" : cardName;
         Rectangle outside = new Rectangle(60, 90);
+        outside.getStyleClass().add("outside");
+
         Rectangle filledInside = new Rectangle(40, 70);
+        filledInside.getStyleClass().addAll("filled", "inside");
+
         Rectangle trainImage = new Rectangle(40, 70);
+        trainImage.getStyleClass().add("train-image");
+
+        StackPane pane = new StackPane();
+        pane.getChildren().addAll(outside, filledInside, trainImage);
+        pane.getStyleClass().addAll(cardName, "card");
+        return pane;
+    }
+    private StackPane cardAndTextLayout(String cardName){
         Text count = new Text();
-        return new StackPane(outside, filledInside, trainImage, count);
+        count.getStyleClass().add("count");
+
+        StackPane pane = cardLayout(cardName);
+        pane.getChildren().add(count);
+        return pane;
     }
 
     private Button gaugedButtonLayout(float percentage){  //(beetween 0.00 and 1.00)
         Button button = new Button();
+        Group group = new Group();
         Rectangle background = new Rectangle(50, 5);
         Rectangle foreground = new Rectangle((int) (50 * percentage), 5);
-        Group group = new Group(background, foreground);
+//        Group group = new Group(background, foreground);
+        group.getChildren().addAll(background, foreground);
         button.setGraphic(group);
         return button;
     }
