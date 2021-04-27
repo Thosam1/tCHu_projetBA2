@@ -71,6 +71,8 @@ public class ObservableGameState {
     private Map<Route, Boolean> canClaimRoute;  //TODO good idea to initialise it in constructor
 */
 
+  //comment faire pour que les valeurs par défaut soient 0 null etc. ?
+    
     public ObservableGameState(PlayerId playerId){
         this.playerId = playerId;
         /*for(PlayerId id : PlayerId.ALL){
@@ -88,6 +90,9 @@ public class ObservableGameState {
         }*/
     }
 
+  //comment faire pour que les valeurs par défaut soient 0 null etc. ?
+    
+    
     /**
      * Pour mettre à jour l'état que la classe contient + les propriétés
      * @param publicGameState la partie publique du jeu
@@ -122,7 +127,7 @@ public class ObservableGameState {
         //TODO modif cardsOfInHand
         
         for (int i = 0; i < ChMap.routes().size(); ++i) {
-            if(publicGameState.currentPlayerId() == playerId && route appartient a personne //méthode privé à créer
+            if(publicGameState.currentPlayerId() == playerId && route appartient a personne et sa voisine non plus //méthode privé à créer
                     && playerState.canClaimRoute(ChMap.routes().get(i))) {
                 canClaimRoute.get(i).set(true);
             }
@@ -199,13 +204,14 @@ public class ObservableGameState {
     private static List<SimpleObjectProperty<Ticket>> createCardsOfInHand(){
         //TODO
     }
+   
     
     //liste dans l'ordre des routes donné par ChMap
     private static List<SimpleObjectProperty<Ticket>> createCanClaimRoute(){
         List<SimpleObjectProperty<Boolean>> output = new ArrayList<>();
         
         for (Route route : ChMap.routes()) {
-            if(publicGameState.currentPlayerId() == playerId && route appartient a personne
+            if(publicGameState.currentPlayerId() == playerId && route appartient a personne et sa voisine non plus
                     && playerState.canClaimRoute(route)) {
                 output.add(new SimpleObjectProperty(true));
             }
