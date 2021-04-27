@@ -38,6 +38,12 @@ class MapViewCreator {
             groupRoute.getStyleClass().addAll("route", "UNDERGROUND", "NEUTRAL");
             //groupRoute.getStyleClass().addAll("route", route.level().toString(), route.color().toString());
             
+            groupRoute.disableProperty().bind(
+                    objectProperty.isNull().or(gameState.claimable(route).not()));
+            //Je ne comprends pas bien la description de gameState ici
+            
+            
+            
             pane.getChildren().add(groupRoute);
             
             //créé un group correspondant à chaque cases de la route (autant que la longueur de cette route)
