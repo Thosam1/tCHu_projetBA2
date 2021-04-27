@@ -2,6 +2,7 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.game.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.ArrayList;
