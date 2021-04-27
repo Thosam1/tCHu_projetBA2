@@ -4,14 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.epfl.tchu.SortedBag;
-import ch.epfl.tchu.game.Card;
-import ch.epfl.tchu.game.ChMap;
-import ch.epfl.tchu.game.PlayerId;
-import ch.epfl.tchu.game.PlayerState;
-import ch.epfl.tchu.game.PublicCardState;
-import ch.epfl.tchu.game.PublicGameState;
-import ch.epfl.tchu.game.PublicPlayerState;
-import ch.epfl.tchu.game.Route;
+import ch.epfl.tchu.game.*;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -27,11 +20,11 @@ public final class Stage9Test extends Application {
     public void start(Stage primaryStage) {
       ObservableGameState gameState = new ObservableGameState(PlayerId.PLAYER_1);
 
-      ObjectProperty<ClaimRouteHandler> claimRoute =
+      ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRoute =
         new SimpleObjectProperty<>(Stage9Test::claimRoute);
-      ObjectProperty<DrawTicketsHandler> drawTickets =
+      ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTickets =
         new SimpleObjectProperty<>(Stage9Test::drawTickets);
-      ObjectProperty<DrawCardHandler> drawCard =
+      ObjectProperty<ActionHandlers.DrawCardHandler> drawCard =
         new SimpleObjectProperty<>(Stage9Test::drawCard);
 
       Node mapView = MapViewCreator
@@ -73,7 +66,7 @@ public final class Stage9Test extends Application {
     }
 
     private static void chooseCards(List<SortedBag<Card>> options,
-                    ChooseCardsHandler chooser) {
+                    ActionHandlers.ChooseCardsHandler chooser) {
       chooser.onChooseCards(options.get(0));
     }
 

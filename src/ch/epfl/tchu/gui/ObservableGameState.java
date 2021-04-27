@@ -74,7 +74,7 @@ public class ObservableGameState {
         this.nbCarsInHand = intPropertyIdMap();
         this.nbConstructionPoints = intPropertyIdMap();
 
-        this.playerTickets; //TODO question comment faire puisque le nombre de Tickets change
+        this.playerTickets = new ArrayList<>(); //TODO question comment faire puisque le nombre de Tickets change
         this.cardsOfInHand = initCardsOfInHand();
         this.canClaimRoute = initCanClaimRoute();
         //TODO tous les mettre dans le constructeur pour éviter de les rappeler à chaque fois
@@ -107,16 +107,13 @@ public class ObservableGameState {
             nbCarsInHand.get(id).set(state.carCount());
             nbConstructionPoints.get(id).set(state.claimPoints());
         }
-        
-//        for(Ticket ticket : playerState.tickets()) {
-//            playerTickets.get //comment on fait pour ne pas créer des nouvelles instances et seulement modifier celles qui existent deja?
-//        }
-        
+        /*
         List<Ticket> tempPlayerTickets = createPlayerTickets();
         for(int i = 0; i < tempPlayerTickets.size(); i++){  //on ne l a pas initialisé
             playerTickets.get(i).set(tempPlayerTickets.get(i));
+        }*/
+        createPlayerTickets();
 
-        }
         /*
         Map<Card, Integer> tempCardsOfInHand = createCardsOfInHand();
         for(Map.Entry<Card, Integer> c : tempCardsOfInHand.entrySet()){
@@ -244,20 +241,22 @@ public class ObservableGameState {
         return output;
         }
     
-//    private static List<ObjectProperty<Ticket>> createPlayerTickets(){
-//        List<ObjectProperty<Ticket>> output = new ArrayList<>();
-//        for(Ticket ticket : playerState.tickets()) {
-//            output.add(new SimpleObjectProperty<>(ticket));
+
+//    private static List<Ticket> createPlayerTickets(){  //sans objectproperty pour pouvoir utiliser dans setState
+//            List<Ticket> output = new ArrayList<>();
+//            for(Ticket ticket : playerState.tickets()) {
+//                output.add(ticket);
+//            }
+//            return output;
 //        }
-//        return output;
-//    }
-    private static List<Ticket> createPlayerTickets(){  //sans objectproperty pour pouvoir utiliser dans setState
-            List<Ticket> output = new ArrayList<>();
+        private void createPlayerTickets(){  //sans objectproperty pour pouvoir utiliser dans setState
             for(Ticket ticket : playerState.tickets()) {
-                output.add(ticket);
+                if(!playerTickets.contains(ticket)){
+                    playerTickets.add(new SimpleObjectProperty<>(ticket));
+                }
             }
-            return output;
         }
+
     
     /**neuf propriétés contenant, pour chaque type de carte wagon/locomotive, 
      * le nombre de cartes de ce type que le joueur a en main
