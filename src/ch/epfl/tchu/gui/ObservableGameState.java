@@ -90,14 +90,13 @@ public class ObservableGameState {
     public void setState(PublicGameState newGameState, PlayerState newPlayerState){
         this.publicGameState = newGameState;
         this.playerState = newPlayerState;
-        percentTicketsLeft.set(pourcentage(newGameState.ticketsCount(), ChMap.tickets().size()));//est ce qu il existe une constante pour 46 et 110?    yesss
+        percentTicketsLeft.set(pourcentage(newGameState.ticketsCount(), ChMap.tickets().size()));
         percentCardsLeft.set(pourcentage(newGameState.cardState().deckSize(), Constants.ALL_CARDS.size()));
-        for (int slot : Constants.FACE_UP_CARD_SLOTS) {
+        /*for (int slot : Constants.FACE_UP_CARD_SLOTS) {
             Card newCard = newGameState.cardState().faceUpCard(slot);
             faceUpCards.get(slot).set(newCard);
-          }
-        
-        //TODO modif routeOwners
+          }*/
+        createFaceUpCards(faceUpCards);
         createRouteOwners(routeOwners);
 
         for(PlayerId id: PlayerId.ALL) {
@@ -182,24 +181,29 @@ public class ObservableGameState {
         return new SimpleObjectProperty<>(output);
     }
     
-    private static List<ObjectProperty<Card>> createFaceUpCards(){
-        List<ObjectProperty<Card>> temp = new ArrayList<ObjectProperty<Card>>();
-        for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++){
-            SimpleObjectProperty<Card> card = new SimpleObjectProperty<>(publicGameState.cardState().faceUpCard(i)); //TODO  -> au début on ne sait pas les cartes faces visibles
-            temp.add(card);
-        }
-        return temp;
+    private static void createFaceUpCards(List<ObjectProperty<Card>> faceUpCards){
+        for(int slot : Constants.FACE_UP_CARD_SLOTS){
+            Card newCard = publicGameState.cardState().faceUpCard(slot);
+            faceUpCards.get(slot).set(newCard);
+            }
     }
     
     private static void createRouteOwners(Map<Route, ObjectProperty<PlayerId>> routeOwners){
+        List<Route> routesPlayer1 = publicGameState.playerState(PlayerId.PLAYER_1).routes();
+        List<Route> routesPlayer2 = publicGameState.playerState(PlayerId.PLAYER_2).routes();
+        
         for(Route route : ChMap.routes()) {
-            if(publicGameState.playerState(PlayerId.PLAYER_1).routes().contains(route)){
-                map.put(new SimpleObjectProperty<Route>(route), PlayerId.PLAYER_1);
-            }else if(publicGameState.playerState(PlayerId.PLAYER_1).routes().contains(route)){
-                map.put(new SimpleObjectProperty<Route>(route), PlayerId.PLAYER_2);
-            }else {map.put(new SimpleObjectProperty<Route>(route), null);}
+            if(routesPlayer1.contains(route)){
+                routeOwners.get(route).set(PlayerId.PLAYER_1);
+                
+            }
+            else if(routesPlayer2.contains(route)){
+                routeOwners.get(route).set(PlayerId.PLAYER_2);
+                
+            }
+            else {routeOwners.get(route).set(null);}
         }
-        return map;
+
     }
     /*
     private static Map<ObjectProperty<Route>, PlayerId> createRouteOwners(){
@@ -207,7 +211,7 @@ public class ObservableGameState {
         for(Route route : ChMap.routes()) {
             if(publicGameState.playerState(PlayerId.PLAYER_1).routes().contains(route)){
                 map.put(new SimpleObjectProperty<Route>(route), PlayerId.PLAYER_1);
-            }else if(publicGameState.playerState(PlayerId.PLAYER_1).routes().contains(route)){
+            }else if(publicGameState.playerState(PlayerId.PLAYER_2).routes().contains(route)){
                 map.put(new SimpleObjectProperty<Route>(route), PlayerId.PLAYER_2);
             }else {map.put(new SimpleObjectProperty<Route>(route), null);}
         }
@@ -274,7 +278,6 @@ public class ObservableGameState {
     private Map<Card, Integer> createCardsOfInHand(){
         Map<Card, Integer> output = Map.of();
         for(Card card : Card.ALL){
-            int count = 0;
             output.put(card, playerState.cards().countOf(card));  //TODO verify
         }
         return output;
