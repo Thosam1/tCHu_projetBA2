@@ -39,8 +39,9 @@ class MapViewCreator {
             //groupRoute.getStyleClass().addAll("route", route.level().toString(), route.color().toString());
             
             groupRoute.disableProperty().bind(
-                    objectProperty.isNull().or(gameState.claimable(route).not()));
-            //Je ne comprends pas bien la description de gameState ici
+                   // objectProperty.isNull().or(observableGame.claimable(route).not()));
+                    objectProperty.isNull().or(observableGame.getCanClaimRoute(route).not()));
+            
             
             
             
