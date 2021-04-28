@@ -1,7 +1,15 @@
 package ch.epfl.tchu.gui;
+import ch.epfl.tchu.Preconditions;
+import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.ArrayList;
@@ -24,9 +32,9 @@ public class ObservableGameState {
      *  Propriétés concernant l'état public de la partie
      */
     
-    private final ObjectProperty<Integer> percentTicketsLeft;
+    private final IntegerProperty percentTicketsLeft;
     
-    private final ObjectProperty<Integer> percentCardsLeft;
+    private final IntegerProperty percentCardsLeft;
 
     private final List<ObjectProperty<Card>> faceUpCards;       // TODO check -> mieux de stocket dans une array[5] de taille 5 ?
 
@@ -40,19 +48,19 @@ public class ObservableGameState {
      *  propriété du Player1 à l index 0 et du Player2 à l index 1
      */ //TODO je pense qu'une map serait plus lisible et plus sûr, que parier sur l'index de la liste
     
-    private final Map<PlayerId, ObjectProperty<Integer>> nbTicketsInHand;
-    private final Map<PlayerId,ObjectProperty<Integer>> nbCardsInHand;
-    private final Map<PlayerId,ObjectProperty<Integer>> nbCarsInHand;
-    private final Map<PlayerId,ObjectProperty<Integer>> nbConstructionPoints;
+    private final Map<PlayerId, IntegerProperty> nbTicketsInHand;
+    private final Map<PlayerId, IntegerProperty> nbCardsInHand;
+    private final Map<PlayerId, IntegerProperty> nbCarsInHand;
+    private final Map<PlayerId, IntegerProperty> nbConstructionPoints;
 
     /**
      *  Propriétés concernant l'état complet du joueur auquel l'instance correspond
      */
     private final List<ObjectProperty<Ticket>> playerTickets;   //TODO quand c'est une liste pointer à quoi ??? ou les éléments null ?
 //    private List<ObjectProperty<Integer>> cardsOfInHand = createCardsOfInHand();    //TODO je pense qu'ici c'est mieux d'utiliser une map pour ensuite changer etc...
-    private final Map<Card, ObjectProperty<Integer>> cardsOfInHand;
+    private final Map<Card, IntegerProperty> cardsOfInHand;
 //    private List<ObjectProperty<Boolean>> canClaimRoute = createCanClaimRoute();
-    private final Map<Route, ObjectProperty<Boolean>> canClaimRoute;   //TODO vérifer que c'est bien les deux ObjectProperty<Route> ? ou pas nécessaire pour route
+    private final Map<Route, BooleanProperty> canClaimRoute;   //TODO vérifer que c'est bien les deux ObjectProperty<Route> ? ou pas nécessaire pour route
     
     /*private List<Ticket> playerTickets = new ArrayList<Ticket>(); //TODO faut-il initialiser à 0 ou null ?
     private Map<Card, Integer> cardsOf_inHand = Map.of(Card.BLACK, 0, Card.VIOLET, 0, Card.BLUE, 0, Card.GREEN, 0, Card.YELLOW, 0, Card.ORANGE, 0, Card.RED, 0, Card.WHITE, 0, Card.ORANGE, 0, Card.LOCOMOTIVE, 0);
@@ -63,8 +71,8 @@ public class ObservableGameState {
     
     public ObservableGameState(PlayerId playerId){
         this.playerId = playerId;
-        this.percentTicketsLeft = new SimpleObjectProperty<Integer>(0);
-        this.percentCardsLeft = new SimpleObjectProperty<Integer>(0);
+        this.percentTicketsLeft = new SimpleIntegerProperty(0);
+        this.percentCardsLeft = new SimpleIntegerProperty(0);
         this.faceUpCards = initFaceUpCards();
         this.routeOwners = initRouteOwners();
 
@@ -96,7 +104,7 @@ public class ObservableGameState {
         modifyFaceUpCards(faceUpCards);
         modifyRouteOwners(routeOwners);
 
-        for(PlayerId id: PlayerId.ALL) {
+        for(PlayerId id: PlayerId.ALL) {//est ce que ce ne serait pas plus propre en faisant un appel à des modify
             PublicPlayerState state = publicGameState.playerState(id);
             nbTicketsInHand.get(id).set(state.ticketCount());   //TODO est-ce qu'on set bien des objectproperty?
             nbCardsInHand.get(id).set(state.cardCount());
@@ -118,10 +126,10 @@ public class ObservableGameState {
     /**
      *
      */
-    private static Map<PlayerId, ObjectProperty<Integer>> intPropertyIdMap(){
-        Map<PlayerId, ObjectProperty<Integer>> temp = Map.of();
+    private static Map<PlayerId, IntegerProperty> intPropertyIdMap(){
+        Map<PlayerId, IntegerProperty> temp = Map.of();
         for(PlayerId id : PlayerId.ALL){
-            temp.put(id, new SimpleObjectProperty<Integer>(0));
+            temp.put(id, new SimpleIntegerProperty(0));
         }
         return temp;
     }
@@ -140,34 +148,35 @@ public class ObservableGameState {
         }
         return map;
     }
-    private static Map<Card, ObjectProperty<Integer>> initCardsOfInHand() {
-        Map<Card, ObjectProperty<Integer>> map = Map.of();
+    private static Map<Card, IntegerProperty> initCardsOfInHand() {
+        Map<Card, IntegerProperty> map = Map.of();
         for (Card card :Card.ALL) {
-            map.put(card, new SimpleObjectProperty<Integer>(0));
+            map.put(card, new SimpleIntegerProperty(0));
         }
         return map;
     }
-    private Map<Route, ObjectProperty<Boolean>> initCanClaimRoute(){
-        Map<Route, ObjectProperty<Boolean>> map = Map.of();
+    private Map<Route, BooleanProperty> initCanClaimRoute(){
+        Map<Route, BooleanProperty> map = Map.of();
         for(Route route : ChMap.routes()) {
-            map.put(route, new SimpleObjectProperty<Boolean>(false));
+            map.put(route, new SimpleBooleanProperty(false));
         }
         return map;
     }
 
         /**
-         *  méthodes statiques privées  pour la modification
+         *  méthodes privées  pour la modification
          */
-    private SimpleObjectProperty<Integer> createPercentTicketsLeft(){
+    /*
+    private SimpleIntegerProperty modifyPercentTicketsLeft(){
         Integer output = pourcentage(publicGameState.ticketsCount(), ChMap.tickets().size());
-        return new SimpleObjectProperty<>(output);
+        return new SimpleIntegerProperty(output);
     }
     
-    private SimpleObjectProperty<Integer> createPercentCardsLeft(){
+    private SimpleObjectProperty<Integer> modifyPercentCardsLeft(){
         Integer output = pourcentage(publicGameState.cardState().deckSize(), Constants.ALL_CARDS.size());
         return new SimpleObjectProperty<>(output);
     }
-    
+    */
     private void modifyFaceUpCards(List<ObjectProperty<Card>> faceUpCards){
         for(int slot : Constants.FACE_UP_CARD_SLOTS){
             Card newCard = publicGameState.cardState().faceUpCard(slot);
@@ -250,7 +259,7 @@ public class ObservableGameState {
      * les retourne dans l ordre de l enumeration Card avec locomotive à la fin
      * */
 
-    private void modifyCardsOfInHand(Map<Card, ObjectProperty<Integer>> cardsOfInHand){
+    private void modifyCardsOfInHand(Map<Card, IntegerProperty> cardsOfInHand){
         for(Card card : Card.ALL){
             cardsOfInHand.get(card).set(playerState.cards().countOf(card));  //TODO verify
         }
@@ -265,7 +274,7 @@ public class ObservableGameState {
         return output;
     }*/
     
-    private void modifyCanClaimRoute(Map<Route, ObjectProperty<Boolean>> canClaimRoute){
+    private void modifyCanClaimRoute(Map<Route, BooleanProperty> canClaimRoute){
         List<List<Station>> listePaireStations = listePaireStations(publicGameState.claimedRoutes());
         //cette liste est créé avant le for each pour ne pas avoir à en créer une nouvelle à chaque fois
         
@@ -295,13 +304,23 @@ public class ObservableGameState {
         return faceUpCards.get(slot);
     }
     
-    public BooleanBinding getCanClaimRoute(Route route){
-        return canClaimRoute.get(route);
+    public boolean getCanDrawTickets() {
+        return publicGameState.canDrawTickets();
+    }
+    public boolean getCanDrawCards() {
+        return publicGameState.canDrawCards();
+    }
+    public List<SortedBag<Card>> getPossibleClaimCards(Route route) {
+        return playerState.possibleClaimCards(route);
     }
     
     /**
-     * méthode privée permettant de calculer un pourcentage*/
+     * méthode privée permettant de calculer un pourcentage qui retourne un int
+     * (pourcentage de a dans b)
+     * peut donc prendre une valeur entre 0 et 1
+     * C'est pour cela qu'on vérifie que a est plus petit ou égal à b*/
     private static Integer pourcentage(int a, int b) {
+        Preconditions.checkArgument(a<=b);
         return (a * 100) / b;
     }   //TODO pourrait-on garder entre 0 et 1 ? -enlever le *100 ? non parce qu on veut une valeur entre 0 et 100
     
@@ -316,11 +335,12 @@ public class ObservableGameState {
 
     }
     
-    /**méthode qui retourne vraie que si le joueur peut actuellement s'emparer de la route
-     * Cette méthode a pour objectif de dire si une seule route est claimable 
-     * Notamment utilisé dans MapViewCreator Ou nous avons seulement besoin de quelques appels*/
-    private boolean claimable(Route route) {
-        return claimable(route, listePaireStations(publicGameState.claimedRoutes()));
+    /**méthode qui retourne un ReadOnlyBooleanProperty: contient la valeur true que si le joueur peut actuellement s'emparer de la route
+     * Ce qui est déterminé lors des updates de canClaimRoute
+     * Cette méthode est appelé dans MapViewCreator
+     * */
+    public ReadOnlyBooleanProperty claimable(Route route) {
+        return canClaimRoute.get(route);
     }
     
     /**
