@@ -36,6 +36,13 @@ class RouteTest {
                     Card.RED,
                     Card.WHITE);
 
+    
+    @Test
+    void testContainsPourObservableGameState() {
+        Route route = new Route("id", new Station(0, "Lausanne"), new Station(1, "Geneve"), 1, Level.OVERGROUND, Color.BLACK);
+        assertEquals(true,route.stations().contains(route.station1()));
+    //    assertEquals(true, route.stations().contains(new Station(0, "Lausanne")));
+    }
     @Test
     void routeConstructorFailsWhenBothStationsAreEqual() {
         var s = new Station(0, "Lausanne");
