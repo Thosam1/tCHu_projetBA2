@@ -4,7 +4,9 @@ import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Constants;
 import ch.epfl.tchu.gui.ObservableGameState;
+import ch.epfl.tchu.gui.ActionHandlers;
 import com.sun.javafx.font.directwrite.RECT;
+import javafx.beans.property.ObjectProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -30,7 +32,7 @@ class DecksViewCreator{
     //constructeur privé
     private DecksViewCreator(){}
 
-    public HBox createHandView(ObservableGameState game){    //noeud java fx, le numéro 3
+    public HBox createHandView(ObservableGameState game){    //TODo retourne la vue de la main ? Hbox ?
 
 //        final List<StackPane> allCardsPane = new ArrayList<StackPane>();
 
@@ -44,7 +46,7 @@ class DecksViewCreator{
             StackPane pane = cardAndTextLayout(card.name());
 //            allCardsPane.add(pane);
         }
-        ListView tickets = new ListView(game.playerTickets);
+        ListView tickets = new ListView(game.playerTickets);    //TODO comment ?
         tickets.setId("tickets");   //TODO check
 
         /**
@@ -57,8 +59,8 @@ class DecksViewCreator{
         return new HBox(pane);
     }
 
-    public createCardsView(ObservableGameState game, ObjectProperty<ClaimTicketHandler> claimTicketHandler, ObjectProperty<ClaimCardsHandler> claimCardsHandler){
-        VBox cardPane = new VBox(); //new VBox(gaugedTickets, faceUpCardsPane, gaugedDeck);
+    public VBox createCardsView(ObservableGameState game, ObjectProperty<ActionHandlers.ChooseTicketsHandler> claimTicketHandler, ObjectProperty<ActionHandlers.ChooseCardsHandler> claimCardsHandler){  //ToDo retourne void ? ou VBox ?
+        VBox cardPane = new VBox(); //new VBox(gaugedTickets, faceUpCardsPane, gaugedDeck); //ToDo quel est le "related problem" ?
         cardPane.getStylesheets().addAll("deck.css", "colors.css");
         cardPane.setId("card-pane");
 
@@ -66,7 +68,7 @@ class DecksViewCreator{
          *  carte
          */
         for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++){
-            StackPane pane = cardLayout(game.faceUpCard(i).name());
+            StackPane pane = cardLayout(game.faceUpCardName(i));
             cardPane.getChildren().add(pane);
         }
         /**
@@ -77,7 +79,7 @@ class DecksViewCreator{
 
         //  ---
         cardPane.getChildren().addAll(gaugedTickets, gaugedDeck);
-
+        return cardPane;
     }
 
     private StackPane cardLayout(String cardName){
