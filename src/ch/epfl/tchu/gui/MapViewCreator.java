@@ -15,6 +15,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * La classe MapViewCreator, non instanciable et package private (!), 
+ * contient une unique méthode publique, nommée createMapView et permettant de créer la vue de la carte.
+ * */
 class MapViewCreator {
     Pane pane;
     
@@ -22,7 +26,7 @@ class MapViewCreator {
         this.pane = pane;
     }
     
-    public static void /*ou MapViewCreator ?*/ createMapView(ObservableGameState observableGame, 
+    public static Pane /*ou MapViewCreator ?*/ createMapView(ObservableGameState observableGame, 
             ObjectProperty<ClaimRouteHandler> objectProperty,
             CardChooser chooser) {
         Pane pane = new Pane();
@@ -39,6 +43,10 @@ class MapViewCreator {
             groupRoute.getStyleClass().addAll("route", "UNDERGROUND", "NEUTRAL");
             //groupRoute.getStyleClass().addAll("route", route.level().toString(), route.color().toString());
             
+            
+            //comment gérer l'activation?
+            
+            //désactive le groupe représentant une route lorsque le joueur ne peut pas s'en emparer
             groupRoute.disableProperty().bind(
                     objectProperty.isNull().or(observableGame.claimable(route).not()));
             
@@ -74,6 +82,7 @@ class MapViewCreator {
                 groupWagon.getChildren().addAll(rec2, circ1, circ2);
             }
         }
+        return pane;
     }
     
     /**

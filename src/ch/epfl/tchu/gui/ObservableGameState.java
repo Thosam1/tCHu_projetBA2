@@ -11,6 +11,8 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +58,7 @@ public class ObservableGameState {
     /**
      *  Propriétés concernant l'état complet du joueur auquel l'instance correspond
      */
-    private final List<ObjectProperty<Ticket>> playerTickets;   //TODO quand c'est une liste pointer à quoi ??? ou les éléments null ?
+    private final ObservableList<Ticket> playerTickets;   //TODO quand c'est une liste pointer à quoi ??? ou les éléments null ?
 //    private List<ObjectProperty<Integer>> cardsOfInHand = createCardsOfInHand();    //TODO je pense qu'ici c'est mieux d'utiliser une map pour ensuite changer etc...
     private final Map<Card, IntegerProperty> cardsOfInHand;
 //    private List<ObjectProperty<Boolean>> canClaimRoute = createCanClaimRoute();
@@ -81,7 +83,7 @@ public class ObservableGameState {
         this.nbCarsInHand = intPropertyIdMap();
         this.nbConstructionPoints = intPropertyIdMap();
 
-        this.playerTickets; //TODO question comment faire puisque le nombre de Tickets change
+        this.playerTickets = FXCollections.observableArrayList(); 
         this.cardsOfInHand = initCardsOfInHand();
         this.canClaimRoute = initCanClaimRoute();
         //TODO tous les mettre dans le constructeur pour éviter de les rappeler à chaque fois
@@ -104,7 +106,8 @@ public class ObservableGameState {
         modifyFaceUpCards(faceUpCards);
         modifyRouteOwners(routeOwners);
 
-        for(PlayerId id: PlayerId.ALL) {//est ce que ce ne serait pas plus propre en faisant un appel à des modify
+      //est ce que ce ne serait pas plus propre en faisant un appel à des modify
+        for(PlayerId id: PlayerId.ALL) {
             PublicPlayerState state = publicGameState.playerState(id);
             nbTicketsInHand.get(id).set(state.ticketCount());   //TODO est-ce qu'on set bien des objectproperty?
             nbCardsInHand.get(id).set(state.cardCount());
@@ -112,10 +115,7 @@ public class ObservableGameState {
             nbConstructionPoints.get(id).set(state.claimPoints());
         }
         
-//        for(Ticket ticket : playerState.tickets()) {
-//            playerTickets.get //comment on fait pour ne pas créer des nouvelles instances et seulement modifier celles qui existent deja?
-//        }
-        
+        modifyPlayerTickets(playerTickets);
         modifyCardsOfInHand(cardsOfInHand);
         modifyCanClaimRoute(canClaimRoute);
 
@@ -238,22 +238,12 @@ public class ObservableGameState {
                 new SimpleObjectProperty<>(publicGameState.playerState(PlayerId.PLAYER_2).claimPoints()));
         return output;
         }
-    
-//    private static List<ObjectProperty<Ticket>> createPlayerTickets(){
-//        List<ObjectProperty<Ticket>> output = new ArrayList<>();
-//        for(Ticket ticket : playerState.tickets()) {
-//            output.add(new SimpleObjectProperty<>(ticket));
-//        }
-//        return output;
-//    }
-    private List<Ticket> createPlayerTickets(){  //sans objectproperty pour pouvoir utiliser dans setState
-            List<Ticket> output = new ArrayList<>();
-            for(Ticket ticket : playerState.tickets()) {
-                output.add(ticket);
-            }
-            return output;
-        }
     */
+    private void modifyPlayerTickets(ObservableList<Ticket> playerTickets){
+        playerTickets.setAll(playerState.tickets().toList());
+    }
+
+    
     /**neuf propriétés contenant, pour chaque type de carte wagon/locomotive, 
      * le nombre de cartes de ce type que le joueur a en main
      * les retourne dans l ordre de l enumeration Card avec locomotive à la fin
@@ -362,8 +352,9 @@ public class ObservableGameState {
         Boolean output = true; //true si la route et sa voisine (si elle en a) n'appartient à personne
         
         for(List<Station> paireStation : listePaireStations) {
-            if(paireStation.contains(paramRoute.station1()) //contains fait appel à equals donc est ce qu on a un probleme avec cette méthode? puisque Station est immuable?
-                    && paireStation.contains(paramRoute.station2())) {
+            if(paireStation.contains(paramRoute.station1()) //contains fait appel à equals donc ici nous avons un test par référence et non par structure
+                    && paireStation.contains(paramRoute.station2())) {//néanmoins ceci n'est pas problématique car nous nous assurons qu’à chaque gare correspond un seul objet
+                                                                      //ainsi égalité par référence = égalité structurelle
                 output = false;
             }
         }
