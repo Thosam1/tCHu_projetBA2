@@ -69,9 +69,6 @@ public class ObservableGameState {
         this.cardsOfInHand = initCardsOfInHand();
         this.canClaimRoute = initCanClaimRoute();
     }
-
-  //comment faire pour que les valeurs par défaut soient 0 null etc. ?
-    
     
     /**
      * Pour mettre à jour l'état que la classe contient + les propriétés
@@ -84,8 +81,8 @@ public class ObservableGameState {
         percentTicketsLeft.set(pourcentage(newGameState.ticketsCount(), ChMap.tickets().size()));
         percentCardsLeft.set(pourcentage(newGameState.cardState().deckSize(), Constants.ALL_CARDS.size()));
 
-        modifyFaceUpCards(faceUpCards); //TODO vérifier que ça change bien, nécessaire de déclarer static ?
-        modifyRouteOwners(routeOwners);
+        modifyFaceUpCards(); //TODO vérifier que ça change bien, nécessaire de déclarer static ?
+        modifyRouteOwners();
 
       //est ce que ce ne serait pas plus propre en faisant un appel à des modify
         for(PlayerId id: PlayerId.ALL) {
@@ -97,17 +94,14 @@ public class ObservableGameState {
         }
 
         modifyPlayerTickets();
-
-        modifyPlayerTickets(playerTickets);
-        modifyCardsOfInHand(cardsOfInHand);
-        modifyCanClaimRoute(canClaimRoute);
+        modifyPlayerTickets();
+        modifyCardsOfInHand();
+        modifyCanClaimRoute();
 
         }
 
-
-
     /**
-     *
+     *  Méthodes appelées à l'initialisation
      */
     private static Map<PlayerId, IntegerProperty> intPropertyIdMap(){
         Map<PlayerId, IntegerProperty> temp = Map.of();
@@ -149,25 +143,15 @@ public class ObservableGameState {
         /**
          *  méthodes privées  pour la modification
          */
-    /*
-    private SimpleIntegerProperty modifyPercentTicketsLeft(){
-        Integer output = pourcentage(publicGameState.ticketsCount(), ChMap.tickets().size());
-        return new SimpleIntegerProperty(output);
-    }
-    
-    private SimpleObjectProperty<Integer> modifyPercentCardsLeft(){
-        Integer output = pourcentage(publicGameState.cardState().deckSize(), Constants.ALL_CARDS.size());
-        return new SimpleObjectProperty<>(output);
-    }
-    */
-    private void modifyFaceUpCards(List<ObjectProperty<Card>> faceUpCards){ //TODO mieux si on met une méthode non static, sans argument, qui modifie directement la variable
+
+    private void modifyFaceUpCards(){ //TODO mieux si on met une méthode non static, sans argument, qui modifie directement la variable
         for(int slot : Constants.FACE_UP_CARD_SLOTS){
             Card newCard = publicGameState.cardState().faceUpCard(slot);
             faceUpCards.get(slot).set(newCard);
             }
     }
     
-    private void modifyRouteOwners(Map<Route, ObjectProperty<PlayerId>> routeOwners){
+    private void modifyRouteOwners(){
         List<Route> routesPlayer1 = publicGameState.playerState(PlayerId.PLAYER_1).routes();
         List<Route> routesPlayer2 = publicGameState.playerState(PlayerId.PLAYER_2).routes();
         
@@ -182,93 +166,24 @@ public class ObservableGameState {
             }
             else {routeOwners.get(route).set(null);}
         }
+    }
 
-    }
-    /*
-    private static Map<ObjectProperty<Route>, PlayerId> createRouteOwners(){
-        Map<ObjectProperty<Route>, PlayerId> map = Map.of();
-        for(Route route : ChMap.routes()) {
-            if(publicGameState.playerState(PlayerId.PLAYER_1).routes().contains(route)){
-                map.put(new SimpleObjectProperty<Route>(route), PlayerId.PLAYER_1);
-            }else if(publicGameState.playerState(PlayerId.PLAYER_2).routes().contains(route)){
-                map.put(new SimpleObjectProperty<Route>(route), PlayerId.PLAYER_2);
-            }else {map.put(new SimpleObjectProperty<Route>(route), null);}
-        }
-        return map;
-    }
-*/
-    /**
-     *  -   -   -   -   -       -   -   -   -   -       -   -   -   -   -   -   -
-     */
-   /* 
-    private List<SimpleObjectProperty<Integer>> createNbTicketsInHand(){
-        List<SimpleObjectProperty<Integer>> output = List.of(new SimpleObjectProperty<>(publicGameState.playerState(PlayerId.PLAYER_1).ticketCount()),
-                new SimpleObjectProperty<>(publicGameState.playerState(PlayerId.PLAYER_2).ticketCount()));
-        return output;
-    }
-    private List<SimpleObjectProperty<Integer>> createNbCardsInHand(){
-        List<SimpleObjectProperty<Integer>> output = List.of(new SimpleObjectProperty<>(publicGameState.playerState(PlayerId.PLAYER_1).cardCount()),
-                new SimpleObjectProperty<>(publicGameState.playerState(PlayerId.PLAYER_2).cardCount()));
-        return output;
-    }
-    private List<SimpleObjectProperty<Integer>> createNbCarsInHand(){
-        List<SimpleObjectProperty<Integer>> output = List.of(new SimpleObjectProperty<>(publicGameState.playerState(PlayerId.PLAYER_1).carCount()),
-                new SimpleObjectProperty<>(publicGameState.playerState(PlayerId.PLAYER_2).carCount()));
-        return output;
-        }
-    private List<SimpleObjectProperty<Integer>> createNbConstructionPoints(){
-        List<SimpleObjectProperty<Integer>> output = List.of(new SimpleObjectProperty<>(publicGameState.playerState(PlayerId.PLAYER_1).claimPoints()),
-                new SimpleObjectProperty<>(publicGameState.playerState(PlayerId.PLAYER_2).claimPoints()));
-        return output;
-        }
-    
-//    private static List<ObjectProperty<Ticket>> createPlayerTickets(){
-//        List<ObjectProperty<Ticket>> output = new ArrayList<>();
-//        for(Ticket ticket : playerState.tickets()) {
-//            output.add(new SimpleObjectProperty<>(ticket));
-//        }
-//        return output;
-//    }
-    private List<Ticket> createPlayerTickets(){  //sans objectproperty pour pouvoir utiliser dans setState
-            List<Ticket> output = new ArrayList<>();
-            for(Ticket ticket : playerState.tickets()) {
-                output.add(ticket);
-            }
-            return output;
-        }
-    */
-    private void modifyPlayerTickets(ObservableList<Ticket> playerTickets){
+    private void modifyPlayerTickets(){
         playerTickets.setAll(playerState.tickets().toList());
     }
+                                                                        /**neuf propriétés contenant, pour chaque type de carte wagon/locomotive,
+                                                                         * le nombre de cartes de ce type que le joueur a en main
+                                                                         * les retourne dans l ordre de l enumeration Card avec locomotive à la fin
+                                                                         * */
 
-
-    private void modifyPlayerTickets(){ //ToDo comme ça ?
-        playerTickets.setAll(playerState.tickets().toList());
-    }
-    /**neuf propriétés contenant, pour chaque type de carte wagon/locomotive,
-     * le nombre de cartes de ce type que le joueur a en main
-     * les retourne dans l ordre de l enumeration Card avec locomotive à la fin
-     * */
-
-    private void modifyCardsOfInHand(Map<Card, IntegerProperty> cardsOfInHand){
+    private void modifyCardsOfInHand(){
         for(Card card : Card.ALL){
             cardsOfInHand.get(card).set(playerState.cards().countOf(card));  //TODO verify
         }
     }
-    
-    /*
-    private Map<Card, Integer> modifyCardsOfInHand(){
-        Map<Card, Integer> output = Map.of();
-        for(Card card : Card.ALL){
-            output.put(card, playerState.cards().countOf(card));  //TODO verify
-        }
-        return output;
-    }*/
-    
-    private void modifyCanClaimRoute(Map<Route, BooleanProperty> canClaimRoute){
+    private void modifyCanClaimRoute(){
         List<List<Station>> listePaireStations = listePaireStations(publicGameState.claimedRoutes());
         //cette liste est créé avant le for each pour ne pas avoir à en créer une nouvelle à chaque fois
-        
         for(Route route : ChMap.routes()) {
             if(claimable(route, listePaireStations)) {
                 canClaimRoute.get(route).set(true);
@@ -276,17 +191,7 @@ public class ObservableGameState {
             else {canClaimRoute.get(route).set(false);}
         }
     }
-    
-/*    private static Map<Route, Boolean> createCanClaimRoute(){
-            Map<Route, Boolean> output = Map.of();
-            for(Route route : ChMap.routes()) {
-                if(!publicGameState.playerState(PlayerId.PLAYER_1).routes().contains(route) && !publicGameState.playerState(PlayerId.PLAYER_2).routes().contains(route) && playerState.canClaimRoute(route)) {
-                    output.put(route, true);
-                }else {output.put(route, false);}
-            }
-            return output;
-        }*/
-    
+
     /**
      *  Getters des propriétés
      */
@@ -302,7 +207,7 @@ public class ObservableGameState {
     public ReadOnlyIntegerProperty nbCarsInHand(PlayerId id){return nbCarsInHand.get(id);}
     public ReadOnlyIntegerProperty nbConstructionPoints(PlayerId id){return nbConstructionPoints.get(id);}
 
-    public ReadOnlyListProperty<Ticket> playerTickets(){return playerTickets;}  //ToDo comment ça se passe ici ?
+    public ReadOnlyListProperty<Ticket> playerTickets(){return (ReadOnlyListProperty<Ticket>) playerTickets;}  //ToDo comment ça se passe ici ?
     public ReadOnlyIntegerProperty cardsOfInHand(Card card){return cardsOfInHand.get(card);}
     public ReadOnlyBooleanProperty canClaimRoute(Route route){return canClaimRoute.get(route);}
 

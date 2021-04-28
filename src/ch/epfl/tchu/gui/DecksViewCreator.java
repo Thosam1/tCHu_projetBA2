@@ -46,9 +46,8 @@ class DecksViewCreator{
             StackPane pane = cardAndTextLayout(card.name());
 //            allCardsPane.add(pane);
         }
-        ListView tickets = new ListView(game.playerTickets);    //TODO comment ?
-        tickets.setId("tickets");   //TODO check
-
+        ListView tickets = new ListView(game.playerTickets());    //TODO comment ?
+        tickets.setId("tickets");
         /**
          *  Construction du plus bas haut plus haut de la pyramide/hiérarchie
          */
