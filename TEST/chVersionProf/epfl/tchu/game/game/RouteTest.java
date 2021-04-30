@@ -42,6 +42,7 @@ class RouteTest {
         Route route = new Route("id", new Station(0, "Lausanne"), new Station(1, "Geneve"), 1, Level.OVERGROUND, Color.BLACK);
         assertEquals(true,route.stations().contains(route.station1()));
     //    assertEquals(true, route.stations().contains(new Station(0, "Lausanne")));
+        assertEquals("OVERGROUND", route.level().toString());
     }
     @Test
     void routeConstructorFailsWhenBothStationsAreEqual() {

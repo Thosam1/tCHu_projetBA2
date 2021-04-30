@@ -303,7 +303,9 @@ public class ObservableGameState {
     public List<SortedBag<Card>> getPossibleClaimCards(Route route) {
         return playerState.possibleClaimCards(route);
     }
-    
+    public ObjectProperty<PlayerId> getRouteOwner(Route route) {
+        return routeOwners.get(route);
+    }
     /**
      * méthode privée permettant de calculer un pourcentage qui retourne un int
      * (pourcentage de a dans b)

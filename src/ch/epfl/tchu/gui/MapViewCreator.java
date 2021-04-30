@@ -5,9 +5,12 @@ import java.util.List;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.ChMap;
+import ch.epfl.tchu.game.PlayerId;
 import ch.epfl.tchu.game.Route;
+import ch.epfl.tchu.gui.ActionHandlers.ChooseCardsHandler;
 import ch.epfl.tchu.gui.ActionHandlers.ClaimRouteHandler;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Group;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -26,9 +29,9 @@ class MapViewCreator {
         this.pane = pane;
     }
     
-    public static Pane /*ou MapViewCreator ?*/ createMapView(ObservableGameState observableGame, 
+    public static Pane createMapView(ObservableGameState observableGame, 
             ObjectProperty<ClaimRouteHandler> objectProperty,
-            CardChooser chooser) {
+            CardChooser cardChooser) {
         Pane pane = new Pane();
         pane.getStylesheets().addAll("map.css","colors.css");
         ImageView view = new ImageView();
@@ -39,18 +42,47 @@ class MapViewCreator {
             Group groupRoute = new Group();
             groupRoute.setId(route.id());
             
-            //Je ne suis pas sur des string passé à addAll
-            groupRoute.getStyleClass().addAll("route", "UNDERGROUND", "NEUTRAL");
-            //groupRoute.getStyleClass().addAll("route", route.level().toString(), route.color().toString());
+            //vérifier par le Test les Strings passé à addAll
+            String couleur = route.color()==null ? "NEUTRAL" : route.color().toString();
+            groupRoute.getStyleClass().addAll("route", route.level().toString(), route.color().toString());
             
+            observableGame.getRouteOwner(route).addListener(
+                    (p, o, n) -> groupRoute.getStyleClass().add(n.toString()));
             
+            //attacher un auditeurà la propriété de l'état de jeu observable contenant le propriétaire de la route
+            //donc il me faut un accès à routeOwners
+            
+   
             //comment gérer l'activation?
+
             
             //désactive le groupe représentant une route lorsque le joueur ne peut pas s'en emparer
             groupRoute.disableProperty().bind(
                     objectProperty.isNull().or(observableGame.claimable(route).not()));
             
             
+            //dans la video de début d'année, la route change quand la souris passe dessus
+            //ce n'est pas ce qu on fait là
+            groupRoute.setOnMouseClicked(e -> {
+                ClaimRouteHandler claimRouteH = objectProperty.get();
+                List<SortedBag<Card>> possibleClaimCards = observableGame.getPossibleClaimCards(route);
+                if(possibleClaimCards.size()==1) {
+                    claimRouteH.onClaimRoute(route, possibleClaimCards.get(0));
+                }
+                else if(possibleClaimCards.size()>1) {
+                    ChooseCardsHandler chooseCardsH =
+                            chosenCards -> claimRouteH.onClaimRoute(route, chosenCards);
+                    cardChooser.chooseCards(possibleClaimCards, chooseCardsH);
+                }
+                else{}// do nothing
+            });
+            
+            //Ce qu on nous donne
+            List<SortedBag<Card>> possibleClaimCards = observableGame.getPossibleClaimCards(route);
+            ClaimRouteHandler claimRouteH = objectProperty.get();
+            ChooseCardsHandler chooseCardsH =
+              chosenCards -> claimRouteH.onClaimRoute(route, chosenCards);
+            cardChooser.chooseCards(possibleClaimCards, chooseCardsH);
             
             
             pane.getChildren().add(groupRoute);
