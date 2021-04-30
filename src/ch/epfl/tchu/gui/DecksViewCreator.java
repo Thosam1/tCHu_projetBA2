@@ -55,7 +55,7 @@ class DecksViewCreator{
          *  carte
          */
         for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++){
-            StackPane pane = cardLayout(game.faceUpCardName(i));
+            StackPane pane = cardLayout(/*game.faceUpCardName(i)*/ Card.YELLOW.name()); //TODO rechanger    !!!!!!!!!!!!!!!
             final int I = i;
             pane.setOnMouseClicked(e -> {                                                      //todo c'est bien set on Mouse Clicked
                 ActionHandlers.DrawCardHandler drawCards = drawCardsHandler.get();
