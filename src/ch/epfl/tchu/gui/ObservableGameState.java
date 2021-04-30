@@ -9,10 +9,13 @@ import javafx.collections.FXCollections;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * @author Aymeric de chillaz (326617)
+ * @author Thösam Norlha-Tsang (330163)
  * représente l'état observable d'une partie de tCHu - une instance de ObservableGameState est spécifique à un joueur
  */
 public class ObservableGameState {
@@ -108,7 +111,7 @@ public class ObservableGameState {
         for(PlayerId id : PlayerId.ALL){
             temp.put(id, new SimpleIntegerProperty(0));
         }
-        return temp;
+        return Collections.unmodifiableMap(temp);
     }
     private static List<ObjectProperty<Card>> initFaceUpCards(){
         List<ObjectProperty<Card>> temp = new ArrayList<ObjectProperty<Card>>();
@@ -116,28 +119,28 @@ public class ObservableGameState {
             SimpleObjectProperty<Card> card = new SimpleObjectProperty<>();
             temp.add(card);
         }
-        return temp;
+        return Collections.unmodifiableList(temp);
     }
     private static Map<Route, ObjectProperty<PlayerId>> initRouteOwners(){
         Map<Route, ObjectProperty<PlayerId>> map = Map.of();
         for(Route route : ChMap.routes()) {
             map.put(route, new SimpleObjectProperty<>(null));
         }
-        return map;
+        return Collections.unmodifiableMap(map);
     }
     private static Map<Card, IntegerProperty> initCardsOfInHand() {
         Map<Card, IntegerProperty> map = Map.of();
         for (Card card :Card.ALL) {
             map.put(card, new SimpleIntegerProperty(0));
         }
-        return map;
+        return Collections.unmodifiableMap(map);
     }
     private Map<Route, BooleanProperty> initCanClaimRoute(){
         Map<Route, BooleanProperty> map = Map.of();
         for(Route route : ChMap.routes()) {
             map.put(route, new SimpleBooleanProperty(false));
         }
-        return map;
+        return Collections.unmodifiableMap(map);
     }
 
         /**
@@ -158,11 +161,9 @@ public class ObservableGameState {
         for(Route route : ChMap.routes()) {
             if(routesPlayer1.contains(route)){
                 routeOwners.get(route).set(PlayerId.PLAYER_1);
-                
             }
             else if(routesPlayer2.contains(route)){
                 routeOwners.get(route).set(PlayerId.PLAYER_2);
-                
             }
             else {routeOwners.get(route).set(null);}
         }

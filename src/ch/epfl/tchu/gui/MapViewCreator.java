@@ -19,6 +19,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 /**
+ * @author Aymeric de chillaz (326617)
  * La classe MapViewCreator, non instanciable et package private (!), 
  * contient une unique méthode publique, nommée createMapView et permettant de créer la vue de la carte.
  * */

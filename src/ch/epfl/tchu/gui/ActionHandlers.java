@@ -6,6 +6,7 @@ import ch.epfl.tchu.game.Route;
 import ch.epfl.tchu.game.Ticket;
 
 /**
+ *  @author Thösam Norlha-Tsang (330163)
  *  Contient cinq interfaces fonctionnelles imbriquées représentant différents «gestionnaires d'actions».
  */
 public interface ActionHandlers {
