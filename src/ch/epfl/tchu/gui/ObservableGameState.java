@@ -107,7 +107,7 @@ public class ObservableGameState {
      *  Méthodes appelées à l'initialisation
      */
     private static Map<PlayerId, IntegerProperty> intPropertyIdMap(){
-        Map<PlayerId, IntegerProperty> temp = new HashMap<PlayerId, IntegerProperty>();
+        Map<PlayerId, IntegerProperty> temp = new HashMap<PlayerId, IntegerProperty>(); //ToDo
         for(PlayerId id : PlayerId.ALL){
             temp.put(id, new SimpleIntegerProperty(0));
         }

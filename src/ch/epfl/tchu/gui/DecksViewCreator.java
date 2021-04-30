@@ -23,7 +23,7 @@ class DecksViewCreator{
     //constructeur privé
     private DecksViewCreator(){}
 
-    public HBox createHandView(ObservableGameState game){
+    public static HBox createHandView(ObservableGameState game){
 
 //        Map<Card, StackPane> allCardsPane = Map.of();
 
@@ -35,12 +35,8 @@ class DecksViewCreator{
 
         for(Card card : Card.ALL){
             StackPane pane = cardAndTextLayout(card.name(), game.cardsOfInHand(card));
-            pane.visibleProperty().bind(Bindings.greaterThan(game.cardsOfInHand(card), 0));  //TODO cette ligne ou la ligne en bas ?
-//            pane.setVisible(game.cardsOfInHand(card).greaterThan(0).get());
-
-//            allCardsPane.put(card, pane);
+            pane.visibleProperty().bind(Bindings.greaterThan(game.cardsOfInHand(card), 0));
             cards.getChildren().add(pane);
-//            allCardsPane.add(pane);
         }
         ListView tickets = new ListView(game.playerTickets());    //TODO comment ?
         tickets.setId("tickets");
@@ -51,10 +47,10 @@ class DecksViewCreator{
         root.getStylesheets().addAll("deck.css", "color.css");
         root.getChildren().addAll(tickets, cards);
 
-        return new HBox(pane);
+        return root;
     }
 
-    public VBox createCardsView(ObservableGameState game, ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketHandler, ObjectProperty<ActionHandlers.DrawCardHandler> drawCardsHandler){  //ToDo faut-il mettre le ObjectProperty<> ?
+    public static VBox createCardsView(ObservableGameState game, ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketHandler, ObjectProperty<ActionHandlers.DrawCardHandler> drawCardsHandler){  //ToDo faut-il mettre le ObjectProperty<> ?
         VBox cardPane = new VBox(); //new VBox(gaugedTickets, faceUpCardsPane, gaugedDeck); //ToDo quel est le "related problem" ?
         cardPane.getStylesheets().addAll("deck.css", "colors.css");
         cardPane.setId("card-pane");
@@ -64,30 +60,31 @@ class DecksViewCreator{
          */
         for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++){
             StackPane pane = cardLayout(game.faceUpCardName(i));
-            if(pane.isPressed()){ drawCardsHandler.onDrawCard(i); } //ToDo je ne suis vrmt pas sûr de commentfaire fonctionner ceci.
+//            if(pane.isPressed()){ drawCardsHandler.onDrawCard(i); } //ToDo je ne suis vrmt pas sûr de commentfaire fonctionner ceci.
             cardPane.getChildren().add(pane);
 //            pane.getStyleClass().addListener(la propriété qui a changé, l'ancienne valeur, la nouvelle valeur); //ToDo ici je ne vois pas l'intérêt du Listener parce que je la recrée dans tous les cas juste en haut...
         }
         /**
          *  Pioche billets et cartes
          */
-        Button gaugedTickets = gaugedButtonLayout(0.0f, (ObjectProperty<ActionHandlers>) drawTicketHandler);
-        if(gaugedTickets.isPressed()){
-            drawTicketHandler.onDrawTickets();
-        }
+//        Button gaugedTickets = gaugedButtonLayout(0.0f, (ObjectProperty<ActionHandlers>) drawTicketHandler);
+//        if(gaugedTickets.isPressed()){
+//            drawTicketHandler.onDrawTickets();
+//        }
 
-        Button gaugedDeck = gaugedButtonLayout(0.0f, (ActionHandlers) drawCardsHandler);
-        if(gaugedDeck.isPressed()){
-            drawCardsHandler.onDrawCard(-1);    //ToDo est-ce qu'ici on assume que c'est seulement le bouton pour la pioche
-        }
+//        Button gaugedDeck = gaugedButtonLayout(0.0f, (ActionHandlers) drawCardsHandler);
+//        if(gaugedDeck.isPressed()){
+//            drawCardsHandler.onDrawCard(-1);    //ToDo est-ce qu'ici on assume que c'est seulement le bouton pour la pioche
+//        }
+
 //        if(cardPane.getChildren())
 
         //  ---
-        cardPane.getChildren().addAll(gaugedTickets, gaugedDeck);
+//        cardPane.getChildren().addAll(gaugedTickets, gaugedDeck);
         return cardPane;
     }
 
-    private StackPane cardLayout(String cardName){
+    private static StackPane cardLayout(String cardName){
         cardName = (cardName == Card.LOCOMOTIVE.name()) ? "NEUTRAL" : cardName;
         Rectangle outside = new Rectangle(60, 90);
         outside.getStyleClass().add("outside");
@@ -104,7 +101,7 @@ class DecksViewCreator{
 
         return pane;
     }
-    private StackPane cardAndTextLayout(String cardName, ReadOnlyIntegerProperty integer){       // TODO y aurait-il moyen de faire le binding, plus haut pour rendre cette méthode plus réutilisable ?
+    private static StackPane cardAndTextLayout(String cardName, ReadOnlyIntegerProperty integer){       // TODO y aurait-il moyen de faire le binding, plus haut pour rendre cette méthode plus réutilisable ?
         Text count = new Text();
         count.getStyleClass().add("count");
         count.textProperty().bind(Bindings.convert(integer));
