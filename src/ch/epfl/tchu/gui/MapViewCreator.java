@@ -19,7 +19,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 /**
- * @author Aymeric de chillaz (326617)
  * La classe MapViewCreator, non instanciable et package private (!), 
  * contient une unique méthode publique, nommée createMapView et permettant de créer la vue de la carte.
  * */
@@ -43,7 +42,6 @@ class MapViewCreator {
             Group groupRoute = new Group();
             groupRoute.setId(route.id());
             
-            //vérifier par le Test les Strings passé à addAll
             String couleur = route.color()==null ? "NEUTRAL" : route.color().toString();
             groupRoute.getStyleClass().addAll("route", route.level().toString(), route.color().toString());
             
@@ -55,6 +53,8 @@ class MapViewCreator {
             
    
             //comment gérer l'activation?
+            //ou alors par défaut la propriété est activé
+            //et il suffit donc de lui donné une condition de désactivation
 
             
             //désactive le groupe représentant une route lorsque le joueur ne peut pas s'en emparer
@@ -75,7 +75,7 @@ class MapViewCreator {
                             chosenCards -> claimRouteH.onClaimRoute(route, chosenCards);
                     cardChooser.chooseCards(possibleClaimCards, chooseCardsH);
                 }
-                else{}// do nothing
+                else{}// do nothing //je pense que ce cas est inutile car la  propiété est seulement activé si la route est claimable
             });
             
             //Ce qu on nous donne

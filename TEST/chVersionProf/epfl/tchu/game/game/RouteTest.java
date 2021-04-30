@@ -2,15 +2,25 @@ package chVersionProf.epfl.tchu.game.game;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
+import ch.epfl.tchu.game.ChMap;
 import ch.epfl.tchu.game.Color;
+import ch.epfl.tchu.game.PlayerId;
 import ch.epfl.tchu.game.Route;
 import ch.epfl.tchu.game.Route.Level;
 import ch.epfl.tchu.game.Station;
 import ch.epfl.test.TestRandomizer;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,6 +53,11 @@ class RouteTest {
         assertEquals(true,route.stations().contains(route.station1()));
     //    assertEquals(true, route.stations().contains(new Station(0, "Lausanne")));
         assertEquals("OVERGROUND", route.level().toString());
+        
+        Map<Route, ObjectProperty<PlayerId>> map = new HashMap<Route, ObjectProperty<PlayerId>>();
+        for(Route routeTest : ChMap.routes()) {
+            map.put(routeTest, new SimpleObjectProperty<>(null));
+        }
     }
     @Test
     void routeConstructorFailsWhenBothStationsAreEqual() {

@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -81,12 +82,12 @@ public class ObservableGameState {
     public void setState(PublicGameState newGameState, PlayerState newPlayerState){
         this.publicGameState = newGameState;
         this.playerState = newPlayerState;
+        
         percentTicketsLeft.set(pourcentage(newGameState.ticketsCount(), ChMap.tickets().size()));
         percentCardsLeft.set(pourcentage(newGameState.cardState().deckSize(), Constants.ALL_CARDS.size()));
-
-        modifyFaceUpCards(); //TODO vérifier que ça change bien, nécessaire de déclarer static ?
+        modifyFaceUpCards();
         modifyRouteOwners();
-
+        
       //est ce que ce ne serait pas plus propre en faisant un appel à des modify
         for(PlayerId id: PlayerId.ALL) {
             PublicPlayerState state = publicGameState.playerState(id);
@@ -97,7 +98,6 @@ public class ObservableGameState {
         }
 
         modifyPlayerTickets();
-        modifyPlayerTickets();
         modifyCardsOfInHand();
         modifyCanClaimRoute();
 
@@ -107,7 +107,7 @@ public class ObservableGameState {
      *  Méthodes appelées à l'initialisation
      */
     private static Map<PlayerId, IntegerProperty> intPropertyIdMap(){
-        Map<PlayerId, IntegerProperty> temp = Map.of();
+        Map<PlayerId, IntegerProperty> temp = new HashMap<PlayerId, IntegerProperty>();
         for(PlayerId id : PlayerId.ALL){
             temp.put(id, new SimpleIntegerProperty(0));
         }
@@ -122,21 +122,21 @@ public class ObservableGameState {
         return Collections.unmodifiableList(temp);
     }
     private static Map<Route, ObjectProperty<PlayerId>> initRouteOwners(){
-        Map<Route, ObjectProperty<PlayerId>> map = Map.of();
+        Map<Route, ObjectProperty<PlayerId>> map = new HashMap<Route, ObjectProperty<PlayerId>>();
         for(Route route : ChMap.routes()) {
             map.put(route, new SimpleObjectProperty<>(null));
         }
         return Collections.unmodifiableMap(map);
     }
     private static Map<Card, IntegerProperty> initCardsOfInHand() {
-        Map<Card, IntegerProperty> map = Map.of();
+        Map<Card, IntegerProperty> map = new HashMap<Card, IntegerProperty>();
         for (Card card :Card.ALL) {
             map.put(card, new SimpleIntegerProperty(0));
         }
         return Collections.unmodifiableMap(map);
     }
     private Map<Route, BooleanProperty> initCanClaimRoute(){
-        Map<Route, BooleanProperty> map = Map.of();
+        Map<Route, BooleanProperty> map = new HashMap<Route, BooleanProperty>();
         for(Route route : ChMap.routes()) {
             map.put(route, new SimpleBooleanProperty(false));
         }
