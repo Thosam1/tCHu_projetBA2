@@ -39,7 +39,6 @@ public final class Stage9Test extends Application {
         new BorderPane(mapView, null, cardsView, handView, null);
       primaryStage.setScene(new Scene(mainPane));
       primaryStage.show();
-
       setState(gameState);
     }
 

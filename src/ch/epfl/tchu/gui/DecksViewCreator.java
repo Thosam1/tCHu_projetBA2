@@ -2,6 +2,7 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Constants;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.scene.Group;
@@ -17,16 +18,12 @@ import javafx.scene.text.Text;
  *
  */
 class DecksViewCreator{
-    Pane pane;
-    Node node;
+
 
     //constructeur privé
     private DecksViewCreator(){}
 
     public static HBox createHandView(ObservableGameState game){
-
-//        Map<Card, StackPane> allCardsPane = Map.of();
-
         /**
          *  carte + compteur
          */
@@ -34,7 +31,7 @@ class DecksViewCreator{
         cards.setId("hand-pane");
 
         for(Card card : Card.ALL){
-            StackPane pane = cardAndTextLayout(card.name(), game.cardsOfInHand(card));
+            StackPane pane = cardAndTextLayout(card.name(), game.cardsOfInHand(card));  //ToDo comment bind le text et le nombre de cartes
             pane.visibleProperty().bind(Bindings.greaterThan(game.cardsOfInHand(card), 0));
             cards.getChildren().add(pane);
         }
@@ -46,12 +43,11 @@ class DecksViewCreator{
         HBox root = new HBox();//new HBox(tickets, cards);
         root.getStylesheets().addAll("deck.css", "color.css");
         root.getChildren().addAll(tickets, cards);
-
         return root;
     }
 
     public static VBox createCardsView(ObservableGameState game, ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketHandler, ObjectProperty<ActionHandlers.DrawCardHandler> drawCardsHandler){  //ToDo faut-il mettre le ObjectProperty<> ?
-        VBox cardPane = new VBox(); //new VBox(gaugedTickets, faceUpCardsPane, gaugedDeck); //ToDo quel est le "related problem" ?
+        VBox cardPane = new VBox();
         cardPane.getStylesheets().addAll("deck.css", "colors.css");
         cardPane.setId("card-pane");
 
@@ -60,27 +56,38 @@ class DecksViewCreator{
          */
         for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++){
             StackPane pane = cardLayout(game.faceUpCardName(i));
-//            if(pane.isPressed()){ drawCardsHandler.onDrawCard(i); } //ToDo je ne suis vrmt pas sûr de commentfaire fonctionner ceci.
+            final int I = i;
+            pane.setOnMouseClicked(e -> {                                                      //todo c'est bien set on Mouse Clicked
+                ActionHandlers.DrawCardHandler drawCards = drawCardsHandler.get();
+                drawCards.onDrawCard(I);
+            });
+            game.faceUpCard(i).addListener((p, o, n) -> {
+                pane.getStyleClass().set(0, (n.name() == Card.LOCOMOTIVE.name()) ? "NEUTRAL" : n.name());
+            });
+
             cardPane.getChildren().add(pane);
-//            pane.getStyleClass().addListener(la propriété qui a changé, l'ancienne valeur, la nouvelle valeur); //ToDo ici je ne vois pas l'intérêt du Listener parce que je la recrée dans tous les cas juste en haut...
         }
         /**
          *  Pioche billets et cartes
          */
-//        Button gaugedTickets = gaugedButtonLayout(0.0f, (ObjectProperty<ActionHandlers>) drawTicketHandler);
-//        if(gaugedTickets.isPressed()){
-//            drawTicketHandler.onDrawTickets();
-//        }
+        Button gaugedTickets = gaugedButtonLayout((IntegerProperty) game.percentTicketsLeft()); //ToDo changer la taille dedans
+                     //ToDo comment accéder à la propriété du background ? ou comment le faire dans le constructeur ? passer la référence serait une mauvaise idée ?
+        gaugedTickets.disableProperty().bind(drawTicketHandler.isNull());
 
-//        Button gaugedDeck = gaugedButtonLayout(0.0f, (ActionHandlers) drawCardsHandler);
-//        if(gaugedDeck.isPressed()){
-//            drawCardsHandler.onDrawCard(-1);    //ToDo est-ce qu'ici on assume que c'est seulement le bouton pour la pioche
-//        }
+        gaugedTickets.setOnMouseClicked(e -> {    // ou bien setOnAction
+            ActionHandlers.DrawTicketsHandler drawTickets = drawTicketHandler.get();;
+            drawTickets.onDrawTickets();
+        });
 
-//        if(cardPane.getChildren())
+        Button gaugedDeck = gaugedButtonLayout((IntegerProperty) game.percentCardsLeft());
+        gaugedDeck.disableProperty().bind(drawCardsHandler.isNull());
+                //ToDo changer la taille
+        gaugedDeck.setOnMouseClicked(e -> {
+            ActionHandlers.DrawCardHandler drawCards = drawCardsHandler.get();
+            drawCards.onDrawCard(-1);     //ToDo est-ce qu'ici on assume que c'est seulement le bouton pour la pioche
+        });
 
-        //  ---
-//        cardPane.getChildren().addAll(gaugedTickets, gaugedDeck);
+        cardPane.getChildren().addAll(gaugedTickets, gaugedDeck);
         return cardPane;
     }
 
@@ -101,7 +108,7 @@ class DecksViewCreator{
 
         return pane;
     }
-    private static StackPane cardAndTextLayout(String cardName, ReadOnlyIntegerProperty integer){       // TODO y aurait-il moyen de faire le binding, plus haut pour rendre cette méthode plus réutilisable ?
+    private static StackPane cardAndTextLayout(String cardName, ReadOnlyIntegerProperty integer){       // TODO y aurait-il moyen de faire le binding, plus haut pour rendre cette méthode plus réutilisable ?  -> pour le "integer" accéder depuis plus bas
         Text count = new Text();
         count.getStyleClass().add("count");
         count.textProperty().bind(Bindings.convert(integer));
@@ -112,16 +119,26 @@ class DecksViewCreator{
         return pane;
     }
 
-    private Button gaugedButtonLayout(float percentage, ObjectProperty<ActionHandlers> handler){  //(beetween 0.00 and 1.00)
+    private static Button gaugedButtonLayout(IntegerProperty percentage){  //(beetween 0 and 100)    // bind
         Button button = new Button();
         Group group = new Group();
         Rectangle background = new Rectangle(50, 5);
-        Rectangle foreground = new Rectangle((int) (50 * percentage), 5);
-//        Group group = new Group(background, foreground);
-        group.getChildren().addAll(background, foreground);
-        button.setGraphic(group);
+        Rectangle foreground = new Rectangle(50, 5);
+        foreground.widthProperty().bind(percentage.multiply(50).divide(100));   //toDo
 
-        button.disableProperty().bind(handler.isNull());
+//        Group group = new Group(background, foreground);  -> mieux
+        group.getChildren().addAll(background, foreground); //ToDo pour le changement de la taille du bouton je fais comment ?
+        button.setGraphic(group);
         return button;
     }
 }
+
+/*
+    Questions :
+    0) vérifier les setOnMouse vs setOnAction   // done
+    1) création des 5 faceUpcards
+        - lambda et index pour piocher
+        - addListener pour le label
+    2) Pour les boutons et leur pourcentage, comment accéder au rectangle "background"  // done
+    3) CardAndTextLayout -> comment éviter de mettre l'integerProperty dans le constructeur ? comment y accéder depuis dehors ?
+ */

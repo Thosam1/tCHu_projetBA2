@@ -208,7 +208,7 @@ public class ObservableGameState {
     public ReadOnlyIntegerProperty nbCarsInHand(PlayerId id){return nbCarsInHand.get(id);}
     public ReadOnlyIntegerProperty nbConstructionPoints(PlayerId id){return nbConstructionPoints.get(id);}
 
-    public ReadOnlyListProperty<Ticket> playerTickets(){return (ReadOnlyListProperty<Ticket>) playerTickets;}  //ToDo comment ça se passe ici ?
+    public ObservableList<Ticket> playerTickets(){return playerTickets;}
     public ReadOnlyIntegerProperty cardsOfInHand(Card card){return cardsOfInHand.get(card);}
     public ReadOnlyBooleanProperty canClaimRoute(Route route){return canClaimRoute.get(route);}
 
