@@ -62,8 +62,8 @@ class MapViewCreator {
             Group groupRoute = new Group();
             groupRoute.setId(route.id());
             
-            String couleur = route.color()==null ? "NEUTRAL" : route.color().toString();
-            groupRoute.getStyleClass().addAll("route", route.level().toString(), couleur);
+            String color = route.color()==null ? "NEUTRAL" : route.color().toString();
+            groupRoute.getStyleClass().addAll("route", route.level().toString(), color);
             
             //ici on attache un auditeur à la propriété de l'état de jeu observable contenant le propriétaire de la route
             //lorsque cette propriété change, on rajoute une classe de Style associé à l'identité de la nouvelle valeur i.e. n.toString()

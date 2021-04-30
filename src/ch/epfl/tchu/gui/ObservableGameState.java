@@ -83,8 +83,8 @@ public class ObservableGameState {
         this.publicGameState = newGameState;
         this.playerState = newPlayerState;
         
-        percentTicketsLeft.set(pourcentage(newGameState.ticketsCount(), ChMap.tickets().size()));
-        percentCardsLeft.set(pourcentage(newGameState.cardState().deckSize(), Constants.ALL_CARDS.size()));
+        percentTicketsLeft.set(percent(newGameState.ticketsCount(), ChMap.tickets().size()));
+        percentCardsLeft.set(percent(newGameState.cardState().deckSize(), Constants.ALL_CARDS.size()));
         modifyFaceUpCards();
         modifyRouteOwners();
         
@@ -230,7 +230,7 @@ public class ObservableGameState {
      * (pourcentage de a dans b)
      * peut donc prendre une valeur entre 0 et 1
      * C'est pour cela qu'on vérifie que a est plus petit ou égal à b*/
-    private static Integer pourcentage(int a, int b) {
+    private static Integer percent(int a, int b) {
         Preconditions.checkArgument(a<=b);
         return (a * 100) / b;
     }   //TODO pourrait-on garder entre 0 et 1 ? -enlever le *100 ? non parce qu on veut une valeur entre 0 et 100
