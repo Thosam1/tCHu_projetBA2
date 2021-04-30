@@ -30,7 +30,7 @@ public interface ActionHandlers {
          * @param route
          * @param cards
          */
-        public abstract void onClaimRoute(Route route, SortedBag<Card> cards);   //TODO est-ce que les cartes initiales données sont le sortedBag?
+        public abstract void onClaimRoute(Route route, SortedBag<Card> cards);   //TODO est-ce que les cartes initiales données sont le sortedBag? (multiensenble)
     }
     public interface ChooseTicketsHandler{
         /**
