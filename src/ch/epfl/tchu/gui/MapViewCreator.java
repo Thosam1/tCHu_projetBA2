@@ -23,12 +23,32 @@ import javafx.scene.shape.Rectangle;
  * contient une unique méthode publique, nommée createMapView et permettant de créer la vue de la carte.
  * */
 class MapViewCreator {
-    Pane pane;
+    public Pane pane;
     
+    /**
+     * Le seul attribut de la classe est une instance de Pane
+     * */
     private MapViewCreator(Pane pane) {
         this.pane = pane;
     }
     
+    /**
+     * Cette méthode prend trois paramètres:
+     * @param observableGame qui est une instance de ObservableGameState, 
+     *      nous en avons besoin pour accéder à ses propriétés routeOwners et possibleClaimCards
+     *      Mais aussi pour savoir si une route est "claimable"
+     * @param objectProperty qui est une propiété contenant un ClaimRouteHandler 
+     *      Nous voulons savoir si la propriété est null, et accéder à son contenu
+     * @param cardChooser est utile pour sa méthode chooseCards qui provoque l'apparition d'un dialogue 
+     *      demandant au joueur de choisir l'ensemble de cartes qu'il désire utiliser pour (tenter de) s'emparer d'une route
+     *      dans le cas ou il a plusieurs options
+     *      
+     *      Cette méthode créé l'interface utilisateur (la vue et le controleur)
+     *      La racine du grap de scène est de type Pane. Nous lui plusieurs enfants qui eux meme ont des enfants etc.
+     *      Finalement, nous nous retrouvons avec un affichage de la carte en fond d'écran, avec les routes affiché sur celle ci.
+     *      
+     *      Ces routes peuvent changer en fonction de l'interaction (ce qui est aussi géré par cette classe et est plus détaillé ci-dessous)
+     * */
     public static Pane createMapView(ObservableGameState observableGame, 
             ObjectProperty<ClaimRouteHandler> objectProperty,
             CardChooser cardChooser) {
@@ -43,18 +63,15 @@ class MapViewCreator {
             groupRoute.setId(route.id());
             
             String couleur = route.color()==null ? "NEUTRAL" : route.color().toString();
-            groupRoute.getStyleClass().addAll("route", route.level().toString(), route.color().toString());
+            groupRoute.getStyleClass().addAll("route", route.level().toString(), couleur);
             
+            //ici on attache un auditeur à la propriété de l'état de jeu observable contenant le propriétaire de la route
+            //lorsque cette propriété change, on rajoute une classe de Style associé à l'identité de la nouvelle valeur i.e. n.toString()
             observableGame.getRouteOwner(route).addListener(
                     (p, o, n) -> groupRoute.getStyleClass().add(n.toString()));
             
             //attacher un auditeurà la propriété de l'état de jeu observable contenant le propriétaire de la route
             //donc il me faut un accès à routeOwners
-            
-   
-            //comment gérer l'activation?
-            //ou alors par défaut la propriété est activé
-            //et il suffit donc de lui donné une condition de désactivation
 
             
             //désactive le groupe représentant une route lorsque le joueur ne peut pas s'en emparer
@@ -62,29 +79,20 @@ class MapViewCreator {
                     objectProperty.isNull().or(observableGame.claimable(route).not()));
             
             
-            //dans la video de début d'année, la route change quand la souris passe dessus
-            //ce n'est pas ce qu on fait là
             groupRoute.setOnMouseClicked(e -> {
                 ClaimRouteHandler claimRouteH = objectProperty.get();
                 List<SortedBag<Card>> possibleClaimCards = observableGame.getPossibleClaimCards(route);
                 if(possibleClaimCards.size()==1) {
                     claimRouteH.onClaimRoute(route, possibleClaimCards.get(0));
                 }
-                else if(possibleClaimCards.size()>1) {
+                else {//cas ou il y a plusieurs possibilité de cartes qui peuvent permettre de prendre pocession de la route
                     ChooseCardsHandler chooseCardsH =
                             chosenCards -> claimRouteH.onClaimRoute(route, chosenCards);
                     cardChooser.chooseCards(possibleClaimCards, chooseCardsH);
                 }
-                else{}// do nothing //je pense que ce cas est inutile car la  propiété est seulement activé si la route est claimable
             });
             
-            //Ce qu on nous donne
-            List<SortedBag<Card>> possibleClaimCards = observableGame.getPossibleClaimCards(route);
-            ClaimRouteHandler claimRouteH = objectProperty.get();
-            ChooseCardsHandler chooseCardsH =
-              chosenCards -> claimRouteH.onClaimRoute(route, chosenCards);
-            cardChooser.chooseCards(possibleClaimCards, chooseCardsH);
-            
+           
             
             pane.getChildren().add(groupRoute);
             
