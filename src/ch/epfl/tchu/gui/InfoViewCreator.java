@@ -41,7 +41,7 @@ class InfoViewCreator {
         vBoxPlayerStats.setId("player-stats");
         vBox.getChildren().add(vBoxPlayerStats);
         
-        List<PlayerId> playerIdList = new ArrayList<>(playerId, playerId.next());
+        List<PlayerId> playerIdList = List.of(playerId, playerId.next());
         
         for(PlayerId player : playerIdList) {
             TextFlow textFlowPlayerStatistics = new TextFlow();

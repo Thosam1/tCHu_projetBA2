@@ -225,6 +225,9 @@ public class ObservableGameState {
     public ObjectProperty<PlayerId> getRouteOwner(Route route) {
         return routeOwners.get(route);
     }
+    public PublicGameState getPublicGameState() {
+        return publicGameState;
+    }
     /**
      * méthode privée permettant de calculer un pourcentage qui retourne un int
      * (pourcentage de a dans b)
