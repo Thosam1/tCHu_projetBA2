@@ -210,7 +210,12 @@ public final class Info {
         return (route.station1().name() + StringsFr.EN_DASH_SEPARATOR + route.station2().name());   // fonctionne avec " - "
     }
 
-    private static String cardListString(SortedBag<Card> cardSortedBag){
+    /**
+     * utilisée dans la classe info et dans la classe GrphicalPlayer
+     * @param cardSortedBag
+     * @return les cartes du multi-ensemble donné en format String, plus lisible
+     */
+    public static String cardListString(SortedBag<Card> cardSortedBag){
         String cardList = "";
 
         int i = 0;

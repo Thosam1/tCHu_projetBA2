@@ -1,8 +1,8 @@
 package ch.epfl.tchu.gui;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
@@ -15,12 +15,20 @@ import ch.epfl.tchu.gui.ActionHandlers.ChooseCardsHandler;
 import ch.epfl.tchu.gui.ActionHandlers.ChooseTicketsHandler;
 import ch.epfl.tchu.gui.ActionHandlers.ClaimRouteHandler;
 import ch.epfl.tchu.gui.ActionHandlers.DrawCardHandler;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -28,14 +36,15 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.StringConverter;
 
-import javax.swing.text.html.ListView;
 
 public final class GraphicalPlayer {
     private ObservableGameState observableGame;
     private ObservableList<Text> messageList;
     private final PlayerId playerId;
     private final Map<PlayerId, String> mapPlayerNames;
+    private Stage main;
     
     //propriétés contenant les gestionnaires d'action
     //si elle contient null, alors l'action en question est actuellement interdite
@@ -43,9 +52,17 @@ public final class GraphicalPlayer {
     private ObjectProperty<ClaimRouteHandler> claimRouteProperty = new SimpleObjectProperty<>();
     private ObjectProperty<ChooseTicketsHandler> chooseTicketsProperty = new SimpleObjectProperty<>();
     
-    public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> mapPlayerNames) {
+    public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> mapPlayerNames,
+                           Node mapView,
+                           Node drawView,
+                           Node handView,
+                           Node infoView) {
         this.playerId = playerId;
         this.mapPlayerNames = mapPlayerNames;
+        observableGame = new ObservableGameState(playerId);
+
+        main = mainSceneGraph(mapView, drawView, handView, infoView); // todo comment créer ceci sans prendre les nodes en arguments ?
+        main.show();
     }
     
     public void setState(PublicGameState newGameState, PlayerState newPlayerState) {
@@ -91,7 +108,12 @@ public final class GraphicalPlayer {
     public void chooseTickets(SortedBag<Ticket> ticketsToChoose, ChooseTicketsHandler chooseTicketsHandler) {
         Preconditions.checkArgument(ticketsToChoose.size()==3 || ticketsToChoose.size()==5);
         //TODO
-       
+        ObservableList<SortedBag<Ticket>> observableListTickets = FXCollections.observableArrayList(ticketsToChoose);
+        int min = ticketsToChoose.size()-2;
+        ListView listView = listView(observableListTickets, false, min != 1);  //toDo utiliser des constantes ici ?      //que ce passe-t-il s'il ne reste que 2 tickets -> 2-2 = 0
+        Button chooseTicketsButton = chooseTicketsButton(listView, min);
+        Stage chooseWindow = chooseGraph(main, StringsFr.TICKETS_CHOICE, String.format(StringsFr.CHOOSE_TICKETS, min), listView, chooseTicketsButton);
+        chooseWindow.show();
     }
     
     public void drawCard(DrawCardHandler drawCardHandler) {
@@ -102,38 +124,61 @@ public final class GraphicalPlayer {
     }
     
     public void chooseClaimCards(List<SortedBag<Card>> possibleClaimCards, ChooseCardsHandler chooseCardsHandler) {
-        
+        ObservableList<SortedBag<Card>> observableListCards = FXCollections.observableArrayList(possibleClaimCards);    //toDo checker que ça fonctionne
+        ListView listView = listView(observableListCards, true, true);
+        Button chooseClaimCardsButton = chooseCardsButton(listView);
+        Stage chooseWindow = chooseGraph(main, StringsFr.CARDS_CHOICE, StringsFr.CHOOSE_CARDS, listView, chooseClaimCardsButton);
+        chooseWindow.show();
     }
     
-    public void choosedAdditionalCards(List<SortedBag<Card>> possibleAdditionalCards, ChooseCardsHandler chooseCardsHandler) {}
+    public void choosedAdditionalCards(List<SortedBag<Card>> possibleAdditionalCards, ChooseCardsHandler chooseCardsHandler) {
+        ObservableList<SortedBag<Card>> observableListCards = FXCollections.observableArrayList(possibleAdditionalCards);    //toDo checker que ça fonctionne
+        ListView listView = listView(observableListCards, true, true);
+        Button choosedAdditionalCardsButton = chooseAdditionalCardsButton();
+        Stage chooseWindow = chooseGraph(main, StringsFr.CARDS_CHOICE, StringsFr.CHOOSE_ADDITIONAL_CARDS, listView, choosedAdditionalCardsButton);
+        chooseWindow.show();
+    }
+
+
 
     private Stage mainSceneGraph(Node mapView, Node drawView, Node handView, Node infoView){
         BorderPane borderPane = new BorderPane(mapView, null, drawView, handView, infoView);
         Stage root = new Stage();
         root.setScene(new Scene(borderPane));
         root.setTitle("tCHu" + " - " + mapPlayerNames.get(playerId));
-        root.show();    //todo show-void or return ?
+//        root.show();    //todo show-void or return ?
         return root;
     }
 
 
-    public static Stage chooseGraph(String title, String introText, String number, ObservableList list){  // titre est donné soit par la constante TICKETS_CHOICE, soit par la constante CARDS_CHOICE de StringsFr
+    public Stage chooseGraph(Stage root, String title, String introText, /*ObservableList<E> list*/ ListView listView, Button caseButton){  // titre est donné soit par la constante TICKETS_CHOICE, soit par la constante CARDS_CHOICE de StringsFr
         Stage stage = new Stage(StageStyle.UTILITY);
-        stage.initOwner();  //todo ? soit la fenêtre principale de l'interface (créée par le constructeur de GraphicalPlayer)
+        stage.initOwner(root);  //todo ? soit la fenêtre principale de l'interface (créée par le constructeur de GraphicalPlayer)
         stage.initModality(Modality.WINDOW_MODAL);
 
         VBox vBox = new VBox();
 
-        Text text = new Text(number == null ? introText : String.format(StringsFr.CHOOSE_TICKETS, number)); //toDo mieux de formater en dehors ou dedans ?
+        Text text = new Text(/*number == null ? introText : String.format(StringsFr.CHOOSE_TICKETS, number)*/ introText); //toDo mieux de formater en dehors mieux
         TextFlow textFlow = new TextFlow(text);
 
 
-        ListView listView = new ListView(list);
-        listView.
+//        ListView listView = new ListView(list);
+//        if(multiple) {listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);}    //iff multiple
+//        listView.getSelectionModel().getSelectedItems();
+//        ObservableList temp = listView.getSelectionModel().getSelectedItems();
 
-        Button button = new Button();
+//        caseButton.disableProperty().bind(Bindings.greaterThan(Bindings.size(temp), number));
 
-        vBox.getChildren().addAll(textFlow, listView, button);
+
+//        listView.setCellFactory(v ->
+//                new TextFieldListCell<>(new CardBagStringConverter())); // iff cards
+
+
+//        Button button = new Button(caseButton);
+        caseButton.getStyleClass().add("gauged");
+        caseButton.setText("Choisir");
+
+        vBox.getChildren().addAll(textFlow, listView, caseButton);
 
         Scene scene = new Scene(vBox);
         scene.getStylesheets().add("chooser.css");
@@ -142,6 +187,59 @@ public final class GraphicalPlayer {
 
 
         return stage;
+    }
+    /**
+     *  Pour la liste view
+     */
+    private <E> ListView listView(ObservableList<E> list, boolean cards,boolean multiple){
+        ListView listView = new ListView(list);
+        if(cards){ listView.setCellFactory(v ->
+                new TextFieldListCell<>(new CardBagStringConverter()));} // iff cards à cause de sortedBag
+        if(multiple) {listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);}    //iff multiple
+        return listView;
+    }
+
+    /**
+     *  for chooseTickets
+     */
+    private Button chooseTicketsButton(ListView list, int min){
+        Button button = new Button();
+        ObservableList temp = list.getSelectionModel().getSelectedItems();
+        button.disableProperty().bind(Bindings.greaterThanOrEqual(Bindings.size(temp), min));
+        return button;
+    }
+    /**
+     *  for chooseCards
+     */
+    private Button chooseCardsButton(ListView list){    //todo ça représente quoi ? les cartes initiales ? on peut choisir plus d'une option ?
+        Button button = new Button();
+        ObservableList temp = list.getSelectionModel().getSelectedItems();
+        BooleanBinding equals = Bindings.createBooleanBinding(() -> Objects.equals(Bindings.size(temp),1));
+//        button.disableProperty().bind(Bindings.size(temp) == 0); /*&& Bindings.size(temp) >= number*/);
+        button.disableProperty().bind(equals);
+        return button;
+    }
+    /**
+     *  for chooseAdditionalCards
+     *  le bouton est toujours actif, une sélection vide permettant au joueur
+     *  de déclarer qu'il désire abandonner sa tentative de prise de possession du tunnel.
+     */
+    private Button chooseAdditionalCardsButton(){
+        Button button = new Button();
+        return button;
+    }
+
+    private class CardBagStringConverter extends StringConverter<SortedBag<Card>> {
+        @Override
+        public String toString(SortedBag<Card> cardSortedBag) {
+            return Info.cardListString(cardSortedBag);  //toDo serait-il mieux de la recopier plus bas ?
+        }
+
+        @Override
+        public SortedBag<Card> fromString(String s) {
+            throw new UnsupportedOperationException();
+        } // StringConverter<SortedBag<Card>> quelle librairie ?
+
     }
 
 }
