@@ -62,17 +62,30 @@ public final class GraphicalPlayer {
     public void startTurn(DrawCardHandler drawCardHandler, ClaimRouteHandler claimRouteHandler,
             ChooseTicketsHandler chooseTicketsHandler) {
         if(observableGame.getPublicGameState().canDrawTickets()) {
-            chooseTicketsProperty.set(chooseTicketsHandler);
+            chooseTicketsProperty.set((tickets) ->{
+                chooseTicketsHandler.onChooseTickets(tickets);
+                drawCardProperty.set(null);
+                claimRouteProperty.set(null);
+                chooseTicketsProperty.set(null);//je ne suis pas sur de ça
+            });
         }
         
-        DrawCardHandler localDrawCardHandler = (observableGame.getPublicGameState().canDrawCards())?
-                drawCardHandler : null;
-        drawCardProperty.set(localDrawCardHandler);
-        
-        //La propriété correspondant à la prise de possession d'une route doit toujours être remplie
-        claimRouteProperty.set(claimRouteHandler);
-        
-        //TODO
+        if(observableGame.getPublicGameState().canDrawCards()) {
+            drawCardProperty.set((a) ->{
+                drawCardHandler.onDrawCard(a);
+                chooseTicketsProperty.set(null);
+                claimRouteProperty.set(null);
+                drawCardProperty.set(null);//je ne suis pas sur de ça
+            });
+        }
+        //La propriété correspondant à la prise de possession d'une route doit toujours être remplie 
+        //lorsque le tour commence (ce qui est le cas lors de l'appel à startTurn)
+        claimRouteProperty.set((route, cards) -> {
+            claimRouteHandler.onClaimRoute(route, cards);
+            chooseTicketsProperty.set(null);
+            claimRouteProperty.set(null);
+            drawCardProperty.set(null);
+        });
     }
     
     public void chooseTickets(SortedBag<Ticket> ticketsToChoose, ChooseTicketsHandler chooseTicketsHandler) {
@@ -82,7 +95,10 @@ public final class GraphicalPlayer {
     }
     
     public void drawCard(DrawCardHandler drawCardHandler) {
-        //TODO
+        drawCardProperty.set((a) -> {
+            drawCardHandler.onDrawCard(a);
+            drawCardProperty.set(null);  
+        });
     }
     
     public void chooseClaimCards(List<SortedBag<Card>> possibleClaimCards, ChooseCardsHandler chooseCardsHandler) {
