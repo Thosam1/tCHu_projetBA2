@@ -15,6 +15,14 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
+
+/**
+ * la partie de l'interface montrant :
+ *  en haut: pour chaque joueur, un disque de la couleur de ses wagons, suivi des statistiques le concernant—
+ *  nombre de billets et de cartes en main, wagons restants et points de construction obtenus,
+ *  en bas: les cinq dernières informations sur le déroulement de la partie.
+ */
+
 class InfoViewCreator {
     public VBox vBox;
     
