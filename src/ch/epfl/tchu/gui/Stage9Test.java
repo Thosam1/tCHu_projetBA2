@@ -17,10 +17,16 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public final class Stage9Test extends Application {
+
     public static void main(String[] args) { launch(args); }
 
     @Override
     public void start(Stage primaryStage) {
+
+
+        /**
+         *  tests etapes 9
+         */
       ObservableGameState gameState = new ObservableGameState(PlayerId.PLAYER_1);
 
       ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRoute =
@@ -32,14 +38,14 @@ public final class Stage9Test extends Application {
 
       Node mapView = MapViewCreator
         .createMapView(gameState, claimRoute, Stage9Test::chooseCards);
-      
       Node cardsView = DecksViewCreator
         .createCardsView(gameState, drawTickets, drawCard);
       Node handView = DecksViewCreator
         .createHandView(gameState);
 
+      // ---------------- début des tests etapes 10 -----------------
       Map<PlayerId, String> playerNames =
-              Map.of(PlayerId.PLAYER_1, "Ada", PlayerId.PLAYER_2, "Charles");
+              Map.of(PlayerId.PLAYER_1, "Thösam", PlayerId.PLAYER_2, "Aymeric");
             ObservableList<Text> infos = FXCollections.observableArrayList(
               new Text("Première information.\n"),
               new Text("\nSeconde information.\n"));
@@ -47,9 +53,11 @@ public final class Stage9Test extends Application {
               .createInfoView(PlayerId.PLAYER_1, playerNames, gameState, infos);
             
       BorderPane mainPane =
-        new BorderPane(mapView, null, /*cardsView*/null, /*handView*/null, infoView);
-      
+        new BorderPane(mapView, null, cardsView, handView, infoView);
+
+      // ----------------- fin des tests etape 10   ----------------------
       primaryStage.setScene(new Scene(mainPane));
+
 
       primaryStage.show();
       setState(gameState);

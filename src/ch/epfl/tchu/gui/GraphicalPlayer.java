@@ -15,6 +15,7 @@ import ch.epfl.tchu.gui.ActionHandlers.ChooseCardsHandler;
 import ch.epfl.tchu.gui.ActionHandlers.ChooseTicketsHandler;
 import ch.epfl.tchu.gui.ActionHandlers.ClaimRouteHandler;
 import ch.epfl.tchu.gui.ActionHandlers.DrawCardHandler;
+import ch.epfl.tchu.gui.ActionHandlers.DrawTicketsHandler;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
@@ -23,6 +24,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -50,18 +52,14 @@ public final class GraphicalPlayer {
     //si elle contient null, alors l'action en question est actuellement interdite
     private ObjectProperty<DrawCardHandler> drawCardProperty = new SimpleObjectProperty<>();
     private ObjectProperty<ClaimRouteHandler> claimRouteProperty = new SimpleObjectProperty<>();
-    private ObjectProperty<ChooseTicketsHandler> chooseTicketsProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<DrawTicketsHandler> drawTicketsProperty = new SimpleObjectProperty<>();
     
-    public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> mapPlayerNames,
-                           Node mapView,
-                           Node drawView,
-                           Node handView,
-                           Node infoView) {
+    public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> mapPlayerNames) {
         this.playerId = playerId;
         this.mapPlayerNames = mapPlayerNames;
         observableGame = new ObservableGameState(playerId);
 
-        main = mainSceneGraph(mapView, drawView, handView, infoView); // todo comment créer ceci sans prendre les nodes en arguments ?
+        main = mainSceneGraph(); // todo comment créer ceci sans prendre les nodes en arguments ?
         main.show();
     }
     
@@ -76,21 +74,27 @@ public final class GraphicalPlayer {
         }
     }
     
-    public void startTurn(DrawCardHandler drawCardHandler, ClaimRouteHandler claimRouteHandler,
-            ChooseTicketsHandler chooseTicketsHandler) {
+    public void startTurn(ActionHandlers.DrawTicketsHandler drawTicketsHandler, DrawCardHandler drawCardHandler,
+                          ClaimRouteHandler claimRouteHandler) {
         if(observableGame.getPublicGameState().canDrawTickets()) {
-            chooseTicketsProperty.set((tickets) ->{
-                chooseTicketsHandler.onChooseTickets(tickets);
+//            chooseTicketsProperty.set((tickets) ->{
+//                chooseTicketsHandler.onChooseTickets(tickets);
+//                drawCardProperty.set(null);
+//                claimRouteProperty.set(null);
+//                chooseTicketsProperty.set(null);//je ne suis pas sur de ça
+//            });
+            drawTicketsProperty.set(() -> {
+                drawTicketsHandler.onDrawTickets();
                 drawCardProperty.set(null);
                 claimRouteProperty.set(null);
-                chooseTicketsProperty.set(null);//je ne suis pas sur de ça
+                //                chooseTicketsProperty.set(null);//je ne suis pas sur de ça
             });
         }
         
         if(observableGame.getPublicGameState().canDrawCards()) {
             drawCardProperty.set((a) ->{
                 drawCardHandler.onDrawCard(a);
-                chooseTicketsProperty.set(null);
+                drawTicketsProperty.set(null);
                 claimRouteProperty.set(null);
                 drawCardProperty.set(null);//je ne suis pas sur de ça
             });
@@ -99,7 +103,7 @@ public final class GraphicalPlayer {
         //lorsque le tour commence (ce qui est le cas lors de l'appel à startTurn)
         claimRouteProperty.set((route, cards) -> {
             claimRouteHandler.onClaimRoute(route, cards);
-            chooseTicketsProperty.set(null);
+            drawTicketsProperty.set(null);
             claimRouteProperty.set(null);
             drawCardProperty.set(null);
         });
@@ -125,7 +129,7 @@ public final class GraphicalPlayer {
     
     public void chooseClaimCards(List<SortedBag<Card>> possibleClaimCards, ChooseCardsHandler chooseCardsHandler) {
         ObservableList<SortedBag<Card>> observableListCards = FXCollections.observableArrayList(possibleClaimCards);    //toDo checker que ça fonctionne
-        ListView listView = listView(observableListCards, true, true);
+        ListView listView = listView(observableListCards, true, false);
         Button chooseClaimCardsButton = chooseCardsButton(listView);
         Stage chooseWindow = chooseGraph(main, StringsFr.CARDS_CHOICE, StringsFr.CHOOSE_CARDS, listView, chooseClaimCardsButton);
         chooseWindow.show();
@@ -133,8 +137,8 @@ public final class GraphicalPlayer {
     
     public void choosedAdditionalCards(List<SortedBag<Card>> possibleAdditionalCards, ChooseCardsHandler chooseCardsHandler) {
         ObservableList<SortedBag<Card>> observableListCards = FXCollections.observableArrayList(possibleAdditionalCards);    //toDo checker que ça fonctionne
-        ListView listView = listView(observableListCards, true, true);
-        Button choosedAdditionalCardsButton = chooseAdditionalCardsButton();
+        ListView listView = listView(observableListCards, true, false);
+        Button choosedAdditionalCardsButton = chooseAdditionalCardsButton(listView);
         Stage chooseWindow = chooseGraph(main, StringsFr.CARDS_CHOICE, StringsFr.CHOOSE_ADDITIONAL_CARDS, listView, choosedAdditionalCardsButton);
         chooseWindow.show();
     }
@@ -162,21 +166,15 @@ public final class GraphicalPlayer {
         TextFlow textFlow = new TextFlow(text);
 
 
-//        ListView listView = new ListView(list);
-//        if(multiple) {listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);}    //iff multiple
-//        listView.getSelectionModel().getSelectedItems();
-//        ObservableList temp = listView.getSelectionModel().getSelectedItems();
-
-//        caseButton.disableProperty().bind(Bindings.greaterThan(Bindings.size(temp), number));
-
-
-//        listView.setCellFactory(v ->
-//                new TextFieldListCell<>(new CardBagStringConverter())); // iff cards
-
-
-//        Button button = new Button(caseButton);
         caseButton.getStyleClass().add("gauged");
         caseButton.setText("Choisir");
+//        caseButton.setOnAction(e -> { caseButton
+//            stage.hide();   // toDo c'est bien sur le stage // et que ça fait bien les deux avec le setOnAction qui lui est appelé dans la méthode spécifique
+//        });
+        caseButton.addEventHandler(ActionEvent.ACTION, e -> {
+            stage.hide();
+        });
+
 
         vBox.getChildren().addAll(textFlow, listView, caseButton);
 
@@ -184,6 +182,7 @@ public final class GraphicalPlayer {
         scene.getStylesheets().add("chooser.css");
         stage.setTitle(title);      //depends
         stage.setScene(scene);
+        stage.setOnCloseRequest(e -> {e.consume();});   //todo vérifier que c'est juste ça
 
 
         return stage;
@@ -202,21 +201,29 @@ public final class GraphicalPlayer {
     /**
      *  for chooseTickets
      */
-    private Button chooseTicketsButton(ListView list, int min){
+    private Button chooseTicketsButton(ListView<SortedBag<Ticket>> list, int min){
         Button button = new Button();
-        ObservableList temp = list.getSelectionModel().getSelectedItems();
+        ObservableList temp = list.getSelectionModel().getSelectedItems();  //toDo est ce que ça fonctionne si il n'y a qu 1 element ?
         button.disableProperty().bind(Bindings.greaterThanOrEqual(Bindings.size(temp), min));
+        button.setOnAction(e -> {
+            ChooseTicketsHandler handler = null;    // faut-il initialiser à null ?
+            handler.onChooseTickets((SortedBag<Ticket>) temp.get(0));    //toDo c'est bien l'index 0 ?
+        });
         return button;
     }
     /**
      *  for chooseCards
      */
-    private Button chooseCardsButton(ListView list){    //todo ça représente quoi ? les cartes initiales ? on peut choisir plus d'une option ?
+    private Button chooseCardsButton(ListView<SortedBag<Card>> list){    //todo ça représente quoi ? les cartes initiales ? on peut choisir plus d'une option ?
         Button button = new Button();
         ObservableList temp = list.getSelectionModel().getSelectedItems();
-        BooleanBinding equals = Bindings.createBooleanBinding(() -> Objects.equals(Bindings.size(temp),1));
-//        button.disableProperty().bind(Bindings.size(temp) == 0); /*&& Bindings.size(temp) >= number*/);
+        BooleanBinding equals = Bindings.createBooleanBinding(() -> !Objects.equals(Bindings.size(temp),1));    // disable when selects 0 or more than 1
         button.disableProperty().bind(equals);
+
+        button.setOnAction(e -> {
+            ChooseCardsHandler handler = null;
+            handler.onChooseCards((SortedBag<Card>) temp.get(0));
+        });
         return button;
     }
     /**
@@ -224,10 +231,20 @@ public final class GraphicalPlayer {
      *  le bouton est toujours actif, une sélection vide permettant au joueur
      *  de déclarer qu'il désire abandonner sa tentative de prise de possession du tunnel.
      */
-    private Button chooseAdditionalCardsButton(){
+    private Button chooseAdditionalCardsButton(ListView<SortedBag<Card>> list){
         Button button = new Button();
+        ObservableList temp = list.getSelectionModel().getSelectedItems();
+
+        BooleanBinding equals = Bindings.createBooleanBinding(() -> !Objects.equals(Bindings.size(temp),1));    // disable when selects 0 or more than 1    //not very important since we won't be able to select more than one
+        button.disableProperty().bind(equals);
+
+        button.setOnAction(e -> {
+            ChooseCardsHandler handler = null;
+            handler.onChooseCards((SortedBag<Card>) temp.get(0));
+        });
         return button;
     }
+    //todo retravailler les deux méthodes plus haut
 
     private class CardBagStringConverter extends StringConverter<SortedBag<Card>> {
         @Override
