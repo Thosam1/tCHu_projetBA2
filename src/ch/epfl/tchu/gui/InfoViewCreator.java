@@ -39,7 +39,6 @@ class InfoViewCreator {
         /**Statistiques joueurs*/
         VBox vBoxPlayerStats = new VBox();
         vBoxPlayerStats.setId("player-stats");
-        vBox.getChildren().add(vBoxPlayerStats);
         
         List<PlayerId> playerIdList = List.of(playerId, playerId.next());
         
