@@ -18,10 +18,7 @@ import ch.epfl.tchu.gui.ActionHandlers.DrawCardHandler;
 import ch.epfl.tchu.gui.ActionHandlers.DrawTicketsHandler;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -43,7 +40,7 @@ import javafx.util.StringConverter;
 
 public final class GraphicalPlayer {
     private ObservableGameState observableGame;
-    private ObservableList<Text> messageList;
+    private ObservableList<Text> messageList = new SimpleListProperty<>();  // toDo check avec la ligne 74
     private final PlayerId playerId;
     private final Map<PlayerId, String> mapPlayerNames;
     private Stage main;
@@ -59,7 +56,23 @@ public final class GraphicalPlayer {
         this.mapPlayerNames = mapPlayerNames;
         observableGame = new ObservableGameState(playerId);
 
-        main = mainSceneGraph(); // todo comment créer ceci sans prendre les nodes en arguments ?
+        ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRoute =       //toDo je ne suis vraiment pas sûr
+                new SimpleObjectProperty<>();
+        ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTickets =
+                new SimpleObjectProperty<>();
+        ObjectProperty<ActionHandlers.DrawCardHandler> drawCard =
+                new SimpleObjectProperty<>();
+        MapViewCreator.CardChooser chooseCard = null;
+
+        Node mapView = MapViewCreator
+                .createMapView(observableGame, claimRoute, chooseCard);
+        Node cardsView = DecksViewCreator
+                .createCardsView(observableGame, drawTickets, drawCard);
+        Node handView = DecksViewCreator
+                .createHandView(observableGame);
+        Node infoView = InfoViewCreator.createInfoView(playerId, mapPlayerNames, observableGame, messageList);   //toDo check le new SimpleListProperty
+
+        main = mainSceneGraph(mapView, cardsView, handView, infoView); // todo comment créer ceci sans prendre les nodes en arguments ?
         main.show();
     }
     

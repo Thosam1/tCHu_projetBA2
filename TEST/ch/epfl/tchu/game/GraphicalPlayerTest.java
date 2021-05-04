@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 public final class GraphicalPlayerTest extends Application {
+    public static void main(String[] args) { launch(args); }
+
     private void setState(GraphicalPlayer player) {
         // … construit exactement les mêmes états que la méthode setState
         // du test de l'étape 9
@@ -40,6 +42,7 @@ public final class GraphicalPlayerTest extends Application {
         Map<PlayerId, String> playerNames =
                 Map.of(PlayerId.PLAYER_1, "Ada", PlayerId.PLAYER_2, "Charles");
         GraphicalPlayer p = new GraphicalPlayer(PlayerId.PLAYER_1, playerNames);    //toDo comment faire pour créer la vue ?
+
         setState(p);
 
         ActionHandlers.DrawTicketsHandler drawTicketsH =
