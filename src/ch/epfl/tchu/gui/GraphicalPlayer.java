@@ -1,5 +1,6 @@
 package ch.epfl.tchu.gui;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,10 +38,12 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 
+import static javafx.application.Platform.isFxApplicationThread;
+
 
 public final class GraphicalPlayer {
     private ObservableGameState observableGame;
-    private ObservableList<Text> messageList = new SimpleListProperty<>();  // toDo check avec la ligne 74
+    private ObservableList<Text> messageList = FXCollections.observableList(new ArrayList<>());  // toDo check avec la ligne 74
     private final PlayerId playerId;
     private final Map<PlayerId, String> mapPlayerNames;
     private Stage main;
@@ -56,18 +59,13 @@ public final class GraphicalPlayer {
         this.mapPlayerNames = mapPlayerNames;
         observableGame = new ObservableGameState(playerId);
 
-        ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRoute =       //toDo je ne suis vraiment pas sûr
-                new SimpleObjectProperty<>();
-        ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTickets =
-                new SimpleObjectProperty<>();
-        ObjectProperty<ActionHandlers.DrawCardHandler> drawCard =
-                new SimpleObjectProperty<>();
-        MapViewCreator.CardChooser chooseCard = null;
+
+        MapViewCreator.CardChooser chooseCard = (list, handler) -> {chooseClaimCards(list, handler);};
 
         Node mapView = MapViewCreator
-                .createMapView(observableGame, claimRoute, chooseCard);
+                .createMapView(observableGame, claimRouteProperty, chooseCard);
         Node cardsView = DecksViewCreator
-                .createCardsView(observableGame, drawTickets, drawCard);
+                .createCardsView(observableGame, drawTicketsProperty, drawCardProperty);
         Node handView = DecksViewCreator
                 .createHandView(observableGame);
         Node infoView = InfoViewCreator.createInfoView(playerId, mapPlayerNames, observableGame, messageList);   //toDo check le new SimpleListProperty
@@ -77,18 +75,22 @@ public final class GraphicalPlayer {
     }
     
     public void setState(PublicGameState newGameState, PlayerState newPlayerState) {
+        assert isFxApplicationThread();
         observableGame.setState(newGameState, newPlayerState);
     }
-    
+
     public void receiveInfo(String message) {
+        assert isFxApplicationThread();
         messageList.add(new Text(message));
         if(messageList.size()==6) {
             messageList.remove(0);
         }
     }
-    
+
+
     public void startTurn(ActionHandlers.DrawTicketsHandler drawTicketsHandler, DrawCardHandler drawCardHandler,
                           ClaimRouteHandler claimRouteHandler) {
+        assert isFxApplicationThread();
         if(observableGame.getPublicGameState().canDrawTickets()) {
 //            chooseTicketsProperty.set((tickets) ->{
 //                chooseTicketsHandler.onChooseTickets(tickets);
@@ -100,7 +102,7 @@ public final class GraphicalPlayer {
                 drawTicketsHandler.onDrawTickets();
                 drawCardProperty.set(null);
                 claimRouteProperty.set(null);
-                //                chooseTicketsProperty.set(null);//je ne suis pas sur de ça
+                drawTicketsProperty.set(null);      //je ne suis pas sur de ça
             });
         }
         
@@ -123,6 +125,7 @@ public final class GraphicalPlayer {
     }
     
     public void chooseTickets(SortedBag<Ticket> ticketsToChoose, ChooseTicketsHandler chooseTicketsHandler) {
+        assert isFxApplicationThread();
         Preconditions.checkArgument(ticketsToChoose.size()==3 || ticketsToChoose.size()==5);
         //TODO
         ObservableList<SortedBag<Ticket>> observableListTickets = FXCollections.observableArrayList(ticketsToChoose);
@@ -134,6 +137,7 @@ public final class GraphicalPlayer {
     }
     
     public void drawCard(DrawCardHandler drawCardHandler) {
+        assert isFxApplicationThread();
         drawCardProperty.set((a) -> {
             drawCardHandler.onDrawCard(a);
             drawCardProperty.set(null);  
@@ -141,14 +145,17 @@ public final class GraphicalPlayer {
     }
     
     public void chooseClaimCards(List<SortedBag<Card>> possibleClaimCards, ChooseCardsHandler chooseCardsHandler) {
+        assert isFxApplicationThread();
         ObservableList<SortedBag<Card>> observableListCards = FXCollections.observableArrayList(possibleClaimCards);    //toDo checker que ça fonctionne
         ListView listView = listView(observableListCards, true, false);
         Button chooseClaimCardsButton = chooseCardsButton(listView);
         Stage chooseWindow = chooseGraph(main, StringsFr.CARDS_CHOICE, StringsFr.CHOOSE_CARDS, listView, chooseClaimCardsButton);
         chooseWindow.show();
     }
-    
+
+    //ToDo où faut-il appeler cette méthode ?
     public void choosedAdditionalCards(List<SortedBag<Card>> possibleAdditionalCards, ChooseCardsHandler chooseCardsHandler) {
+        assert isFxApplicationThread();
         ObservableList<SortedBag<Card>> observableListCards = FXCollections.observableArrayList(possibleAdditionalCards);    //toDo checker que ça fonctionne
         ListView listView = listView(observableListCards, true, false);
         Button choosedAdditionalCardsButton = chooseAdditionalCardsButton(listView);
@@ -169,6 +176,7 @@ public final class GraphicalPlayer {
 
 
     public Stage chooseGraph(Stage root, String title, String introText, /*ObservableList<E> list*/ ListView listView, Button caseButton){  // titre est donné soit par la constante TICKETS_CHOICE, soit par la constante CARDS_CHOICE de StringsFr
+        assert isFxApplicationThread();
         Stage stage = new Stage(StageStyle.UTILITY);
         stage.initOwner(root);  //todo ? soit la fenêtre principale de l'interface (créée par le constructeur de GraphicalPlayer)
         stage.initModality(Modality.WINDOW_MODAL);
@@ -262,6 +270,7 @@ public final class GraphicalPlayer {
     private class CardBagStringConverter extends StringConverter<SortedBag<Card>> {
         @Override
         public String toString(SortedBag<Card> cardSortedBag) {
+            System.out.println("En format ecrit");
             return Info.cardListString(cardSortedBag);  //toDo serait-il mieux de la recopier plus bas ?
         }
 

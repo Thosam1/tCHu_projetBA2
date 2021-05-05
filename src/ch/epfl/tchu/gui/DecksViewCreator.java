@@ -54,14 +54,19 @@ class DecksViewCreator{
          *  carte
          */
         for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++){
-            StackPane pane = cardLayout(/*game.faceUpCardName(i)*/ Card.YELLOW.name()); //TODO rechanger    !!!!!!!!!!!!!!!
+            StackPane pane = cardEmptyLayout(); //TODO rechanger    !!!!!!!!!!!!!!! DEMANDER A UN ASSISTANT Comment les initialiser à null ?
             final int I = i;
             pane.setOnMouseClicked(e -> {
                 ActionHandlers.DrawCardHandler drawCards = drawCardsHandler.get();
-                drawCards.onDrawCard(I);
+//                drawCards.onDrawCard(I);  // ici null pointer exception
+                if(drawCards != null){drawCards.onDrawCard(I);}        //ToDo vérifier que c'est une bonne solution
             });
             game.faceUpCard(i).addListener((p, o, n) -> {
-                pane.getStyleClass().set(0, (n.name() == Card.LOCOMOTIVE.name()) ? "NEUTRAL" : n.name());
+                if ((pane.getStyleClass().size() == 2)) {
+                    pane.getStyleClass().set(0, assignCardStyle(n.name()));
+                } else {
+                    pane.getStyleClass().add(0, assignCardStyle(n.name()));   //(n.name() == Card.LOCOMOTIVE.name()) ? "NEUTRAL" : n.name()
+                }
             });
             cardPaneRoot.getChildren().add(pane);
         }
@@ -92,8 +97,11 @@ class DecksViewCreator{
         return cardPaneRoot;
     }
 
-    private static StackPane cardLayout(String cardName){
-        cardName = (cardName == Card.LOCOMOTIVE.name()) ? "NEUTRAL" : cardName;
+    private static String assignCardStyle(String cardName){
+//        return (cardName == Card.LOCOMOTIVE.name()) ? "NEUTRAL" : cardName;   //toDo `?? or equals
+        return (cardName.equals(Card.LOCOMOTIVE.name()) ? "NEUTRAL" : cardName);
+    }
+    private static StackPane cardEmptyLayout(){
         Rectangle outside = new Rectangle(60, 90);
         outside.getStyleClass().add("outside");
 
@@ -104,11 +112,16 @@ class DecksViewCreator{
         trainImage.getStyleClass().add("train-image");
 
         StackPane pane = new StackPane(outside, filledInside, trainImage);
-//        pane.getChildren().addAll(outside, filledInside, trainImage);
-        pane.getStyleClass().addAll(cardName, "card");
+        pane.getStyleClass().add("card");
+
         return pane;
     }
-
+    private static StackPane cardLayout(String cardName){
+        StackPane pane = cardEmptyLayout();
+        cardName = assignCardStyle(cardName);
+        pane.getStyleClass().add(0, cardName);
+        return pane;
+    }
     private static StackPane cardAndTextLayout(String cardName, ReadOnlyIntegerProperty integer){       // TODO y aurait-il moyen de faire le binding, plus haut pour rendre cette méthode plus réutilisable ?  -> pour le "integer" accéder depuis plus bas
         Text count = new Text();
         count.getStyleClass().add("count");
@@ -119,7 +132,6 @@ class DecksViewCreator{
         pane.getChildren().add(count);
         return pane;
     }
-
     private static Button gaugedButtonLayout(String label, ReadOnlyIntegerProperty percentage){  //(beetween 0 and 100)    // bind
         Button button = new Button();
         button.getStyleClass().add("gauged");

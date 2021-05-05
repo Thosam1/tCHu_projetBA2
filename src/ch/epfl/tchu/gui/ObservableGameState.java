@@ -212,7 +212,7 @@ public class ObservableGameState {
     public ReadOnlyIntegerProperty cardsOfInHand(Card card){return cardsOfInHand.get(card);}
     public ReadOnlyBooleanProperty canClaimRoute(Route route){return canClaimRoute.get(route);}
 
-    public String faceUpCardName(int slot){return publicGameState.cardState().faceUpCard(slot).name();}
+    public String faceUpCardName(int slot){return publicGameState.cardState().faceUpCard(slot).name();} //toDo comment faire ce truc d'une façon plus jolie ?
     public boolean getCanDrawTickets() {
         return publicGameState.canDrawTickets();
     }
