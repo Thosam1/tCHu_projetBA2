@@ -92,12 +92,6 @@ public final class GraphicalPlayer {
                           ClaimRouteHandler claimRouteHandler) {
         assert isFxApplicationThread();
         if(observableGame.getPublicGameState().canDrawTickets()) {
-//            chooseTicketsProperty.set((tickets) ->{
-//                chooseTicketsHandler.onChooseTickets(tickets);
-//                drawCardProperty.set(null);
-//                claimRouteProperty.set(null);
-//                chooseTicketsProperty.set(null);//je ne suis pas sur de ça
-//            });
             drawTicketsProperty.set(() -> {
                 drawTicketsHandler.onDrawTickets();
                 drawCardProperty.set(null);
@@ -111,9 +105,11 @@ public final class GraphicalPlayer {
                 drawCardHandler.onDrawCard(a);
                 drawTicketsProperty.set(null);
                 claimRouteProperty.set(null);
-                drawCardProperty.set(null);//je ne suis pas sur de ça
+               // drawCardProperty.set(null);//je ne suis pas sur de ça
+                this.drawCard(drawCardHandler);
             });
         }
+        
         //La propriété correspondant à la prise de possession d'une route doit toujours être remplie 
         //lorsque le tour commence (ce qui est le cas lors de l'appel à startTurn)
         claimRouteProperty.set((route, cards) -> {
