@@ -41,7 +41,7 @@ public final class PlayerState extends PublicPlayerState {
      * @throws IllegalArgumentException si le nombre de cartes initiales ne vaut pas 4
      */
     public static PlayerState initial(SortedBag<Card> initialCards){
-        Preconditions.checkArgument(initialCards.size() == 4);
+        Preconditions.checkArgument(initialCards.size() == Constants.INITIAL_CARDS_COUNT);
         return new PlayerState(SortedBag.of(), initialCards, new ArrayList<>());
 
     }
@@ -74,7 +74,7 @@ public final class PlayerState extends PublicPlayerState {
      */
     public PlayerState withAddedCard(Card card){
         return new PlayerState(tickets(), cards().union(
-                SortedBag.of(Collections.singletonList(card))), routes());
+                SortedBag.of(card)), routes());
     }
 
     /**
@@ -90,7 +90,7 @@ public final class PlayerState extends PublicPlayerState {
      * @return vrai ssi le joueur peut s'emparer de la route donnée, c-à-d s'il lui reste assez de wagons et s'il possède les cartes nécessaires
      */
     public boolean canClaimRoute(Route route){ 
-        return (carCount() >= route.length() && possibleClaimCards(route).size() > 0);
+        return (carCount() >= route.length() && possibleClaimCards(route).isEmpty() == false);
     }
 
     /**
@@ -120,7 +120,7 @@ public final class PlayerState extends PublicPlayerState {
         Preconditions.checkArgument(initialCards != null);
         Preconditions.checkArgument(initialCards.size() >= 1);
         Preconditions.checkArgument(initialCards.toSet().size() <= 2);
-        Preconditions.checkArgument(drawnCards.size() == 3);
+        Preconditions.checkArgument(drawnCards.size() == Constants.ADDITIONAL_TUNNEL_CARDS);
 
         Card initialCardsType = Card.LOCOMOTIVE;
         for (Card card : initialCards) {

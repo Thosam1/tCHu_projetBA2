@@ -92,7 +92,7 @@ public final class Ticket implements Comparable<Ticket> {
      */
     public int points(StationConnectivity connectivity) {
         int maxPositivePoints = 0;
-        int maxNegativePoints = -100; //ce nombre est arbitraire, il en faut juste un très bas pour etre sur qu aucun ticket peut faire perdre plus de point que cette valeur
+        int maxNegativePoints = Integer.MIN_VALUE; //ce nombre est arbitraire, il en faut juste un très bas pour etre sur qu aucun ticket peut faire perdre plus de point que cette valeur
         
         for (Trip trip : trips) {
             /**regarde tous les trip dans trips pour déterminer si il en existe qui font gagner des points

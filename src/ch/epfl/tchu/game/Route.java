@@ -1,8 +1,10 @@
 package ch.epfl.tchu.game;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
@@ -118,42 +120,22 @@ public final class Route {
      * @return liste décrite au-dessus
      */
     public List<SortedBag<Card>> possibleClaimCards(){
-        List<SortedBag<Card>> output = new ArrayList<SortedBag<Card>>();
+
+        Set<SortedBag<Card>> output = new LinkedHashSet<>(); 
+        //permet de garder l'ordre (donc pas besoin de definir de comparator)
+        //et permet de ne pas avoir de doublons (important car pour les routes UNDERGROUND on rajoute listCard.size() fois un sortedbag avec que des Locomotives)
         
         
-        if(level==Level.UNDERGROUND) {
-            for (int i = 0; i<length; ++i) {
-                
-                if (color() == null) {//c'est une route neutre
-                    //if (Card.of(color))    
-                    for(Card card : Card.CARS) {//Card.CARS est une liste qui contient toutes les cartes wagons (pas LOCOMOTIVE)
-                        output.add(SortedBag.of(length-i, card, i, Card.LOCOMOTIVE));}
-                }
-                
-                //route de couleur
-                else {
-                    output.add(SortedBag.of(length-i, Card.of(color), i, Card.LOCOMOTIVE));
-                }
-                }
-            
-            //SortedBag contenant un nombre de locomotives égale à length
-            //nous le mettons endehors du for loop pour etre sur que une seul sortedbag avec un nombre length de Locomotives est rajouté à output
-            output.add(SortedBag.of(length, Card.LOCOMOTIVE));
-            }
+        List<Card> listCard = (color() == null) ? Card.CARS : List.of(Card.of(color));
+        int index = (level == Level.UNDERGROUND) ? length : 0;
         
-        
-        //Pour les routes OVERGROUND nous ne voulons pas de LOCOMOTIVES dans l'output
-        else {
-            if(color()==null) {
-                for(Card card : Card.CARS) {
-                    output.add(SortedBag.of(length,card));}
-            }
-            
-            else {
-                output.add(SortedBag.of(length, Card.of(color)));
+        for(int i = 0; i <= index; i++) {
+            for(Card card : listCard) {
+                output.add(SortedBag.of(length-i, card, i, Card.LOCOMOTIVE));
             }
         }
-        return output;
+        return new ArrayList<>(output);
+        
         }
     
     /**
@@ -184,13 +166,8 @@ public final class Route {
         /*si les cartes de drawnCards sont des Locomotive alors on ajoute une carte
         à additionalCards, sinon il faut que ces cartes soient égales à claimCardsType*/
         for (Card card : drawnCards) {
-            if (card.equals(Card.LOCOMOTIVE)) {
+            if (card.equals(Card.LOCOMOTIVE) || card.equals(claimCardsType)) {
                 ++additionalCards;
-            }
-            else {
-                if(card.equals(claimCardsType)) {
-                    ++additionalCards;
-                }
             }
         }
         return additionalCards;

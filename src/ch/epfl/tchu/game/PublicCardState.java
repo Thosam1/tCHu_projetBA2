@@ -52,7 +52,7 @@ public class PublicCardState {
      * @throws IndexOutOfBoundsException si slot n'est pas compris entre 0(inclus) et 5(exclus)
      */
     public Card faceUpCard(int slot) {
-        Objects.checkIndex(slot, 5);
+        Objects.checkIndex(slot, Constants.FACE_UP_CARDS_COUNT);
         return faceUpCards.get(slot);
     }
     

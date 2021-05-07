@@ -16,7 +16,6 @@ import ch.epfl.tchu.SortedBag;
  */
 public final class Deck<C extends Comparable<C>> {
     private final int size;
-    private final boolean isEmpty;
     private final List<C> deck;
     
     /**
@@ -28,7 +27,6 @@ public final class Deck<C extends Comparable<C>> {
      */
     private Deck(List<C> cards){
         size = cards.size();
-        isEmpty = (size==0);
         deck = List.copyOf(cards);
     }
     
@@ -56,14 +54,14 @@ public final class Deck<C extends Comparable<C>> {
      * Getter qui rend l'attribut isEmpty
      * @return isEmpty
      */
-    public boolean isEmpty() {return isEmpty;}
+    public boolean isEmpty() {return size == 0;}
     
     /**
      * @return la carte en haut du deck (à la position 0)
      * @throws IllegalArgumentException si le tas est vide
      */
     public C topCard() {
-        Preconditions.checkArgument(!isEmpty);
+        Preconditions.checkArgument(!isEmpty());
         return deck.get(0);
     }
     
@@ -72,7 +70,7 @@ public final class Deck<C extends Comparable<C>> {
      * @return un tas identique mais sans la carte au sommet
      */
     public Deck<C> withoutTopCard(){
-        Preconditions.checkArgument(!isEmpty);
+        Preconditions.checkArgument(!isEmpty());
         return this.withoutTopCards(1);
         
     }
@@ -100,12 +98,11 @@ public final class Deck<C extends Comparable<C>> {
      * @return un Deck identique mais sans les count cartes du sommet
      */
     public Deck<C> withoutTopCards(int count){
-        Preconditions.checkArgument((0<=count)&&(count<=size));
-        List<C> newDeckList = List.copyOf(deck);                             
+        Preconditions.checkArgument((0<=count)&&(count<=size));                          
         List<C> outputList = new ArrayList<>();
         
-        for (int i = count; i< newDeckList.size(); ++i) {
-            outputList.add(newDeckList.get(i));
+        for (int i = count; i< size; ++i) {
+            outputList.add(deck.get(i));
         }
         return new Deck<C>(outputList);     
     }
