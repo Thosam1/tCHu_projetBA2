@@ -52,12 +52,12 @@ class InfoViewCreator {
         
         for(PlayerId player : playerIdList) {
             TextFlow textFlowPlayerStatistics = new TextFlow();
-            vBoxPlayerStats.getChildren().add(textFlowPlayerStatistics);//est ce qu il faut rajouter le joueur courant en premier pour qu il soit placé en haut
+            vBoxPlayerStats.getChildren().add(textFlowPlayerStatistics);//rajouter le joueur courant en premier permet de le placer en haut du VBox
             
             textFlowPlayerStatistics.getStyleClass()
             .add(player.toString());
             
-            Circle circle = new Circle(5);//il faudra peut etre le placer
+            Circle circle = new Circle(5);//il est placé en haut à gauche par défaut
             circle.getStyleClass().add("filled");
             
             Text textPlayerStatistics = new Text();
@@ -71,26 +71,7 @@ class InfoViewCreator {
         }
         
         
-        /*for (int i=0; i<mapPlayers.size(); ++i) {
-            TextFlow textFlowPlayerStatistics = new TextFlow();
-            vBoxPlayerStats.getChildren().add(textFlowPlayerStatistics);//est ce qu il faut rajouter le joueur courant en premier pour qu il soit placé en haut
-            
-            String playerIndex = String.valueOf(i+1);
-            textFlowPlayerStatistics.getStyleClass()
-            .add(String.join("_", List.of("PLAYER", playerIndex)));
-            
-            Circle circle = new Circle(5);//il faudra peut etre le placer
-            circle.getStyleClass().add("filled");
-            
-            Text textPlayerStatistics = new Text();
-            
-            StringExpression stringExpression = Bindings.format(StringsFr.PLAYER_STATS, );
-            //Comment accéder aux valeurs à passer? probablement a partir de la map
-            textPlayerStatistics.textProperty().bind(stringExpression);
-            
-            textFlowPlayerStatistics.getChildren().addAll(circle, textPlayerStatistics);
-        }*/
-        
+       
         /**Messages*/
         TextFlow textGameInfo = new TextFlow();
         textGameInfo.setId("game-info");

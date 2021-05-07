@@ -81,7 +81,7 @@ public final class GraphicalPlayer {
 
     public void receiveInfo(String message) {
         assert isFxApplicationThread();
-        messageList.add(new Text(message));
+        messageList.add(new Text("\n" + message));
         if(messageList.size()==6) {
             messageList.remove(0);
         }
