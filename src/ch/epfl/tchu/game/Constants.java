@@ -11,6 +11,11 @@ public final class Constants {
     private Constants() {}
 
     /**
+     * Nombre de wagons à partir duquel la partie entre dans le dernier tour
+     * */
+    public static final int LAST_TURN_BEGINS_CAR_COUNT = 2;
+    
+    /**
      * Nombre de cartes wagon de chaque couleur.
      */
     public static final int CAR_CARDS_COUNT = 12;

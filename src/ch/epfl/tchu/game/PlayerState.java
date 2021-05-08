@@ -117,7 +117,7 @@ public final class PlayerState extends PublicPlayerState {
      */
     public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards, SortedBag<Card> drawnCards){
         Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= 3);
-        Preconditions.checkArgument(initialCards != null);
+        //Preconditions.checkArgument(initialCards != null); implicitement vérifié
         Preconditions.checkArgument(initialCards.size() >= 1);
         Preconditions.checkArgument(initialCards.toSet().size() <= 2);
         Preconditions.checkArgument(drawnCards.size() == Constants.ADDITIONAL_TUNNEL_CARDS);

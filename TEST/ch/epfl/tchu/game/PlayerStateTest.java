@@ -671,9 +671,6 @@ public class PlayerStateTest {
             test.possibleAdditionalCards(4, SortedBag.of(Card.BLUE), SortedBag.of(3,Card.GREEN)) ;
         });
         assertThrows(IllegalArgumentException.class, () -> {
-            test.possibleAdditionalCards(3, null, SortedBag.of(3,Card.GREEN)) ;
-        });
-        assertThrows(IllegalArgumentException.class, () -> {
             SortedBag.Builder<Card> builder = new SortedBag.Builder<>();
             builder.add(Card.BLACK);
             builder.add(Card.LOCOMOTIVE);

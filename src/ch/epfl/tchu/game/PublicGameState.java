@@ -3,6 +3,7 @@ package ch.epfl.tchu.game;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import ch.epfl.tchu.Preconditions;
 
@@ -12,11 +13,11 @@ import ch.epfl.tchu.Preconditions;
  * @author Thösam Norlha-Tsang (330163) (juste les commentaires)
  */
 public class PublicGameState {
-    private int ticketsCount;
-    private PublicCardState cardState;
-    private PlayerId currentPlayerId;
-    private PlayerId lastPlayer;
-    private Map<PlayerId, PublicPlayerState> playerState;
+    private final int ticketsCount;
+    private final PublicCardState cardState;
+    private final PlayerId currentPlayerId;
+    private final PlayerId lastPlayer;
+    private final Map<PlayerId, PublicPlayerState> playerState;
 
     /**
      * Constructeur public de publicGameState :
@@ -38,16 +39,15 @@ public class PublicGameState {
             PlayerId currentPlayerId, Map<PlayerId, PublicPlayerState> playerState, 
             PlayerId lastPlayer){
         Preconditions.checkArgument(ticketsCount>=0);
-        if((cardState==null)||(currentPlayerId==null)||(playerState==null)) {    
-            throw new NullPointerException();
-        }
-        //Tres important que cette precondition soit après
+        Objects.requireNonNull(cardState);
+        Objects.requireNonNull(currentPlayerId);
+        Objects.requireNonNull(playerState);
         Preconditions.checkArgument(playerState.size() == PlayerId.COUNT);
         
         this.ticketsCount = ticketsCount;
         this.cardState = cardState;
         this.currentPlayerId = currentPlayerId;
-        this.playerState = playerState;
+        this.playerState = Map.copyOf(playerState);
         this.lastPlayer = lastPlayer;
     }
 
@@ -70,7 +70,7 @@ public class PublicGameState {
      * @return vrai ssi il est possible de tirer des cartes, c-à-d si la pioche et la défausse contiennent entre elles au moins 5 cartes
      */
     public boolean canDrawCards() {
-        return (cardState.discardsSize() + cardState.deckSize()>=5);
+        return (cardState.discardsSize() + cardState.deckSize()>=Constants.FACE_UP_CARDS_COUNT);
     }
 
     /**
@@ -95,10 +95,10 @@ public class PublicGameState {
      * @return la totalité des routes dont l'un ou l'autre des joueurs s'est emparé
      */
     public List<Route> claimedRoutes(){
-        List<Route> routeFirstPlayer = List.copyOf(playerState.get(PlayerId.PLAYER_1).routes());
-        List<Route> routeSecondPlayer = List.copyOf(playerState.get(PlayerId.PLAYER_2).routes());
-        List<Route> routeOutput = new ArrayList<>(routeFirstPlayer);
-        routeOutput.addAll(routeSecondPlayer);
+        List<Route> routeOutput = new ArrayList<>();
+        for(PlayerId player : PlayerId.ALL) {
+            routeOutput.addAll(playerState.get(player).routes());
+        }
         return routeOutput;
     }
 

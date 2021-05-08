@@ -11,11 +11,9 @@ import ch.epfl.tchu.SortedBag;
  * @author Aymeric de chillaz (326617)
  */
 public final class GameState extends PublicGameState{
-    private Deck<Ticket> tickets;
-    private CardState cardState;
-    private Map<PlayerId, PlayerState> playerState;
-    private PlayerId currentPlayerId;
-    private PlayerId lastPlayer;
+    private final Deck<Ticket> tickets;
+    private final CardState cardState;
+    private final Map<PlayerId, PlayerState> playerState;
 
     /**
      * Constructeur privé de GameState, fait appel au constructeur de PublicGameState, sa super-classe
@@ -27,18 +25,12 @@ public final class GameState extends PublicGameState{
      */
     private GameState(Deck<Ticket> ticketsList, CardState cardState, PlayerId currentPlayerId,
             Map<PlayerId, PlayerState> playerState, PlayerId lastPlayer) {
-        super(ticketsList.size(), cardState, currentPlayerId, makePublic(playerState), lastPlayer);
+        super(ticketsList.size(), cardState, currentPlayerId, Map.copyOf(playerState), lastPlayer);
         this.tickets = ticketsList;
         this.cardState = cardState;
         this.playerState = Map.copyOf(playerState);
-        this.currentPlayerId = currentPlayerId;
-        this.lastPlayer= lastPlayer;
-    }
-    private static Map<PlayerId, PublicPlayerState> makePublic(Map<PlayerId, PlayerState> playerState) {
-        Map<PlayerId, PublicPlayerState> playerStateMap = new EnumMap<>(PlayerId.class); 
-        playerStateMap.put(PlayerId.PLAYER_1, playerState.get(PlayerId.PLAYER_1));
-        playerStateMap.put(PlayerId.PLAYER_2, playerState.get(PlayerId.PLAYER_2));
-        return playerStateMap;
+        Objects.requireNonNull(ticketsList);
+        Objects.requireNonNull(cardState);
     }
 
     /**
@@ -50,29 +42,26 @@ public final class GameState extends PublicGameState{
      * @return une instante de GameState
      */
     public static GameState initial(SortedBag<Ticket> tickets, Random rng) {
-
+        /**
+         *  Création de la map, des playerstates, choix aléatoire des premiers joueurs
+         */
+        Map<PlayerId, PlayerState> playerStateMap = new EnumMap<>(PlayerId.class);
+        List<PlayerId> shuffledList = new ArrayList<>(PlayerId.ALL);
+        Collections.shuffle(shuffledList, rng);
+        
         /**
          *  Création du deck - mélanger - distribuer
          */
-        Deck<Card> deck = Deck.of(SortedBag.of(Constants.ALL_CARDS), rng); //mélanger les cartes
+        Deck<Card> deck = Deck.of(SortedBag.of(Constants.ALL_CARDS), rng); //mélange les cartes
 
-        List<Card> initialPlayerCards = new ArrayList<>(deck.topCards(Constants.INITIAL_CARDS_COUNT).toList());
-        deck = deck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
-
-        List<Card> secondPlayerCards = new ArrayList<>(deck.topCards(Constants.INITIAL_CARDS_COUNT).toList());
-        deck = deck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
-
-        CardState cardState = CardState.of(deck);
-
-        /**
-         *  Création de la map, des playerstates, choix aléatoire du premier joueur
-         */
-        Map<PlayerId, PlayerState> playerStateMap = new EnumMap<>(PlayerId.class);
-        PlayerId premierJoueurId = PlayerId.ALL.get(rng.nextInt(2));
-        playerStateMap.put(premierJoueurId, PlayerState.initial(SortedBag.of(initialPlayerCards)));
-        playerStateMap.put(premierJoueurId.next(), PlayerState.initial(SortedBag.of(secondPlayerCards)));
-        
-        return new GameState(Deck.of(tickets, rng), cardState, premierJoueurId, playerStateMap, null);
+        for(PlayerId player : shuffledList) {
+            SortedBag<Card> playerCards = deck.topCards(Constants.INITIAL_CARDS_COUNT);
+            deck = deck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
+            
+            playerStateMap.put(player, PlayerState.initial(playerCards));
+            
+        }
+        return new GameState(Deck.of(tickets, rng), CardState.of(deck), shuffledList.get(0), playerStateMap, null);
     }
 
     /**
@@ -88,7 +77,7 @@ public final class GameState extends PublicGameState{
      * @return l'état complet du joueur courant, et pas seulement sa partie publique
      */
     @Override
-    public PlayerState currentPlayerState() {return playerState.get(currentPlayerId);}
+    public PlayerState currentPlayerState() {return playerState.get(currentPlayerId());}
 
     /**
      * @param count
@@ -105,7 +94,7 @@ public final class GameState extends PublicGameState{
      * @throws IllegalArgumentException si count n'est pas compris entre 0 et la taille de la pioche (inclus)
      */
     public GameState withoutTopTickets(int count) {
-        return new GameState(tickets.withoutTopCards(count), cardState, currentPlayerId, playerState, lastPlayer);
+        return new GameState(tickets.withoutTopCards(count), cardState, currentPlayerId(), playerState, lastPlayer());
     }
 
     /**
@@ -121,7 +110,7 @@ public final class GameState extends PublicGameState{
      * @throws IllegalArgumentException si la pioche est vide
      */
     public GameState withoutTopCard() {
-        return new GameState(tickets, cardState.withoutTopDeckCard(), currentPlayerId, playerState, lastPlayer);
+        return new GameState(tickets, cardState.withoutTopDeckCard(), currentPlayerId(), playerState, lastPlayer());
     }
 
     /**
@@ -129,7 +118,7 @@ public final class GameState extends PublicGameState{
      * @return un état identique au récepteur mais avec les cartes données ajoutées à la défausse
      */
     public GameState withMoreDiscardedCards(SortedBag<Card> discardedCards) {
-        return new GameState(tickets, cardState.withMoreDiscardedCards(discardedCards), currentPlayerId, playerState, lastPlayer);
+        return new GameState(tickets, cardState.withMoreDiscardedCards(discardedCards), currentPlayerId(), playerState, lastPlayer());
     }
 
     /**
@@ -137,7 +126,7 @@ public final class GameState extends PublicGameState{
      * @return un état identique au récepteur sauf si la pioche de cartes est vide, auquel cas elle est recréée à partir de la défausse, mélangée au moyen du générateur aléatoire donné
      */
     public GameState withCardsDeckRecreatedIfNeeded(Random rng) {
-        return (cardState.isDeckEmpty()) ? new GameState(tickets, cardState.withDeckRecreatedFromDiscards(rng), currentPlayerId, playerState, lastPlayer) : this;
+        return (cardState.isDeckEmpty()) ? new GameState(tickets, cardState.withDeckRecreatedFromDiscards(rng), currentPlayerId(), playerState, lastPlayer()) : this;
     }
 
 
@@ -151,10 +140,10 @@ public final class GameState extends PublicGameState{
      * @throws IllegalArgumentException si le joueur en question possède déjà au moins un billet
      */
     public GameState withInitiallyChosenTickets(PlayerId playerId, SortedBag<Ticket> chosenTickets) {
-        Preconditions.checkArgument(playerState.get(playerId).ticketCount()<1);
+        Preconditions.checkArgument(playerState.get(playerId).ticketCount()==0);
         Map<PlayerId, PlayerState> playerState2 = cloneMap();
         playerState2.put(playerId, playerState.get(playerId).withAddedTickets(chosenTickets));
-        return new GameState(tickets, cardState, currentPlayerId, playerState2, lastPlayer);
+        return new GameState(tickets, cardState, currentPlayerId(), playerState2, lastPlayer());
     }
 
     /**
@@ -169,7 +158,7 @@ public final class GameState extends PublicGameState{
 
         Map<PlayerId, PlayerState> playerState2 = cloneMap();
         playerState2.put(currentPlayerId(), playerState.get(currentPlayerId()).withAddedTickets(chosenTickets));
-        return new GameState(tickets.withoutTopCards(drawnTickets.size()), cardState, currentPlayerId(), playerState2, lastPlayer);
+        return new GameState(tickets.withoutTopCards(drawnTickets.size()), cardState, currentPlayerId(), playerState2, lastPlayer());
     }
 
 
@@ -182,8 +171,8 @@ public final class GameState extends PublicGameState{
     public GameState withDrawnFaceUpCard(int slot) {
         Preconditions.checkArgument(canDrawCards());
         Map<PlayerId, PlayerState> playerState2 = cloneMap();
-        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedCard(cardState.faceUpCard(slot)));
-        return new GameState(tickets, cardState.withDrawnFaceUpCard(slot), currentPlayerId, playerState2, lastPlayer);
+        playerState2.put(currentPlayerId(), playerState.get(currentPlayerId()).withAddedCard(cardState.faceUpCard(slot)));
+        return new GameState(tickets, cardState.withDrawnFaceUpCard(slot), currentPlayerId(), playerState2, lastPlayer());
     }
 
 
@@ -195,8 +184,8 @@ public final class GameState extends PublicGameState{
     public GameState withBlindlyDrawnCard() {
         Preconditions.checkArgument(canDrawCards());
         Map<PlayerId, PlayerState> playerState2 = cloneMap();
-        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withAddedCard(cardState.topDeckCard()));
-        return new GameState(tickets, cardState.withoutTopDeckCard(), currentPlayerId, playerState2, lastPlayer);
+        playerState2.put(currentPlayerId(), playerState.get(currentPlayerId()).withAddedCard(cardState.topDeckCard()));
+        return new GameState(tickets, cardState.withoutTopDeckCard(), currentPlayerId(), playerState2, lastPlayer());
     }
 
     /** modifie la défausse
@@ -206,8 +195,8 @@ public final class GameState extends PublicGameState{
      */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
         Map<PlayerId, PlayerState> playerState2 = cloneMap();
-        playerState2.put(currentPlayerId, playerState.get(currentPlayerId).withClaimedRoute(route, cards));     // on enlève les cartes utilisées de la main du joueur
-        return new GameState(tickets, cardState.withMoreDiscardedCards(cards), currentPlayerId, playerState2, lastPlayer);      // puis ces cartes sont ajoutées à la défausse
+        playerState2.put(currentPlayerId(), playerState.get(currentPlayerId()).withClaimedRoute(route, cards));     // on enlève les cartes utilisées de la main du joueur
+        return new GameState(tickets, cardState.withMoreDiscardedCards(cards), currentPlayerId(), playerState2, lastPlayer());      // puis ces cartes sont ajoutées à la défausse
     }
 
 
@@ -216,7 +205,7 @@ public final class GameState extends PublicGameState{
      * @return vrai ssi le dernier tour commence, c-à-d si l'identité du dernier joueur est actuellement inconnue mais que le joueur courant n'a plus que deux wagons ou moins
      */
     public boolean lastTurnBegins() {
-      return ((lastPlayer == null)&&(playerState.get(currentPlayerId).carCount()<=2));
+      return ((lastPlayer() == null)&&(playerState.get(currentPlayerId()).carCount()<=Constants.LAST_TURN_BEGINS_CAR_COUNT));
     }
 
     /**
@@ -224,7 +213,7 @@ public final class GameState extends PublicGameState{
      * @return un état identique au récepteur si ce n'est que le joueur courant est celui qui suit le joueur courant actuel; de plus, si lastTurnBegins retourne vrai, le joueur courant actuel devient le dernier joueur
      */
     public GameState forNextTurn() {
-        return (lastTurnBegins()) ? new GameState(tickets, cardState, currentPlayerId.next(), playerState, currentPlayerId) : new GameState(tickets, cardState, currentPlayerId.next(), playerState, lastPlayer);
+        return (lastTurnBegins()) ? new GameState(tickets, cardState, currentPlayerId().next(), playerState, currentPlayerId()) : new GameState(tickets, cardState, currentPlayerId().next(), playerState, lastPlayer());
     }
 
     /**

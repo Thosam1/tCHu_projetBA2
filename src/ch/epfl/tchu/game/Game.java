@@ -14,8 +14,10 @@ import ch.epfl.tchu.gui.Info;
  * @author Thösam Norlha-Tsang (330163)
  * @author Aymeric de chillaz (326617)
  */
-public final class Game {
+public abstract class Game {
 
+    private Game() {}
+    
     /**
      * fait jouer une partie de tCHu aux joueurs donnés, dont les noms figurent dans la table playerNames ;
      * les billets disponibles pour cette partie sont ceux de tickets, et le générateur aléatoire rng est utilisé
@@ -28,7 +30,7 @@ public final class Game {
      */
     public static void play(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames,
                             SortedBag<Ticket> tickets, Random rng) {
-        Preconditions.checkArgument((players.size()==2)&&(playerNames.size()==2));
+        Preconditions.checkArgument((players.size()==PlayerId.COUNT)&&(playerNames.size()==PlayerId.COUNT));
         int numberOfLastTurns = 0; // Égal à 1 quand l'avant dernier joueur joue et 2 quand le dernier joue
 
         Info player1 = new Info(playerNames.get(PlayerId.PLAYER_1));
