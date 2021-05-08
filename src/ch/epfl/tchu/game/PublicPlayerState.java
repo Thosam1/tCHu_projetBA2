@@ -41,7 +41,6 @@ public class PublicPlayerState {
 
         this.carCount = Constants.INITIAL_CAR_COUNT - sumOfRoutesLengths;   // nombre de wagons
         this.pointCount = points;   // points de construction
-
     }
 
     /**

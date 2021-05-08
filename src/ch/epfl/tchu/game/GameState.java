@@ -85,6 +85,7 @@ public final class GameState extends PublicGameState{
      * @throws IllegalArgumentException si count n'est pas compris entre 0 et la taille de la pioche (inclus)
      */
     public SortedBag<Ticket> topTickets(int count){
+        Preconditions.checkArgument((0<=count)&&(count<=tickets.size()));
         return tickets.topCards(count);
     }
 
@@ -94,6 +95,7 @@ public final class GameState extends PublicGameState{
      * @throws IllegalArgumentException si count n'est pas compris entre 0 et la taille de la pioche (inclus)
      */
     public GameState withoutTopTickets(int count) {
+        Preconditions.checkArgument((0<=count)&&(count<=tickets.size()));
         return new GameState(tickets.withoutTopCards(count), cardState, currentPlayerId(), playerState, lastPlayer());
     }
 
@@ -102,6 +104,7 @@ public final class GameState extends PublicGameState{
      * @throws IllegalArgumentException si la pioche est vide
      */
     public Card topCard() {
+        Preconditions.checkArgument(!cardState().isDeckEmpty());
         return cardState.topDeckCard();
     }
 
@@ -110,6 +113,7 @@ public final class GameState extends PublicGameState{
      * @throws IllegalArgumentException si la pioche est vide
      */
     public GameState withoutTopCard() {
+        Preconditions.checkArgument(!cardState().isDeckEmpty());
         return new GameState(tickets, cardState.withoutTopDeckCard(), currentPlayerId(), playerState, lastPlayer());
     }
 
@@ -141,7 +145,7 @@ public final class GameState extends PublicGameState{
      */
     public GameState withInitiallyChosenTickets(PlayerId playerId, SortedBag<Ticket> chosenTickets) {
         Preconditions.checkArgument(playerState.get(playerId).ticketCount()==0);
-        Map<PlayerId, PlayerState> playerState2 = cloneMap();
+        Map<PlayerId, PlayerState> playerState2 = new EnumMap<>(playerState);
         playerState2.put(playerId, playerState.get(playerId).withAddedTickets(chosenTickets));
         return new GameState(tickets, cardState, currentPlayerId(), playerState2, lastPlayer());
     }
@@ -156,7 +160,7 @@ public final class GameState extends PublicGameState{
     public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) {
         Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
 
-        Map<PlayerId, PlayerState> playerState2 = cloneMap();
+        Map<PlayerId, PlayerState> playerState2 = new EnumMap<>(playerState);
         playerState2.put(currentPlayerId(), playerState.get(currentPlayerId()).withAddedTickets(chosenTickets));
         return new GameState(tickets.withoutTopCards(drawnTickets.size()), cardState, currentPlayerId(), playerState2, lastPlayer());
     }
@@ -170,7 +174,7 @@ public final class GameState extends PublicGameState{
      */
     public GameState withDrawnFaceUpCard(int slot) {
         Preconditions.checkArgument(canDrawCards());
-        Map<PlayerId, PlayerState> playerState2 = cloneMap();
+        Map<PlayerId, PlayerState> playerState2 = new EnumMap<>(playerState);
         playerState2.put(currentPlayerId(), playerState.get(currentPlayerId()).withAddedCard(cardState.faceUpCard(slot)));
         return new GameState(tickets, cardState.withDrawnFaceUpCard(slot), currentPlayerId(), playerState2, lastPlayer());
     }
@@ -183,7 +187,7 @@ public final class GameState extends PublicGameState{
      */
     public GameState withBlindlyDrawnCard() {
         Preconditions.checkArgument(canDrawCards());
-        Map<PlayerId, PlayerState> playerState2 = cloneMap();
+        Map<PlayerId, PlayerState> playerState2 = new EnumMap<>(playerState);
         playerState2.put(currentPlayerId(), playerState.get(currentPlayerId()).withAddedCard(cardState.topDeckCard()));
         return new GameState(tickets, cardState.withoutTopDeckCard(), currentPlayerId(), playerState2, lastPlayer());
     }
@@ -194,7 +198,7 @@ public final class GameState extends PublicGameState{
      * @return un état identique au récepteur mais dans lequel le joueur courant s'est emparé de la route donnée au moyen des cartes données
      */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
-        Map<PlayerId, PlayerState> playerState2 = cloneMap();
+        Map<PlayerId, PlayerState> playerState2 = new EnumMap<>(playerState);
         playerState2.put(currentPlayerId(), playerState.get(currentPlayerId()).withClaimedRoute(route, cards));     // on enlève les cartes utilisées de la main du joueur
         return new GameState(tickets, cardState.withMoreDiscardedCards(cards), currentPlayerId(), playerState2, lastPlayer());      // puis ces cartes sont ajoutées à la défausse
     }
@@ -214,15 +218,6 @@ public final class GameState extends PublicGameState{
      */
     public GameState forNextTurn() {
         return (lastTurnBegins()) ? new GameState(tickets, cardState, currentPlayerId().next(), playerState, currentPlayerId()) : new GameState(tickets, cardState, currentPlayerId().next(), playerState, lastPlayer());
-    }
-
-    /**
-     * @return une nouvelle map/la même, non-finale donc qu'on peut modifier
-     */
-    private Map<PlayerId, PlayerState> cloneMap(){
-        Map<PlayerId, PlayerState> playerState2 = new HashMap<PlayerId, PlayerState>();
-        playerState2.putAll(playerState);                                                   // si on utilise pas .putAll, on brise l'immuabilité
-        return playerState2;
     }
 
 }

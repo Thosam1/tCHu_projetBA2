@@ -38,28 +38,18 @@ public final class Trail {
             return new Trail(null, null, 0, null);
         }
 
-
         /**
-         *  D'abord, doublons le nombre de routes pour inclure les mêmes routes dans le sens inverse (en inversant les stations)
-         */
-        List<Route> allRoutesPossible = new ArrayList<>();
-        for(Route a : routes) {
-            allRoutesPossible.add(a);
-            Route opposite = new Route(a.id(), a.station2(), a.station1(), a.length(), a.level(), a.color());
-            allRoutesPossible.add(opposite);
-        }
-
-        /**
-         *  Créons une liste de trails, contenant chaque route seule de la liste juste en haut
+         *  Créons une liste de trails, contenant chaque route seule, faire de même avec leur inverses
          */
         List<Trail> listOfTrails = new ArrayList<>();
-        for(Route a : allRoutesPossible){
+        for(Route a : routes){
             listOfTrails.add(new Trail(a.station1(), a.station2(), a.length(), Collections.singletonList(a)));
+            listOfTrails.add(new Trail(a.station2(), a.station1(), a.length(), Collections.singletonList(new Route(a.id(), a.station2(), a.station1(), a.length(), a.level(), a.color()))));
         }
 
         //  --- --- --- Stockage de données --- --- ---
 
-        List<Trail> storagePotentialTrails = new ArrayList<>();   // if one trail with length > longestTrail, then remove all and add the latest one, if == just add
+        Trail storagePotentialTrail = new Trail(null, null, 0, null);   // if one trail with length > longestTrail, then remove all and add the latest one, if == just add
         int longestTrailLength = 0;
 
         //  --- --- --- --- --- --- --- --- --- --- ---
@@ -70,8 +60,7 @@ public final class Trail {
         for(Route r: routes){
             if(r.length() > longestTrailLength){
                 longestTrailLength = r.length();
-                if(storagePotentialTrails.size() >= 1){storagePotentialTrails.clear();}
-                storagePotentialTrails.add(new Trail(r.station1(), r.station2(), r.length(), Collections.singletonList(r)));
+                storagePotentialTrail = new Trail(r.station1(), r.station2(), r.length(), Collections.singletonList(r));
             }
         }
 
@@ -98,9 +87,12 @@ public final class Trail {
                 /**
                  *  Itérer sur toutes les routes, pour savoir lesquelles peuvent prolonger la trail actuelle
                  */
-                for(Route testedRoute: allRoutesPossible) {
+                for(Route testedRoute: routes) {
                     if(testedRoute.station1() == singleRouteTrail.station2() && singleRouteTrail.doesNotContainTheRoute(testedRoute)) {
                              otherPossibleRoutes.add(testedRoute);
+                    }
+                    if(testedRoute.station2() == singleRouteTrail.station2() && singleRouteTrail.doesNotContainTheRoute(testedRoute)){
+                        otherPossibleRoutes.add(new Route(testedRoute.id(), testedRoute.station2(), testedRoute.station1(), testedRoute.length(), testedRoute.level(), testedRoute.color()));
                     }
                 }
 
@@ -108,10 +100,6 @@ public final class Trail {
                  *  Si il y a des routes qui peuvent rallonger le trail
                  */
                 if(otherPossibleRoutes.size() > 0){
-//                    if(tempListOfTrails == null){
-//                        tempListOfTrails = new ArrayList<>();   // c'était dur de fixer ce bug
-//                    }
-
                     for(Route r: otherPossibleRoutes) {
                         List<Route> previousList = new ArrayList<>();
                         previousList.addAll(singleRouteTrail.listOfRoutesInTrail);
@@ -124,14 +112,9 @@ public final class Trail {
                          *  Si la trail est de même longueur que les plus longues, on peut l'ajouter au stockage
                          */
                         tempListOfTrails.add(newTrail);
-
-
-                        if(newTrail.length() == longestTrailLength){
-                            storagePotentialTrails.add(newTrail);
-                        }else if(newTrail.length() > longestTrailLength){
+                        if(newTrail.length() > longestTrailLength){
                             longestTrailLength = newTrail.length();
-                            storagePotentialTrails.clear();
-                            storagePotentialTrails.add(newTrail);
+                            storagePotentialTrail = newTrail;
                         }
                     }
                 }
@@ -142,7 +125,7 @@ public final class Trail {
             listOfTrails = (tempListOfTrails.size() == 0) ? null : tempListOfTrails;    // On veut itérer sur les nouvelles trails le prochain tour
         }
 
-        return storagePotentialTrails.get(0);
+        return storagePotentialTrail;
 
     }
 
@@ -170,12 +153,19 @@ public final class Trail {
         if(length() == 0 || station1() == null || station2() == null || listOfRoutesInTrail == null){
             return "(0)";
         }else{
-            String trail = "";
+            StringBuilder str = new StringBuilder();
             for(Route a : listOfRoutesInTrail){
-                trail = trail + a.station1().name() + " - "; // toutes les première stations
+                str.append(a.station1().name() + " - ");
             }
-            trail = trail + listOfRoutesInTrail.get(listOfRoutesInTrail.size()-1).station2().name() + " (" + length() + ")";  // le dernier deuxième station
-            return trail;
+            str.append(listOfRoutesInTrail.get(listOfRoutesInTrail.size()-1).station2().name() + " (" + length() + ")");    //TODO quelle est la différence entre ça et le truc du bas ?
+
+//            String trail = "";
+//            for(Route a : listOfRoutesInTrail){
+//                trail = trail + a.station1().name() + " - "; // toutes les première stations
+//            }
+//            trail = trail + listOfRoutesInTrail.get(listOfRoutesInTrail.size()-1).station2().name() + " (" + length() + ")";  // le dernier deuxième station
+//            return trail;
+            return str.toString();
         }
     }
 
@@ -185,9 +175,10 @@ public final class Trail {
      */
     private boolean doesNotContainTheRoute(Route route){
         boolean notHere = true;
-        for(int i = 0; i < listOfRoutesInTrail.size(); i++){
-            if(route.id() == listOfRoutesInTrail.get(i).id()){
+        for(Route routes : listOfRoutesInTrail){
+            if(route.id() == routes.id()){
                 notHere = false;
+                break;
             }
         }
         return notHere;

@@ -7,6 +7,7 @@ import ch.epfl.tchu.gui.ObservableGameState;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +57,56 @@ public final class GraphicalPlayerTest extends Application {
                 };
 
         p.startTurn(drawTicketsH, drawCardH, claimRouteH);
+
+        ActionHandlers.ChooseTicketsHandler chooseTickets =
+                s -> p.receiveInfo(String.format("Je choisis des tickets" ));
+        List listTicket = new ArrayList();
+        listTicket.add(ChMap.tickets().get(2));
+        listTicket.add(ChMap.tickets().get(3));
+        listTicket.add(ChMap.tickets().get(4));
+        listTicket.add(ChMap.tickets().get(5));
+        listTicket.add(ChMap.tickets().get(6));
+        SortedBag<Ticket> tickets = SortedBag.of(listTicket);
+        p.chooseTickets(tickets, chooseTickets);
+
+        ActionHandlers.ChooseCardsHandler chooseCards =
+                s -> p.receiveInfo(String.format("Je choisis des cartes" ));
+        List listCards1 = new ArrayList();
+        listCards1.add(Card.RED);
+        listCards1.add(Card.RED);
+        listCards1.add(Card.RED);
+        listCards1.add(Card.RED);
+        listCards1.add(Card.RED);
+        SortedBag<Card> cards1 = SortedBag.of(listCards1);
+        List listCards2 = new ArrayList();
+        listCards2.add(Card.RED);
+        listCards2.add(Card.RED);
+        listCards2.add(Card.RED);
+        listCards2.add(Card.RED);
+        listCards2.add(Card.BLUE);
+        SortedBag<Card> cards2 = SortedBag.of(listCards2);
+        List listCards3 = new ArrayList();
+        listCards3.add(Card.RED);
+        listCards3.add(Card.RED);
+        listCards3.add(Card.RED);
+        listCards3.add(Card.GREEN);
+        listCards3.add(Card.BLUE);
+        SortedBag<Card> cards3 = SortedBag.of(listCards3);
+        List listCards4 = new ArrayList();
+        listCards4.add(Card.RED);
+        listCards4.add(Card.RED);
+        listCards4.add(Card.BLACK);
+        listCards4.add(Card.GREEN);
+        listCards4.add(Card.BLUE);
+        SortedBag<Card> cards4 = SortedBag.of(listCards4);
+        List<SortedBag<Card>> listcards = new ArrayList<>();
+        listcards.add(cards1);
+        listcards.add(cards2);
+        listcards.add(cards3);
+        listcards.add(cards4);
+        p.chooseClaimCards(listcards, chooseCards);
+        //ToDo quand on appuie sur choisir, le texte receive info ne s'affiche pas !!!
+
     }
 
     private void setState(ObservableGameState gameState) {

@@ -4,14 +4,12 @@ import java.util.List;
 
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
-import ch.epfl.tchu.game.Card;
-import ch.epfl.tchu.game.Route;
-import ch.epfl.tchu.game.Trail;
+import ch.epfl.tchu.game.*;
 
-/**
- * @author Thösam Norlha-Tsang (330163)
- *
- */
+ /**
+  * @author Thösam Norlha-Tsang (330163)
+  *
+  */
 
 public final class Info {
 
@@ -61,12 +59,9 @@ public final class Info {
                 cardInFrench = StringsFr.LOCOMOTIVE_CARD;
                 break;
             default:
-                cardInFrench = StringsFr.LOCOMOTIVE_CARD; // !!!
+                throw new Error(); // !!!
         }
-        if(Math.abs(count) != 1) {
-            cardInFrench = cardInFrench + "s";
-        }
-
+        cardInFrench = cardInFrench + StringsFr.plural(count);
         return cardInFrench;
     }
 
@@ -76,7 +71,7 @@ public final class Info {
      * @return le message déclarant que les joueurs, dont les noms sont ceux donnés, ont terminé la partie ex æqo en ayant chacun remporté les points donnés (utilise DRAW)
      */
     public static String draw(List<String> playerNames, int points) {
-        Preconditions.checkArgument(playerNames.size() == 2);
+        Preconditions.checkArgument(playerNames.size() == PlayerId.COUNT);
         String bothNames = playerNames.get(0) + StringsFr.AND_SEPARATOR + playerNames.get(1);
         return String.format(StringsFr.DRAW, bothNames, points);
     }
@@ -174,9 +169,8 @@ public final class Info {
      * @return le message déclarant que le joueur n'a plus que le nombre donné (et inférieur ou égale à 2) de wagons, et que le dernier tour commence
      */
     public String lastTurnBegins(int carCount){
-        Preconditions.checkArgument(carCount <= 2);
+        Preconditions.checkArgument(carCount <= Constants.LAST_TURN_BEGINS_CAR_COUNT);
         return String.format(StringsFr.LAST_TURN_BEGINS, player, carCount, StringsFr.plural(carCount));
-
     }
 
     /**
@@ -184,7 +178,7 @@ public final class Info {
      * @return le message déclarant que le joueur obtient le bonus de fin de partie grâce au chemin donné, qui est le plus long, ou l'un des plus longs
      */
     public String getsLongestTrailBonus(Trail longestTrail){
-        String trailStations = longestTrail.station1() + StringsFr.EN_DASH_SEPARATOR + longestTrail.station2();
+        String trailStations = String.join(StringsFr.EN_DASH_SEPARATOR, longestTrail.station1().name(), longestTrail.station2().name());
         return String.format(StringsFr.GETS_BONUS, player, trailStations);
     }
 
@@ -216,22 +210,35 @@ public final class Info {
      * @return les cartes du multi-ensemble donné en format String, plus lisible
      */
     public static String cardListString(SortedBag<Card> cardSortedBag){
-        String cardList = "";
-
+//        String cardList = "";
+//
+//        int i = 0;
+//        for (Card c: cardSortedBag.toSet()) {
+//            int n = cardSortedBag.countOf(c);
+//            if(i == cardSortedBag.toSet().size() - 2){
+//                cardList = cardList + n + " " + cardName(c, n) + StringsFr.AND_SEPARATOR;
+//            }else if(i == cardSortedBag.toSet().size() - 1){
+//                cardList = cardList + n + " " + cardName(c, n);
+//            }else{
+//                cardList = cardList + n + " " + cardName(c, n) + ", ";
+//            }
+//            i += 1;
+//        }
+//        return cardList;
+        StringBuilder str = new StringBuilder();
         int i = 0;
         for (Card c: cardSortedBag.toSet()) {
-
             int n = cardSortedBag.countOf(c);
             if(i == cardSortedBag.toSet().size() - 2){
-                cardList = cardList + n + " " + cardName(c, n) + StringsFr.AND_SEPARATOR;
+                str.append(n + " " + cardName(c, n) + StringsFr.AND_SEPARATOR);
             }else if(i == cardSortedBag.toSet().size() - 1){
-                cardList = cardList + n + " " + cardName(c, n);
+                str.append(n + " " + cardName(c, n));
             }else{
-                cardList = cardList + n + " " + cardName(c, n) + ", ";
+                str.append(n + " " + cardName(c, n) + ", ");
             }
             i += 1;
         }
-        return cardList;
+        return str.toString();
     }
 
 }

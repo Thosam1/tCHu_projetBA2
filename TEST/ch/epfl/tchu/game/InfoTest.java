@@ -20,7 +20,8 @@ public class InfoTest {
     public void cardNameWithSingularBlue() {
         Card card = Card.of(Color.BLUE);
         String cardName = Info.cardName(card, 1);
-        assertTrue(cardName == "bleue");
+        System.out.println(cardName);
+        assertTrue(cardName.equals("bleue"));
     }
 
     @Test
