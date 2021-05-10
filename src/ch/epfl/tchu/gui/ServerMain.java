@@ -15,6 +15,7 @@ import java.util.Random;
 
 /**
  *  Classe contenant le programme principal du client tCHu
+ *  @author Thösam Norlha-Tsang (330163)
  */
 
 public class ServerMain extends Application {

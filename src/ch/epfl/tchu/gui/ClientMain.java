@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  *  Classe contenant le programme principal du client tCHu
+ *  @author Thösam Norlha-Tsang (330163)
  */
 public class ClientMain extends Application {
 
