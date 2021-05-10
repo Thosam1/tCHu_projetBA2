@@ -1,6 +1,7 @@
-package ch.epfl.tchu.game;
+package ch.epfl.tchu.game.net;
 import ch.epfl.tchu.SortedBag;
 
+import ch.epfl.tchu.game.*;
 import ch.epfl.tchu.net.Serdes;
 import org.junit.jupiter.api.Test;
 import java.util.*;

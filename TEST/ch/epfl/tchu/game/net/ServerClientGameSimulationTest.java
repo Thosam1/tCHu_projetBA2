@@ -1,7 +1,8 @@
-package ch.epfl.tchu.game;
+package ch.epfl.tchu.game.net;
 import ch.epfl.tchu.SmartBot;
 import ch.epfl.tchu.SortedBag;
 
+import ch.epfl.tchu.game.*;
 import ch.epfl.tchu.net.RemotePlayerClient;
 import ch.epfl.tchu.net.RemotePlayerProxy;
 import ch.epfl.tchu.net.Serdes;

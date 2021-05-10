@@ -1,6 +1,7 @@
-package ch.epfl.tchu.game;
+package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
+import ch.epfl.tchu.game.*;
 import ch.epfl.tchu.gui.ActionHandlers;
 import ch.epfl.tchu.gui.GraphicalPlayer;
 import ch.epfl.tchu.gui.ObservableGameState;

@@ -37,7 +37,7 @@ import static javafx.application.Platform.isFxApplicationThread;
 
 public final class GraphicalPlayer {
     private ObservableGameState observableGame;
-    private ObservableList<Text> messageList = FXCollections.observableList(new ArrayList<>());  // toDo check avec la ligne 74
+    private ObservableList<Text> messageList = FXCollections.observableList(new ArrayList<>());
     private final PlayerId playerId;
     private final Map<PlayerId, String> mapPlayerNames;
     private Stage main;
@@ -49,6 +49,7 @@ public final class GraphicalPlayer {
     private ObjectProperty<DrawTicketsHandler> drawTicketsProperty = new SimpleObjectProperty<>();
 
     public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> mapPlayerNames) {
+        assert isFxApplicationThread();
         this.playerId = playerId;
         this.mapPlayerNames = mapPlayerNames;
         observableGame = new ObservableGameState(playerId);
@@ -156,6 +157,7 @@ public final class GraphicalPlayer {
 
 
     private Stage mainSceneGraph(Node mapView, Node drawView, Node handView, Node infoView) {
+        assert isFxApplicationThread();
         BorderPane borderPane = new BorderPane(mapView, null, drawView, handView, infoView);
         Stage root = new Stage();
         root.setScene(new Scene(borderPane));
@@ -202,6 +204,7 @@ public final class GraphicalPlayer {
      * Pour la liste view
      */
     private <E> ListView listViewCard(ObservableList<E> list, boolean multiple) {
+        assert isFxApplicationThread();
         ListView listView = new ListView(list);
         listView.setCellFactory(v ->
                 new TextFieldListCell<>(new CardBagStringConverter()));
@@ -214,6 +217,7 @@ public final class GraphicalPlayer {
     // return listView;
 
     private <E> ListView listViewTicket(SortedBag<Ticket> ticketsToChoose, boolean multiple) {
+        assert isFxApplicationThread();
         ListView<Ticket> ticketList = new ListView<>(FXCollections.observableList(ticketsToChoose.toList()));
         if (multiple) {
             ticketList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -222,10 +226,11 @@ public final class GraphicalPlayer {
     }
 
         /**
-         *  for chooseTickets
+         *  pour choisir les billets
          */
         private Button chooseTicketsButton (ListView<Ticket> list,int min, ChooseTicketsHandler handler)
         {
+            assert isFxApplicationThread();
             Button button = new Button();
             button.disableProperty().bind(Bindings.lessThan(Bindings.size(list.getSelectionModel().getSelectedItems()), min));
             button.setOnAction(e -> {
@@ -234,10 +239,11 @@ public final class GraphicalPlayer {
             return button;
         }
         /**
-         *  for chooseCards
+         *  pour choisir les cartes
          */
         private Button chooseCardsButton (ListView < SortedBag < Card >> list, ChooseCardsHandler handler)
         {    //todo ça représente quoi ? les cartes initiales ? on peut choisir plus d'une option ?
+            assert isFxApplicationThread();
             Button button = new Button();
             ObservableList temp = list.getSelectionModel().getSelectedItems();
             button.disableProperty().bind(Bindings.isEmpty(list.getSelectionModel().getSelectedItems()));
@@ -253,6 +259,7 @@ public final class GraphicalPlayer {
          *  de déclarer qu'il désire abandonner sa tentative de prise de possession du tunnel.
          */
         private Button chooseAdditionalCardsButton (ListView < SortedBag < Card >> list) {
+            assert isFxApplicationThread();
             Button button = new Button();
             ObservableList temp = list.getSelectionModel().getSelectedItems();
             button.disableProperty().bind(Bindings.isEmpty(list.getSelectionModel().getSelectedItems()));

@@ -1,6 +1,7 @@
-package ch.epfl.tchu.game;
+package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
+import ch.epfl.tchu.game.*;
 import ch.epfl.tchu.gui.Info;
 import ch.epfl.tchu.gui.StringsFr;
 import org.junit.jupiter.api.Test;

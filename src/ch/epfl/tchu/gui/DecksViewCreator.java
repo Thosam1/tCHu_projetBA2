@@ -8,7 +8,6 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.scene.Group;
 
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
