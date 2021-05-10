@@ -1,7 +1,6 @@
 package ch.epfl.tchu.game;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -78,14 +77,6 @@ public final class PlayerState extends PublicPlayerState {
     }
 
     /**
-     * @param additionalCards
-     * @return un état identique au récepteur, si ce n'est que le joueur possède en plus les cartes données
-     */
-    public PlayerState withAddedCards(SortedBag<Card> additionalCards){
-        return new PlayerState(tickets(), cards().union(additionalCards), routes());
-    }
-
-    /**
      * @param route
      * @return vrai ssi le joueur peut s'emparer de la route donnée, c-à-d s'il lui reste assez de wagons et s'il possède les cartes nécessaires
      */
@@ -115,12 +106,11 @@ public final class PlayerState extends PublicPlayerState {
      * @return la liste de tous les ensembles de cartes que le joueur pourrait utiliser pour s'emparer d'un tunnel, trié par ordre croissant du nombre de cartes locomotives, sachant qu'il a initialement posé les cartes initialCards, que les 3 cartes tirées du sommet de la pioche sont drawnCards, et que ces dernières forcent le joueur à poser encore additionalCardsCount cartes
      * @throws IllegalArgumentException si le nombre de cartes additionnelles n'est pas compris entre 1 et 3 (inclus), si l'ensemble des cartes initiales est vide ou contient plus de 2 types de cartes différents, ou si l'ensemble des cartes tirées ne contient pas exactement 3 cartes
      */
-    public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards, SortedBag<Card> drawnCards){
+    public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards){
         Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= 3);
         //Preconditions.checkArgument(initialCards != null); implicitement vérifié
         Preconditions.checkArgument(initialCards.size() >= 1);
         Preconditions.checkArgument(initialCards.toSet().size() <= 2);
-        Preconditions.checkArgument(drawnCards.size() == Constants.ADDITIONAL_TUNNEL_CARDS);
 
         Card initialCardsType = Card.LOCOMOTIVE;
         for (Card card : initialCards) {

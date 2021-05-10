@@ -41,20 +41,6 @@ class TestPublicCardState {
           });}
     
     @Test
-    public void totalSizeWorks1(){
-        List<Card> list = List.of(Card.BLUE, Card.GREEN, Card.BLACK, Card.VIOLET, Card.LOCOMOTIVE);
-        PublicCardState cardState = new PublicCardState(list, 4, 5);
-        assertEquals(14, cardState.totalSize());
-    }
-    
-    @Test
-    public void totalSizeWorks2(){
-        List<Card> list = List.of(Card.BLUE, Card.GREEN, Card.BLACK, Card.VIOLET, Card.LOCOMOTIVE);
-        PublicCardState cardState = new PublicCardState(list, 0, 0);
-        assertEquals(5, cardState.totalSize());
-    }
-    
-    @Test
     public void faceUpCardsWorks(){
         List<Card> list = List.of(Card.BLUE, Card.GREEN, Card.BLACK, Card.VIOLET, Card.LOCOMOTIVE);
         PublicCardState cardState = new PublicCardState(list, 4, 5);

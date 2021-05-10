@@ -187,7 +187,7 @@ public abstract class Game {
                         //si le joueur doit poser plus de cartes, possibleAdditionalCards, calcule toutes les combinaisons possible de cartes que le joueur peut poser
                         if (additionalCardsCount != 0) { //possibleAdditionalCards ne doit pas prendre de additionalCardsCount égal à 0
                             possibleAdditionalCards = gameState.currentPlayerState()
-                                    .possibleAdditionalCards(additionalCardsCount, initialCards, drawnCards);
+                                    .possibleAdditionalCards(additionalCardsCount, initialCards);
                         }
 
                         //si le joueur a des cartes additionnelles à poser (entre 1 et 3, autrement dit, différent que 0)

@@ -149,40 +149,6 @@ public class PlayerStateTest {
     }
 
     @Test
-    public void withAddedCardsTest(){
-        SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets().get(0));
-
-        List<Card> cardList = new ArrayList<>();
-        cardList.add(Card.of(Color.GREEN)); // 3 greens
-        cardList.add(Card.of(Color.GREEN));
-        cardList.add(Card.of(Color.GREEN));
-        cardList.add(Card.of(Color.BLUE));  // 1 blue
-        cardList.add(Card.of(Color.BLACK)); // 1 black
-        cardList.add(Card.of(null));    // locomotive
-        SortedBag<Card> cards = SortedBag.of(cardList);
-
-        List<Route> routes = new ArrayList<>();
-        routes.add(ChMap.routes().get(2));
-        routes.add(ChMap.routes().get(8));
-
-        PlayerState test = new PlayerState(tickets, cards, routes);
-
-        assertTrue(test.cardCount() == 6);
-        System.out.println(test.cardCount());
-
-        List<Card> toAdd = new ArrayList<>();
-        toAdd.add(Card.BLUE);
-        toAdd.add(Card.BLUE);
-        toAdd.add(Card.BLUE);
-        toAdd.add(Card.RED);
-
-        test = test.withAddedCards(SortedBag.of(toAdd));
-
-
-        assertTrue((test.ticketCount() == 1) && (test.routes().size() == 2) && test.cardCount() == 10);
-    }
-
-    @Test
     public void canClaimRouteFalseWagon(){  // FUCKING FORGOT THIS ONE !!!
 
     }
@@ -647,7 +613,7 @@ public class PlayerStateTest {
         SortedBag<Card> initialCards = SortedBag.of(3, Card.BLACK, 2, Card.LOCOMOTIVE);
         SortedBag<Card> drawnCards = SortedBag.of(1,Card.RED, 2, Card.BLACK);
         
-        List<SortedBag<Card>> output = test.possibleAdditionalCards(additionalCardsCount, initialCards, drawnCards);
+        List<SortedBag<Card>> output = test.possibleAdditionalCards(additionalCardsCount, initialCards);
         
         SortedBag<Card> bag1 = SortedBag.of(3,Card.BLACK);
         SortedBag<Card> bag2 = SortedBag.of(2,Card.BLACK,1,Card.LOCOMOTIVE);
@@ -665,10 +631,10 @@ public class PlayerStateTest {
         PlayerState test = new PlayerState(tickets, cards, routes);
         
         assertThrows(IllegalArgumentException.class, () -> {
-            test.possibleAdditionalCards(0, SortedBag.of(Card.BLUE), SortedBag.of(3,Card.GREEN));
+            test.possibleAdditionalCards(0, SortedBag.of(Card.BLUE));
         });
         assertThrows(IllegalArgumentException.class, () -> {
-            test.possibleAdditionalCards(4, SortedBag.of(Card.BLUE), SortedBag.of(3,Card.GREEN)) ;
+            test.possibleAdditionalCards(4, SortedBag.of(Card.BLUE)) ;
         });
         assertThrows(IllegalArgumentException.class, () -> {
             SortedBag.Builder<Card> builder = new SortedBag.Builder<>();
@@ -677,13 +643,13 @@ public class PlayerStateTest {
             builder.add(Card.GREEN);
             builder.add(Card.YELLOW);
             SortedBag<Card> cardsTest = builder.build();
-            test.possibleAdditionalCards(3, cardsTest, SortedBag.of(3,Card.GREEN)) ;
+            test.possibleAdditionalCards(3, cardsTest) ;
         });
         assertThrows(IllegalArgumentException.class, () -> {
-            test.possibleAdditionalCards(3, SortedBag.of(Card.BLUE), SortedBag.of(4,Card.GREEN)) ;
+            test.possibleAdditionalCards(3, SortedBag.of(Card.BLUE)) ;
         });
         assertThrows(IllegalArgumentException.class, () -> {
-            test.possibleAdditionalCards(3, SortedBag.of(Card.BLUE), SortedBag.of(2,Card.GREEN)) ;
+            test.possibleAdditionalCards(3, SortedBag.of(Card.BLUE)) ;
         });
         
         

@@ -173,7 +173,6 @@ public final class GameState extends PublicGameState{
      * @throws IllegalArgumentException s'il n'est pas possible de tirer des cartes, c-à-d si canDrawCards retourne faux
      */
     public GameState withDrawnFaceUpCard(int slot) {
-        Preconditions.checkArgument(canDrawCards());
         Map<PlayerId, PlayerState> playerState2 = new EnumMap<>(playerState);
         playerState2.put(currentPlayerId(), playerState.get(currentPlayerId()).withAddedCard(cardState.faceUpCard(slot)));
         return new GameState(tickets, cardState.withDrawnFaceUpCard(slot), currentPlayerId(), playerState2, lastPlayer());
@@ -186,7 +185,6 @@ public final class GameState extends PublicGameState{
      * @throws IllegalArgumentException s'il n'est pas possible de tirer des cartes, c-à-d si canDrawCards retourne faux
      */
     public GameState withBlindlyDrawnCard() {
-        Preconditions.checkArgument(canDrawCards());
         Map<PlayerId, PlayerState> playerState2 = new EnumMap<>(playerState);
         playerState2.put(currentPlayerId(), playerState.get(currentPlayerId()).withAddedCard(cardState.topDeckCard()));
         return new GameState(tickets, cardState.withoutTopDeckCard(), currentPlayerId(), playerState2, lastPlayer());
