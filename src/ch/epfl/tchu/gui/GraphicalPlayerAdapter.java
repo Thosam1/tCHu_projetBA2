@@ -26,6 +26,10 @@ import javafx.application.Platform;
 public final class GraphicalPlayerAdapter implements Player{
     private GraphicalPlayer graphicalPlayer;
     
+    /**
+     * Les méthodes de GraphicalplayerAdapter et les ActionHandlers en attribut manipulent les Blocking Queue
+     * Ceci permet d'avoir une interaction entre le fil JavaFX et un autre fil
+     * */
     private BlockingQueue<SortedBag<Ticket>> qTickets = new ArrayBlockingQueue<>(1);
     private BlockingQueue<Integer> qCardIndex = new ArrayBlockingQueue<>(1);
     private BlockingQueue<SortedBag<Card>> qCards = new ArrayBlockingQueue<>(1);
@@ -33,7 +37,7 @@ public final class GraphicalPlayerAdapter implements Player{
     private BlockingQueue<TurnKind> qTurnKind = new ArrayBlockingQueue<>(1);
     
     /**
-     * les 5 handlers
+     * les 5 handlers qui sont instancié dans le constructeur
      * */
     ActionHandlers.ChooseTicketsHandler chooseTicketHandler;
     ActionHandlers.DrawTicketsHandler drawTicketsHandler;
@@ -41,6 +45,10 @@ public final class GraphicalPlayerAdapter implements Player{
     ActionHandlers.ClaimRouteHandler claimRouteHandler;
     ActionHandlers.ChooseCardsHandler chooseCardsHandler;
     
+    
+    /**
+     * construit les instances de ActionHandlers et les stocke en attribut
+     * leur méthode unique manipule les BlockingQueue*/
     public GraphicalPlayerAdapter() {
         //créé les handlers
         chooseTicketHandler = new ActionHandlers.ChooseTicketsHandler() {
@@ -126,23 +134,42 @@ public final class GraphicalPlayerAdapter implements Player{
         Platform.runLater(() -> graphicalPlayer.chooseTickets(tickets, chooseTicketHandler));
         }
 
+    /**
+     * bloque en attendant que la file utilisée également par setInitialTicketChoice contienne une valeur, puis la retourne
+     * */
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
         return take(qTickets);
     }
 
+    /**
+     * appelle, sur le fil JavaFX, la méthode startTurn du joueur graphique, en lui passant des gestionnaires d'action qui placent le type de tour choisi, 
+     * de même que les éventuels « arguments » de l'action
+     * puis bloque en attendant qu'une valeur soit placée dans la file contenant le type de tour, qu'elle retire et retourne,
+     * */
     @Override
     public TurnKind nextTurn() {       
         Platform.runLater(() -> graphicalPlayer.startTurn(drawTicketsHandler, drawCardsHandler, claimRouteHandler));
         return take(qTurnKind);
         }
 
+    /**
+     * enchaîne les actions effectuées par setInitialTicketChoice et chooseInitialTickets
+     * */
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {//est ce qu il faut lui dire le minimum de tickets qu il peut prendre?
         Platform.runLater(() -> graphicalPlayer.chooseTickets(options, chooseTicketHandler));
         return take(qTickets);
     }
 
+    /**
+     *  teste (sans bloquer !) si la file contenant les emplacements des cartes contient une valeur ; 
+     *  si c'est le cas, cela signifie que drawSlot est appelée pour la première fois du tour, et que le gestionnaire installé par nextTurn 
+     *  a placé l'emplacement de la première carte tirée dans cette file, qu'il suffit donc de retourner ; 
+     *  
+     *  sinon, cela signifie que drawSlot est appelée pour la seconde fois du tour, afin que le joueur tire sa seconde carte, 
+     *  et il faut donc appeler, sur le fil JavaFX, la méthode drawCard du joueur graphique, avant de bloquer en attendant que le gestionnaire 
+     *  qu'on lui passe place l'emplacement de la carte tirée dans la file, qui est alors extrait et retourné,*/
     @Override
     public int drawSlot() {
         if(qCardIndex.isEmpty()) {
@@ -154,22 +181,34 @@ public final class GraphicalPlayerAdapter implements Player{
         }
     }
 
+    /**
+     * extrait et retourne le premier élément de la file contenant les routes, qui y aura été placé par le gestionnaire passé à startTurn par nextTurn,
+     * */
     @Override
     public Route claimedRoute() {
         return take(qRoute);
     }
 
+    /**
+     * extrait et retourne l'élément de la file contenant le multi ensemble de cartes, qui y aura été placé par le gestionnaire passé à startTurn par nextTurn,
+     * */
     @Override
     public SortedBag<Card> initialClaimCards() {
         return take(qCards);
     }
 
+    /**
+     * appelle, sur le fil JavaFX, la méthode du même nom du joueur graphique 
+     * puis bloque en attendant qu'un élément soit placé dans la file contenant les multiensembles de cartes, qu'elle retourne.
+     */
     @Override
     public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
         Platform.runLater(() -> graphicalPlayer.choosedAdditionalCards(options, chooseCardsHandler));
         return take(qCards);
     }
 
+    /**méthode privé qui permet de ne pas répéter la meme syntaxe
+     * retourne la valeur stocké dans le blockingQueue passé en argument*/
     private <T> T take(BlockingQueue<T> q) {
         try {
             return q.take();

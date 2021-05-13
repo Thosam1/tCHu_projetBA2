@@ -234,7 +234,8 @@ public final class GraphicalPlayer {
             Button button = new Button();
             button.disableProperty().bind(Bindings.lessThan(Bindings.size(list.getSelectionModel().getSelectedItems()), min));
             button.setOnAction(e -> {
-                handler.onChooseTickets(SortedBag.of(list.getSelectionModel().getSelectedItems().get(0)));    //toDo c'est bien l'index 0 ?
+                //handler.onChooseTickets(SortedBag.of(list.getSelectionModel().getSelectedItems().get(0)));    //toDo c'est bien l'index 0 ? non parceque sinon tu gardes juste un ticket
+                handler.onChooseTickets(SortedBag.of(list.getSelectionModel().getSelectedItems())); 
             });
             return button;
         }
