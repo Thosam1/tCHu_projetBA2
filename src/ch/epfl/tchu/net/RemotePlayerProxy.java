@@ -25,6 +25,7 @@ import ch.epfl.tchu.game.Ticket;
 /**
  * représente un mandataire (proxy en anglais) de joueur distant
  * @author Aymeric de chillaz (326617)
+ * @param <E>
  * */
 public final class RemotePlayerProxy implements Player{
     private Socket socket; //pour l'instant on se sert que de socket dans le constructeur
@@ -51,16 +52,20 @@ public final class RemotePlayerProxy implements Player{
      * et de les lever à nouveau, en quelque sorte, sous forme d'exceptions équivalentes 
      * mais de type UncheckedIOException. La différence entre les deux types d'exception 
      * est que le premier est un type d'exception checked, le second pas.
+     * @param <T>
+     * @param <E>
      * 
      * @param messageId : l'identité du message (de type MessageId)
      * @param argument1 : la chaine de caractère correspondant au premier argument de la classe (peut etre null)
      * @param argument2 : la chaine de caractère correspondant au deuxieme argument de la classe (peut aussi etre null)
      * */
+    
     private void messageOut(String messageId, String argument1, String argument2) {
-        ArrayList<String> liste = new ArrayList<>();
-        liste.add(messageId);
+        
+        List<String> liste = List.of(messageId, argument1, argument2);
+        /*liste.add(messageId);
         liste.add(argument1);   //on ajoute argument1 et argument2 meme si ils sont null
-        liste.add(argument2);
+        liste.add(argument2);*/
         
         //créé un stream à partir des trois String, retire les valeurs null et les join en mettant un espace au mileu
         String string = liste.stream().filter(value -> value != null)
@@ -76,6 +81,7 @@ public final class RemotePlayerProxy implements Player{
                 throw new UncheckedIOException(e);
                } 
     }
+
     
     /**
      * méthode privée qui permet de recevoir un message et de le retourner sous la forme de String
@@ -111,13 +117,8 @@ public final class RemotePlayerProxy implements Player{
         String argument2 = Serdes.serdeListeOfString
                 .serialize(List.of(playerNames.get(PlayerId.PLAYER_1),
                         playerNames.get(PlayerId.PLAYER_2)));
-//        System.out.println("player1 Id " + playerNames.get(PlayerId.PLAYER_1));
-            //TODO à revérifier comment on passe la map
-
+        
         this.messageOut(MessageId.INIT_PLAYERS.name(), argument1, argument2);
-//        System.out.println("In player proxy, message sent : ");
-//        System.out.println("argument 1 : " + argument1);
-//        System.out.println("own Id is : " + ownId);
     }
 
     @Override
