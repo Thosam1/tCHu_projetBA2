@@ -58,7 +58,7 @@ public class ServerMain extends Application {
         System.out.println("Server done !");    //todo à effacer
 
         // 3)
-//        GraphicalPlayer graphicalPlayer = new GraphicalPlayer(PlayerId.PLAYER_1, playerNames);
+        GraphicalPlayer graphicalPlayer = new GraphicalPlayer(PlayerId.PLAYER_1, playerNames);
         GraphicalPlayerAdapter firstGraphicalPlayerAdapter = new GraphicalPlayerAdapter();
         //toDo un mandataire du joueur distant ?
 
@@ -66,6 +66,6 @@ public class ServerMain extends Application {
         Map<PlayerId, Player> players = Map.of(PlayerId.PLAYER_1, firstGraphicalPlayerAdapter, PlayerId.PLAYER_2, secondPlayer);
         SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets());
 
-        Game.play(players, playerNames, tickets, new Random());
+//        Game.play(players, playerNames, tickets, new Random());
     }
 }

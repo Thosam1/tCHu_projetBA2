@@ -124,9 +124,8 @@ class DecksViewCreator{
         /**
          *  Pioche billets et cartes
          */
-        Button gaugedTickets = gaugedButtonLayout(StringsFr.TICKETS, game.percentTicketsLeft()); //ToDo changer la taille dedans
+        Button gaugedTickets = gaugedButtonLayout(StringsFr.TICKETS, game.percentTicketsLeft());
         gaugedTickets.disableProperty().bind(drawTicketHandler.isNull());
-
         gaugedTickets.setOnMouseClicked(e -> {    // ou bien setOnAction
             ActionHandlers.DrawTicketsHandler drawTickets = drawTicketHandler.get();;
             drawTickets.onDrawTickets();
@@ -134,10 +133,9 @@ class DecksViewCreator{
 
         Button gaugedDeck = gaugedButtonLayout(StringsFr.CARDS, game.percentCardsLeft());
         gaugedDeck.disableProperty().bind(drawCardsHandler.isNull());
-                //ToDo changer la taille
         gaugedDeck.setOnMouseClicked(e -> {
             ActionHandlers.DrawCardHandler drawCards = drawCardsHandler.get();
-            drawCards.onDrawCard(-1);     //ToDo est-ce qu'ici on assume que c'est seulement le bouton pour la pioche
+            drawCards.onDrawCard(-1);
         });
 
         /**
@@ -154,7 +152,6 @@ class DecksViewCreator{
      * @return
      */
     private static String assignCardStyle(String cardName){
-//        return (cardName == Card.LOCOMOTIVE.name()) ? "NEUTRAL" : cardName;   //toDo `?? or equals
         return (cardName.equals(Card.LOCOMOTIVE.name()) ? "NEUTRAL" : cardName);
     }
 
@@ -193,7 +190,7 @@ class DecksViewCreator{
      * @param integer le nombre qui doit être affiché par dessus (utilisé dans le handview)
      * @return une pane/image de carte dont le nom de la carte et le nombre sont pris en argument
      */
-    private static StackPane cardAndTextLayout(String cardName, ReadOnlyIntegerProperty integer){       // TODO y aurait-il moyen de faire le binding, plus haut pour rendre cette méthode plus réutilisable ?  -> pour le "integer" accéder depuis plus bas
+    private static StackPane cardAndTextLayout(String cardName, ReadOnlyIntegerProperty integer){
         Text count = new Text();
         count.getStyleClass().add("count");
         count.textProperty().bind(Bindings.convert(integer));
@@ -209,7 +206,7 @@ class DecksViewCreator{
      * @param percentage le pourcentage de la barre/jauge qui doit être remplie
      * @return  un bouton avec un titre et une barre remplie selon le pourcentage
      */
-    private static Button gaugedButtonLayout(String label, ReadOnlyIntegerProperty percentage){  //(beetween 0 and 100)    // bind
+    private static Button gaugedButtonLayout(String label, ReadOnlyIntegerProperty percentage){
         Button button = new Button();
         button.getStyleClass().add("gauged");
 
