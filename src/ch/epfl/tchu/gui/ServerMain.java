@@ -66,6 +66,7 @@ public class ServerMain extends Application {
         Map<PlayerId, Player> players = Map.of(PlayerId.PLAYER_1, firstGraphicalPlayerAdapter, PlayerId.PLAYER_2, secondPlayer);
         SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets());
 
-//        Game.play(players, playerNames, tickets, new Random());
+        new Thread(() -> Game.play(players, playerNames, tickets, new Random()))
+                .start();
     }
 }

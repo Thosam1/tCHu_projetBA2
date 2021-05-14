@@ -44,14 +44,19 @@ public class ClientMain extends Application {
             String hostName = (argList.size() == 2) ? argList.get(0) : "localhost";
             String portNumber = (argList.size() == 2) ? argList.get(1) : "5108";
 
+            System.out.println(portNumber); // TODO EFFACER
+
             // 2)
-            GraphicalPlayerAdapter graphicalPlayer = new GraphicalPlayerAdapter();//GraphicalPlayerAdapter.initPlayers();
-            RemotePlayerClient client = new RemotePlayerClient(graphicalPlayer, hostName, Integer.parseInt(portNumber));
+            GraphicalPlayerAdapter graphicalPlayerAdapter = new GraphicalPlayerAdapter();//GraphicalPlayerAdapter.initPlayers();
+            System.out.println("creating the client server");
+            RemotePlayerClient client = new RemotePlayerClient(graphicalPlayerAdapter, hostName, Integer.parseInt(portNumber));
+            System.out.println("client créé");
             // 3)
-            client.run();
+            new Thread(() -> client.run()).start();   // TODO LE PROBLEME EST ICI
+            System.out.println("client running"); // TODO EFFACER
 
         } catch(Exception e){
-            throw new Exception("Error from client");
+            System.out.println("ERROR OCCURRED");
         }
     }
 }

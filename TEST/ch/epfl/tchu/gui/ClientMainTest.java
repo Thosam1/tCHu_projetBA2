@@ -23,7 +23,8 @@ public class ClientMainTest {
                 "CHOOSE_INITIAL_TICKETS");
 
         public static void main(String[] args) throws IOException {
-            try (ServerSocket s0 = new ServerSocket(5110);  //TODO maybe remettre 5108 selon si on change les arguments facultatifs
+            System.out.println("Starting server!");
+            try (ServerSocket s0 = new ServerSocket(5108);  //TODO maybe remettre 5108 selon si on change les arguments facultatifs
                  Socket s = s0.accept();
                  BufferedReader r = new BufferedReader(
                          new InputStreamReader(s.getInputStream(),
@@ -38,6 +39,7 @@ public class ClientMainTest {
                 }
                 // Attente et impression de la réponse
                 System.out.println(r.readLine());
+                System.out.println("Server done!");
             }
         }
     }

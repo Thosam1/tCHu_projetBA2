@@ -70,8 +70,8 @@ public final class GraphicalPlayerAdapter implements Player{
         drawCardsHandler = new ActionHandlers.DrawCardHandler() {
             public void onDrawCard(int a) {
                 try {
-                    qTurnKind.put(TurnKind.DRAW_CARDS);
                     qCardIndex.put(a);
+                    qTurnKind.put(TurnKind.DRAW_CARDS);
                 }
                 catch(InterruptedException e) {
                     throw new Error();}}};
@@ -79,9 +79,9 @@ public final class GraphicalPlayerAdapter implements Player{
         claimRouteHandler = new ActionHandlers.ClaimRouteHandler() {
             public void onClaimRoute(Route route, SortedBag<Card> cards) {
                 try {
-                    qTurnKind.put(TurnKind.CLAIM_ROUTE);
                     qRoute.put(route);
                     qCards.put(cards);
+                    qTurnKind.put(TurnKind.CLAIM_ROUTE);
                 }
                 catch(InterruptedException e) {
                     throw new Error();}}};
@@ -173,8 +173,16 @@ public final class GraphicalPlayerAdapter implements Player{
     @Override
     public int drawSlot() {
         if(qCardIndex.isEmpty()) {
-            Platform.runLater(() -> graphicalPlayer.drawCard(drawCardsHandler));
+            Platform.runLater(() -> graphicalPlayer.drawCard( e -> {
+                try {
+                    qCardIndex.put(e);
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
+            }));
             return take(qCardIndex);
+            //rajouter la slot dans la queue
+            //next turn se fait ailleur
         }
         else {//drawSlot est appelée pour la première fois du tour
             return qCardIndex.remove();
