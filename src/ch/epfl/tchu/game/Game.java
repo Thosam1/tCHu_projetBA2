@@ -97,6 +97,8 @@ public abstract class Game {
              */
 
             Player.TurnKind turnKind = currPlayerInterf.nextTurn();
+            System.out.println("--------------------------");   //TODO EFFACER
+            System.out.println("LA METHODE NEW TURN KIND A ETE APPELEE : new turnkind");    //TODO EFFACER
 
             switch (turnKind) {
                 case DRAW_TICKETS:
@@ -115,6 +117,8 @@ public abstract class Game {
 
                     //les deux joueurs sont informés du nombre de tickets qui ont été gardé par le joueur courant
                     Game.infoToAll(players, currInf.keptTickets(chosenTickets.size()));
+
+                    System.out.println("TICKET TIRE");          //TODO EFFACER
                     break;
 
                 case DRAW_CARDS:
@@ -122,6 +126,7 @@ public abstract class Game {
                      * Le joueur a décidé de piocher 2 cartes (il a le choix entre les cartes de la pioche ou entre les 5 cartes qui sont face visible)
                      * */
                     for (int i = 0; i < 2; i++) { // tire deux fois
+                        System.out.println("CARTES TIRER" + i);          //TODO EFFACER
                         gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                         int slot = currPlayerInterf.drawSlot();
 
