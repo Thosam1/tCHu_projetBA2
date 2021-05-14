@@ -13,6 +13,7 @@ import ch.epfl.tchu.gui.ActionHandlers.DrawTicketsHandler;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableNumberValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -101,7 +102,7 @@ public final class GraphicalPlayer {
             drawCardProperty.set((a) -> {
                 drawCardHandler.onDrawCard(a);
                 drawTicketsProperty.set(null);
-                claimRouteProperty.set(null);
+                claimRouteProperty.set(null);   // todo parfois ça beug et on arrive à choper une route au lieu de piocher la seconde carte
                 // drawCardProperty.set(null);//je ne suis pas sur de ça
                 this.drawCard(drawCardHandler);
             });
@@ -140,7 +141,7 @@ public final class GraphicalPlayer {
         assert isFxApplicationThread();
         ObservableList<SortedBag<Card>> observableListCards = FXCollections.observableArrayList(possibleClaimCards);    //toDo checker que ça fonctionne
         ListView listView = listViewCard(observableListCards, false);
-        Button chooseClaimCardsButton = chooseCardsButton(listView, chooseCardsHandler);
+        Button chooseClaimCardsButton = chooseCardsButton(listView, chooseCardsHandler, false);
         Stage chooseWindow = chooseGraph(main, StringsFr.CARDS_CHOICE, StringsFr.CHOOSE_CARDS, listView, chooseClaimCardsButton);
         chooseWindow.show();
     }
@@ -150,7 +151,7 @@ public final class GraphicalPlayer {
         assert isFxApplicationThread();
         ObservableList<SortedBag<Card>> observableListCards = FXCollections.observableArrayList(possibleAdditionalCards);    //toDo checker que ça fonctionne
         ListView listView = listViewCard(observableListCards, false);
-        Button choosedAdditionalCardsButton = chooseAdditionalCardsButton(listView);
+        Button choosedAdditionalCardsButton = chooseCardsButton(listView, chooseCardsHandler, true);
         Stage chooseWindow = chooseGraph(main, StringsFr.CARDS_CHOICE, StringsFr.CHOOSE_ADDITIONAL_CARDS, listView, choosedAdditionalCardsButton);
         chooseWindow.show();
     }
@@ -240,42 +241,31 @@ public final class GraphicalPlayer {
             return button;
         }
         /**
-         *  pour choisir les cartes
+         *  pour choisir les cartes, empty vaut false
+         *
+         *  empty est vrai pour dans le cas du tirage de cartes additionnels :
+         *  le bouton est toujours actif, une sélection vide permettant au joueur
+         *  de déclarer qu'il désire abandonner sa tentative de prise de possession du tunnel.
          */
-        private Button chooseCardsButton (ListView < SortedBag < Card >> list, ChooseCardsHandler handler)
+        private Button chooseCardsButton (ListView<SortedBag<Card>> list, ChooseCardsHandler handler, boolean emptyValid)
         {    //todo ça représente quoi ? les cartes initiales ? on peut choisir plus d'une option ?
             assert isFxApplicationThread();
             Button button = new Button();
             ObservableList temp = list.getSelectionModel().getSelectedItems();
-            button.disableProperty().bind(Bindings.isEmpty(list.getSelectionModel().getSelectedItems()));
-
+            if(emptyValid){
+                button.disableProperty().bind(Bindings.greaterThan(1, Bindings.size(list.getSelectionModel().getSelectedItems()))); // todo should only disable if more than 1 eg : 2,3,4 why is it disabled for 0 ?
+            }else {
+                button.disableProperty().bind(Bindings.isEmpty(list.getSelectionModel().getSelectedItems()));
+            }
             button.setOnAction(e -> {
-                handler.onChooseCards((SortedBag<Card>) temp.get(0));
+                handler.onChooseCards((temp.isEmpty()) ? SortedBag.of() : (SortedBag<Card>) temp.get(0));
             });
             return button;
         }
-        /**
-         *  for chooseAdditionalCards
-         *  le bouton est toujours actif, une sélection vide permettant au joueur
-         *  de déclarer qu'il désire abandonner sa tentative de prise de possession du tunnel.
-         */
-        private Button chooseAdditionalCardsButton (ListView < SortedBag < Card >> list) {
-            assert isFxApplicationThread();
-            Button button = new Button();
-            ObservableList temp = list.getSelectionModel().getSelectedItems();
-            button.disableProperty().bind(Bindings.isEmpty(list.getSelectionModel().getSelectedItems()));
-            button.setOnAction(e -> {
-                ChooseCardsHandler handler = null;
-                handler.onChooseCards((SortedBag<Card>) temp.get(0));
-            });
-            return button;
-        }
-        //todo retravailler les deux méthodes plus haut
 
         private class CardBagStringConverter extends StringConverter<SortedBag<Card>> {
             @Override
             public String toString(SortedBag<Card> cardSortedBag) {
-                System.out.println("En format ecrit");
                 return Info.cardListString(cardSortedBag);  //toDo serait-il mieux de la recopier plus bas ?
             }
 

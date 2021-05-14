@@ -144,7 +144,7 @@ public final class GraphicalPlayerAdapter implements Player{
 
     /**
      * appelle, sur le fil JavaFX, la méthode startTurn du joueur graphique, en lui passant des gestionnaires d'action qui placent le type de tour choisi, 
-     * de même que les éventuels « arguments » de l'action
+     * de même que les éventuels «arguments» de l'action
      * puis bloque en attendant qu'une valeur soit placée dans la file contenant le type de tour, qu'elle retire et retourne,
      * */
     @Override
@@ -163,9 +163,9 @@ public final class GraphicalPlayerAdapter implements Player{
     }
 
     /**
-     *  teste (sans bloquer !) si la file contenant les emplacements des cartes contient une valeur ; 
+     *  teste (sans bloquer!) si la file contenant les emplacements des cartes contient une valeur;
      *  si c'est le cas, cela signifie que drawSlot est appelée pour la première fois du tour, et que le gestionnaire installé par nextTurn 
-     *  a placé l'emplacement de la première carte tirée dans cette file, qu'il suffit donc de retourner ; 
+     *  a placé l'emplacement de la première carte tirée dans cette file, qu'il suffit donc de retourner;
      *  
      *  sinon, cela signifie que drawSlot est appelée pour la seconde fois du tour, afin que le joueur tire sa seconde carte, 
      *  et il faut donc appeler, sur le fil JavaFX, la méthode drawCard du joueur graphique, avant de bloquer en attendant que le gestionnaire 
