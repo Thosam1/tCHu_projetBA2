@@ -1,14 +1,11 @@
 package ch.epfl.tchu.net;
 
-import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -19,7 +16,7 @@ import java.util.regex.Pattern;
  */
 public final class RemotePlayerClient {
     final private Player player;
-    final private String name;  //name of the client server eg "localhost"
+    final private String hostName;  //name of the client server eg "localhost"
     final private int port;
 
 //    final Socket s;
@@ -32,9 +29,8 @@ public final class RemotePlayerClient {
      */
     public RemotePlayerClient(Player player, String name, int port){
         this.player = player;
-        this.name = name;
+        this.hostName = name;
         this.port = port;
-//        s = new Socket("localhost_" + name, port);
     }
 
     /**
@@ -48,7 +44,7 @@ public final class RemotePlayerClient {
     public void run(){
 
          //TODO bonne façon ?  // loop quasi infinie   -> while après bufferedReader || Soit while(true) et if(line == null){break;} Soit on met la while avec la condition directement dans le try
-        try (Socket s = new Socket(name, port);
+        try (Socket s = new Socket(hostName, port);
              BufferedReader r =
                      new BufferedReader(
                              new InputStreamReader(s.getInputStream(),
@@ -58,9 +54,9 @@ public final class RemotePlayerClient {
                              new OutputStreamWriter(s.getOutputStream(),
                                      StandardCharsets.US_ASCII))) {
             String line = r.readLine();
-            System.out.println("LINE EN DEHORS de la boucle while (AVANT) : " + line);
+            System.out.println("LINE EN DEHORS de la boucle while (AVANT) : " + line);  //TODO EFFACER
             while (line != null) {
-                System.out.println("LINE AU DEBUT de la boucle while : " + line);
+                System.out.println("LINE AU DEBUT de la boucle while : " + line);   // TODO EFFACER
                 String[] textSplit = line.split(Pattern.quote(" "), -1);//TODO should we assume it won't be longer than a line ??? Yes
                 MessageId message = MessageId.valueOf(textSplit[0]);
                 String arg1 = (textSplit.length >= 2) ? textSplit[1] : null;

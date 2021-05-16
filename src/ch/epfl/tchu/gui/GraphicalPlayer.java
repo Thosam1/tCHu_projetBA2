@@ -103,8 +103,8 @@ public final class GraphicalPlayer {
                 drawCardHandler.onDrawCard(a);
                 drawTicketsProperty.set(null);
                 claimRouteProperty.set(null);   // todo parfois ça beug et on arrive à choper une route au lieu de piocher la seconde carte
-                // drawCardProperty.set(null);//je ne suis pas sur de ça
-                this.drawCard(drawCardHandler);
+                drawCardProperty.set(null);//je ne suis pas sur de ça
+                //this.drawCard(drawCardHandler);
             });
         }
 
@@ -134,6 +134,8 @@ public final class GraphicalPlayer {
         drawCardProperty.set((a) -> {
             drawCardHandler.onDrawCard(a);
             drawCardProperty.set(null);
+            claimRouteProperty.set(null);
+            drawTicketsProperty.set(null);
         });
     }
 
@@ -248,12 +250,12 @@ public final class GraphicalPlayer {
          *  de déclarer qu'il désire abandonner sa tentative de prise de possession du tunnel.
          */
         private Button chooseCardsButton (ListView<SortedBag<Card>> list, ChooseCardsHandler handler, boolean emptyValid)
-        {    //todo ça représente quoi ? les cartes initiales ? on peut choisir plus d'une option ?
+        {
             assert isFxApplicationThread();
             Button button = new Button();
             ObservableList temp = list.getSelectionModel().getSelectedItems();
             if(emptyValid){
-                button.disableProperty().bind(Bindings.greaterThan(1, Bindings.size(list.getSelectionModel().getSelectedItems()))); // todo should only disable if more than 1 eg : 2,3,4 why is it disabled for 0 ?
+                button.disableProperty().bind(Bindings.greaterThan(Bindings.size(list.getSelectionModel().getSelectedItems()), 1));
             }else {
                 button.disableProperty().bind(Bindings.isEmpty(list.getSelectionModel().getSelectedItems()));
             }
@@ -266,7 +268,7 @@ public final class GraphicalPlayer {
         private class CardBagStringConverter extends StringConverter<SortedBag<Card>> {
             @Override
             public String toString(SortedBag<Card> cardSortedBag) {
-                return Info.cardListString(cardSortedBag);  //toDo serait-il mieux de la recopier plus bas ?
+                return Info.cardListString(cardSortedBag);
             }
 
             @Override
