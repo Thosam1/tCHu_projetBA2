@@ -203,7 +203,8 @@ public final class GraphicalPlayerAdapter implements Player{
      */
     @Override
     public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
-        Platform.runLater(() -> graphicalPlayer.choosedAdditionalCards(options, chooseCardsHandler));
+        Platform.runLater(() -> graphicalPlayer.choosedAdditionalCards(options,
+                chooseCardsHandler));
         return take(qCards);
     }
 
