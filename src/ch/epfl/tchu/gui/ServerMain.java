@@ -46,19 +46,19 @@ public class ServerMain extends Application {
 
         // 2) etape 8
         Player secondPlayer = null;
-        try (ServerSocket serverSocket = new ServerSocket(5110);
+        try (ServerSocket serverSocket = new ServerSocket(5108);
              Socket socket = serverSocket.accept()) {
             Player playerProxy = new RemotePlayerProxy(socket);
 
             secondPlayer = playerProxy; // y a t-il une meilleure façon ?
-            playerProxy.initPlayers(PlayerId.PLAYER_1, playerNames); //todo est-ce que c'est important ?
+      //      playerProxy.initPlayers(PlayerId.PLAYER_1, playerNames); //todo est-ce que c'est important ?
         }catch (Error e){
             throw new Error("Error from playerProxy in ServerMain");
         }
         System.out.println("Server done !");    //todo à effacer
 
         // 3)
-        GraphicalPlayer graphicalPlayer = new GraphicalPlayer(PlayerId.PLAYER_1, playerNames);
+       // GraphicalPlayer graphicalPlayer = new GraphicalPlayer(PlayerId.PLAYER_1, playerNames);
         GraphicalPlayerAdapter firstGraphicalPlayerAdapter = new GraphicalPlayerAdapter();
         //toDo un mandataire du joueur distant ?
 
