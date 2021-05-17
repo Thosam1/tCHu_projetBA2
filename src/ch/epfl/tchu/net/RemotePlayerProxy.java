@@ -62,10 +62,11 @@ public final class RemotePlayerProxy implements Player{
     
     private void messageOut(String messageId, String argument1, String argument2) {
         
-        List<String> liste = List.of(messageId, argument1, argument2);
-        /*liste.add(messageId);
+//        List<String> liste = List.of(messageId, argument1, argument2);    //TODO avec cette ligne, on a un null pointer exception qui est lancé
+        List<String> liste = new ArrayList<>();
+        liste.add(messageId);
         liste.add(argument1);   //on ajoute argument1 et argument2 meme si ils sont null
-        liste.add(argument2);*/
+        liste.add(argument2);
         
         //créé un stream à partir des trois String, retire les valeurs null et les join en mettant un espace au mileu
         String string = liste.stream().filter(value -> value != null)
