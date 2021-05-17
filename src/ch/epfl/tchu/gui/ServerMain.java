@@ -46,8 +46,11 @@ public class ServerMain extends Application {
 
         // 2) etape 8
         Player secondPlayer = null;
-        try (ServerSocket serverSocket = new ServerSocket(5108);
-             Socket socket = serverSocket.accept()) {
+        ServerSocket serverSocket = new ServerSocket(5108);
+        Socket socket = serverSocket.accept();
+        
+        try {//ServerSocket serverSocket = new ServerSocket(5108);
+          //   Socket socket = serverSocket.accept()) {
             Player playerProxy = new RemotePlayerProxy(socket);
 
             secondPlayer = playerProxy; // y a t-il une meilleure façon ?
