@@ -11,6 +11,21 @@ public final class Constants {
     private Constants() {}
 
     /**
+     * Taille des ArrayBlockingQueue de Graphical
+     * */
+    public static final int ARRAY_BLOCKING_QUEUE_SIZE = 1;
+    
+    /**
+     * Nombre maximum de messages qui peuvent etre affichés dans le InfoViewCreator
+     * */
+    public static final int MAXIMUM_NUMBER_VISIBLE_INFO = 5;
+    
+    /**
+     * Valeur àl'initialisation des IntegerProperty dans ObservableGameState
+     * */
+    public static final int INITIAL_VALUE_OF_INTEGER_PROPERTY = 0;
+    
+    /**
      * Nombre de wagons à partir duquel la partie entre dans le dernier tour
      * */
     public static final int LAST_TURN_BEGINS_CAR_COUNT = 2;

@@ -1,7 +1,5 @@
 package ch.epfl.tchu.gui;
 
-import ch.epfl.tchu.game.Constants;
-import ch.epfl.tchu.game.Player;
 import ch.epfl.tchu.net.RemotePlayerClient;
 import javafx.application.Application;
 import javafx.stage.Stage;

@@ -15,11 +15,9 @@ import java.util.regex.Pattern;
  * @author Thösam Norlha-Tsang (330163)
  */
 public final class RemotePlayerClient {
-    final private Player player;
-    final private String hostName;  //name of the client server eg "localhost"
-    final private int port;
-
-//    final Socket s;
+    private final Player player;
+    private final String hostName;  //name of the client server eg "localhost"
+    private final int port;
 
     /**
      *  Constructeur de la classe RemotePlayerClient

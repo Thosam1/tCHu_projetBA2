@@ -108,29 +108,16 @@ public interface Serde<T> {
             }
 
             public List<T> deserialize(String string) {
-                /*
-                 * 
-                 * List<T> output = new ArrayList<T>(); String[] stringListe =
-                 * (string.isEmpty())? new String[] {""}: string
-                 * .split(Pattern.quote(separateur.toString()), -1);
-                 * 
-                 * //pas possible de faire forEach sur String[] for (String
-                 * element : stringListe) {
-                 * output.add(serde.deserialize(element)); } //lance une exception
-                 */
-                if (string.isEmpty()) {
-                    return List.of();
-                } else {
-                    List<T> output = new ArrayList<T>();
-                    String[] stringList = string
-                            .split(Pattern.quote(separator.toString()), -1);
+                List<T> output = new ArrayList<T>();
+                String[] stringList = string
+                        .split(Pattern.quote(separator.toString()), -1);
 
-                    // pas possible de faire forEach sur String[]
-                    for (String element : stringList) {
+                for (String element : stringList) {
+                    if (!string.isEmpty()) {//si string est vide output doit etre vide
                         output.add(serde.deserialize(element));
                     }
-                    return output;
                 }
+                return output;
             }
         };
     }
@@ -145,30 +132,29 @@ public interface Serde<T> {
      *         valeurs (dé)sérialisées) par le serde donné
      */
     public static <T extends Comparable<T>> Serde<SortedBag<T>> bagOf(
-            Serde<T> serde, Character separateur) {
+            Serde<T> serde, Character separator) {
         // retourne un nouveau Serde en créant une classe anonyme qui redéfinit
         // serialize et deserialize
         return new Serde<SortedBag<T>>() {
             public String serialize(SortedBag<T> sortedBag) {
-                List<String> liste = new ArrayList<String>();
-                sortedBag.forEach(x -> liste.add(serde.serialize(x)));
+                List<String> list = new ArrayList<String>();
+                sortedBag.forEach(x -> list.add(serde.serialize(x)));
 
-                return String.join(separateur.toString(), liste);
+                return String.join(separator.toString(), list);
             }
 
             public SortedBag<T> deserialize(String string) {
-                if (string.isEmpty()) {
-                    return SortedBag.of();
-                } else {
-                    List<T> output = new ArrayList<T>();
-                    String[] stringListe = string
-                            .split(Pattern.quote(separateur.toString()), -1);
+                List<T> output = new ArrayList<T>();
+                String[] stringList = string
+                        .split(Pattern.quote(separator.toString()), -1);
 
-                    for (String element : stringListe) {
+                for (String element : stringList) {
+                    if (!string.isEmpty()) {//si string est vide output doit etre vide
                         output.add(serde.deserialize(element));
                     }
-                    return SortedBag.of(output);
                 }
+
+                return SortedBag.of(output);
             }
         };
     }

@@ -1,8 +1,8 @@
 package ch.epfl.tchu.gui;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Constants;
+import ch.epfl.tchu.game.Ticket;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.scene.Group;
@@ -18,7 +18,7 @@ import javafx.scene.text.Text;
  * @author Thösam Norlha-Tsang (330163)
  * classe non-instanciable dont le but est de contenir 2 méthodes qui construisent un graphe de scène représentant des cartes
  */
-class DecksViewCreator{
+abstract class DecksViewCreator{
     //constructeur privé
     private DecksViewCreator(){}
 
@@ -54,17 +54,18 @@ class DecksViewCreator{
         HBox cardsBox = new HBox();
         cardsBox.setId("hand-pane");
         for(Card card : Card.ALL){
-            StackPane pane = cardAndTextLayout(card.name(), game.cardsOfInHand(card));  //ToDo comment bind le text et le nombre de cartes
+            StackPane pane = cardAndTextLayout(card.name(), game.cardsOfInHand(card));  //TODO comment bind le text et le nombre de cartes
             pane.visibleProperty().bind(Bindings.greaterThan(game.cardsOfInHand(card), 0));
             cardsBox.getChildren().add(pane);
         }
 
-        ListView tickets = new ListView(game.playerTickets());
+        //TODO c'est quoi le type ici?
+        ListView/*<>*/ tickets = new ListView(game.playerTickets());
         tickets.setId("tickets");
         /**
          *  Construction du plus bas haut plus haut de la pyramide/hiérarchie
          */
-        HBox root = new HBox();//new HBox(tickets, cards);
+        HBox root = new HBox();
         root.getStylesheets().addAll("decks.css", "colors.css");
         root.getChildren().addAll(tickets, cardsBox);
         return root;
@@ -113,7 +114,7 @@ class DecksViewCreator{
                 if(drawCards != null){drawCards.onDrawCard(I);}        //ToDo vérifier que c'est une bonne solution
             });
             game.faceUpCard(i).addListener((p, o, n) -> {
-                if ((pane.getStyleClass().size() == 2)) {
+                if ((pane.getStyleClass().size() == 2)) {//TODO expliquer pourquoi 2 ou utiliser constante
                     pane.getStyleClass().set(0, assignCardStyle(n.name()));
                 } else {
                     pane.getStyleClass().add(0, assignCardStyle(n.name()));   //(n.name() == Card.LOCOMOTIVE.name()) ? "NEUTRAL" : n.name()
@@ -135,7 +136,7 @@ class DecksViewCreator{
         gaugedDeck.disableProperty().bind(drawCardsHandler.isNull());
         gaugedDeck.setOnMouseClicked(e -> {
             ActionHandlers.DrawCardHandler drawCards = drawCardsHandler.get();
-            drawCards.onDrawCard(-1);
+            drawCards.onDrawCard(Constants.DECK_SLOT);
         });
 
         /**
@@ -147,7 +148,7 @@ class DecksViewCreator{
     }
 
     /**
-     *  méthode pour donner un "style" au cartes, permets d'éviter de recopier du code
+     *  méthode privée pour donner un "style" au cartes, permets d'éviter de recopier du code
      * @param cardName
      * @return
      */
@@ -159,6 +160,7 @@ class DecksViewCreator{
      * @return une pane/image de carte, vide dans le sens "couleur-style" utilisé pour l'initialisation (on ne sait pas encore quelle couleur la carte prendra)
      */
     private static StackPane cardEmptyLayout(){
+        //les deux valeurs passées aux constructeur de Rectangle correspondent au dimensions largeur et hauteur
         Rectangle outside = new Rectangle(60, 90);
         outside.getStyleClass().add("outside");
 
@@ -194,7 +196,7 @@ class DecksViewCreator{
         Text count = new Text();
         count.getStyleClass().add("count");
         count.textProperty().bind(Bindings.convert(integer));
-        count.visibleProperty().bind(Bindings.greaterThan(integer, 0));
+        count.visibleProperty().bind(Bindings.greaterThan(integer, 0));//TODO pourquoi 0
 
         StackPane pane = cardLayout(cardName);
         pane.getChildren().add(count);
@@ -210,12 +212,13 @@ class DecksViewCreator{
         Button button = new Button();
         button.getStyleClass().add("gauged");
 
+        //les deux valeurs passées aux constructeur de Rectangle correspondent au dimensions largeur et hauteur
         Rectangle background = new Rectangle(50, 5);
         background.getStyleClass().add("background");
 
         Rectangle foreground = new Rectangle(50, 5);
         foreground.getStyleClass().add("foreground");
-        foreground.widthProperty().bind(percentage.multiply(50).divide(100));   //toDo
+        foreground.widthProperty().bind(percentage.multiply(50).divide(100));   //TODO
 
         Group group = new Group(background, foreground);  //-> mieux
         button.setGraphic(group);

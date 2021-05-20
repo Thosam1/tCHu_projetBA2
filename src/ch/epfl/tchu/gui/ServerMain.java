@@ -1,17 +1,20 @@
 package ch.epfl.tchu.gui;
 
-import ch.epfl.tchu.SmartBot;
-import ch.epfl.tchu.SortedBag;
-import ch.epfl.tchu.game.*;
-import ch.epfl.tchu.net.RemotePlayerProxy;
-import javafx.application.Application;
-import javafx.stage.Stage;
-
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import ch.epfl.tchu.SortedBag;
+import ch.epfl.tchu.game.ChMap;
+import ch.epfl.tchu.game.Game;
+import ch.epfl.tchu.game.Player;
+import ch.epfl.tchu.game.PlayerId;
+import ch.epfl.tchu.game.Ticket;
+import ch.epfl.tchu.net.RemotePlayerProxy;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
 /**
  *  Classe contenant le programme principal du client tCHu
