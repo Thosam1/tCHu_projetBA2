@@ -19,6 +19,7 @@ import ch.epfl.tchu.gui.ActionHandlers.ChooseTicketsHandler;
 import ch.epfl.tchu.gui.ActionHandlers.ClaimRouteHandler;
 import ch.epfl.tchu.gui.ActionHandlers.DrawCardHandler;
 import ch.epfl.tchu.gui.ActionHandlers.DrawTicketsHandler;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -367,6 +368,7 @@ public final class GraphicalPlayer {
             button.disableProperty().bind(Bindings
                     .isEmpty(list.getSelectionModel().getSelectedItems()));
         }
+        return button;
     }
 
     /**
