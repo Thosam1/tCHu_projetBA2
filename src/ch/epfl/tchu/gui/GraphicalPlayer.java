@@ -19,7 +19,6 @@ import ch.epfl.tchu.gui.ActionHandlers.ChooseTicketsHandler;
 import ch.epfl.tchu.gui.ActionHandlers.ClaimRouteHandler;
 import ch.epfl.tchu.gui.ActionHandlers.DrawCardHandler;
 import ch.epfl.tchu.gui.ActionHandlers.DrawTicketsHandler;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -42,17 +41,20 @@ import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 
 /**
+ * La classe instanciable GraphicalPlayer du paquetage ch.epfl.tchu.gui
+ * représente l'interface graphique d'un joueur de tCHu
+ * 
+ * @author Thösam Norlha-Tsang (330163)
  * @author Aymeric de chillaz (326617)
- * @author Thösam Norlha-Tsang (330163) classe qui représente l'interface
- *         graphique d'un joueur de tCHu
  */
+
 public final class GraphicalPlayer {
     private ObservableGameState observableGame;
     private ObservableList<Text> messageList = FXCollections
             .observableList(new ArrayList<>());
     private final PlayerId playerId;
     private final Map<PlayerId, String> mapPlayerNames;
-    private Stage main;
+    private final Stage main;
 
     // propriétés contenant les gestionnaires d'action
     // si elle contient null, alors l'action en question est actuellement
@@ -166,10 +168,11 @@ public final class GraphicalPlayer {
         Preconditions.checkArgument(ticketsToChoose
                 .size() == Constants.IN_GAME_TICKETS_COUNT
                 || ticketsToChoose.size() == Constants.INITIAL_TICKETS_COUNT);
-
         int min = ticketsToChoose.size() - Constants.DISCARDABLE_TICKETS_COUNT;
+
         // TODO mettre un type à ListView
         ListView listView = listViewTicket(ticketsToChoose, true);
+
         // TODO que ce passe-t-il s'il ne reste que 2 tickets -> 2-2 = 0
         Button chooseTicketsButton = chooseTicketsButton(listView, min,
                 chooseTicketsHandler);
@@ -189,6 +192,9 @@ public final class GraphicalPlayer {
      * première carte et doit maintenant tirer la seconde
      * 
      * si une propriété contient null alors l'action est interdite
+     * 
+     * @param drawCardHandler
+     *            un gestionnaire de tirage de carte
      */
     public void drawCard(DrawCardHandler drawCardHandler) {
         assert isFxApplicationThread();
@@ -244,7 +250,16 @@ public final class GraphicalPlayer {
         chooseWindow.show();
     }
 
-    // TODO description
+    /**
+     * méthode appelée dans le constructeur, pour mettre ensemble les
+     * différentes parties de la fenêtre du jeu
+     * 
+     * @param mapView
+     * @param drawView
+     * @param handView
+     * @param infoView
+     * @return une stage de la fenêtre principale
+     */
     private Stage mainSceneGraph(Node mapView, Node drawView, Node handView,
             Node infoView) {
         assert isFxApplicationThread();
@@ -256,11 +271,20 @@ public final class GraphicalPlayer {
         return root;
     }
 
+    /**
+     * méthode pour créer la fenêtre pour choisir les billets ou les cartes
+     * titre est donné soit par la constante TICKETS_CHOICE, soit par la
+     * constante CARDS_CHOICE de StringsFr
+     * 
+     * @param root
+     * @param title
+     * @param introText
+     * @param listView
+     * @param caseButton
+     * @return
+     */
     private Stage chooseGraph(Stage root, String title, String introText,
             ListView listView, Button caseButton) {
-        // titre est donné soit par la constante TICKETS_CHOICE soit par la
-        // constante CARDS_CHOICE de StringFr
-        // TODO quel titre?
         assert isFxApplicationThread();
         Stage stage = new Stage(StageStyle.UTILITY);
         stage.initOwner(root);
@@ -268,17 +292,14 @@ public final class GraphicalPlayer {
 
         VBox vBox = new VBox();
 
-        Text text = new Text(introText); // TODO mieux de formater en dehors
+        Text text = new Text(introText);
 
         TextFlow textFlow = new TextFlow(text);
 
         caseButton.getStyleClass().add("gauged");
+
         caseButton.setText(StringsFr.CHOOSE);
-        // caseButton.setOnAction(e -> { caseButton
-        // stage.hide(); // toDo c'est bien sur le stage // et que ça fait bien
-        // les deux avec le setOnAction qui lui est appelé dans la méthode
-        // spécifique
-        // });
+
         caseButton.addEventHandler(ActionEvent.ACTION, e -> {
             stage.hide();
         });
@@ -289,8 +310,6 @@ public final class GraphicalPlayer {
         scene.getStylesheets().add("chooser.css");
         stage.setTitle(title); // depends
         stage.setScene(scene);
-        // stage.setOnCloseRequest(e -> {e.consume();}); //TODO vérifier que
-        // c'est juste ça
         stage.setOnCloseRequest(Event::consume);
 
         return stage;
@@ -327,28 +346,6 @@ public final class GraphicalPlayer {
     }
 
     /**
-     * pour choisir les billets //TODO description
-     */
-    private Button chooseTicketsButton(ListView<Ticket> list, int min,
-            ChooseTicketsHandler handler) {
-        assert isFxApplicationThread();
-        Button button = new Button();
-        button.disableProperty()
-                .bind(Bindings.lessThan(
-                        Bindings.size(
-                                list.getSelectionModel().getSelectedItems()),
-                        min));
-        button.setOnAction(e -> {
-            // handler.onChooseTickets(SortedBag.of(list.getSelectionModel().getSelectedItems().get(0)));
-            // //toDo c'est bien l'index 0 ? non parceque sinon tu gardes juste
-            // un ticket
-            handler.onChooseTickets(
-                    SortedBag.of(list.getSelectionModel().getSelectedItems()));
-        });
-        return button;
-    }
-
-    /**
      * pour choisir les cartes, empty vaut false
      *
      * empty est vrai pour dans le cas du tirage de cartes additionnels : le
@@ -370,9 +367,23 @@ public final class GraphicalPlayer {
             button.disableProperty().bind(Bindings
                     .isEmpty(list.getSelectionModel().getSelectedItems()));
         }
+    }
+
+    /**
+     * pour choisir les billets
+     */
+    private Button chooseTicketsButton(ListView<Ticket> list, int min,
+            ChooseTicketsHandler handler) {
+        assert isFxApplicationThread();
+        Button button = new Button();
+        button.disableProperty()
+                .bind(Bindings.lessThan(
+                        Bindings.size(
+                                list.getSelectionModel().getSelectedItems()),
+                        min));
         button.setOnAction(e -> {
-            handler.onChooseCards(
-                    (temp.isEmpty()) ? SortedBag.of() : temp.get(0));
+            handler.onChooseTickets(
+                    SortedBag.of(list.getSelectionModel().getSelectedItems()));
         });
         return button;
     }

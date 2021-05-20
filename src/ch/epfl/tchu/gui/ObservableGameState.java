@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
@@ -51,13 +50,9 @@ public final class ObservableGameState {
     /**
      * Propriétés concernant l'état public de la partie
      */
-
     private final IntegerProperty percentTicketsLeft;
-
     private final IntegerProperty percentCardsLeft;
-
     private final List<ObjectProperty<Card>> faceUpCards;
-
     private final Map<Route, ObjectProperty<PlayerId>> routeOwners;
 
     /**

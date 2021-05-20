@@ -16,13 +16,13 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 /**
+ * 
  * @author Aymeric de chillaz (326617) La classe MapViewCreator, non
  *         instanciable et package private, contient une unique méthode publique
  *         et statique, nommée createMapView et permettant de créer la vue de la
  *         carte.
  */
 public abstract class MapViewCreator {
-    public Pane pane;
 
     /**
      * Cette méthode prend trois paramètres:
@@ -52,17 +52,16 @@ public abstract class MapViewCreator {
      *            qui est aussi géré par cette classe et est plus détaillé
      *            ci-dessous)
      * 
-     *            La hiérarchie du graphe de scène est la suivante: 
-     *            1)Pane
-     *            2.1)instance de ImageView contenant le fond de la carte (n'a pas d enfants) 
-     *            2.2)un Group par route dans le jeux (groupRoute) 
-     *            3)chacuns de ces groupRoute a autant d'enfants de type Group 
-     *            que sa longueur(son nombre de cases) ces enfants s'appellent groupCase 
-     *            4)Chaque groupCase a deux enfants de types différents 
-     *            4.1)un enfant de type rectangle(rec1) 
-     *            4.2)unenfant de type Group qui a lui même trois enfants (groupWagon)
-     *            5.1)un rectangle(rec2) 
-     *            5.2)deux cercles(circ1 et circ2)
+     *            La hiérarchie du graphe de scène est la suivante: 1)Pane
+     *            2.1)instance de ImageView contenant le fond de la carte (n'a
+     *            pas d enfants) 2.2)un Group par route dans le jeux
+     *            (groupRoute) 3)chacuns de ces groupRoute a autant d'enfants de
+     *            type Group que sa longueur(son nombre de cases) ces enfants
+     *            s'appellent groupCase 4)Chaque groupCase a deux enfants de
+     *            types différents 4.1)un enfant de type rectangle(rec1)
+     *            4.2)unenfant de type Group qui a lui même trois enfants
+     *            (groupWagon) 5.1)un rectangle(rec2) 5.2)deux cercles(circ1 et
+     *            circ2)
      */
     public static Pane createMapView(ObservableGameState observableGame,
             ObjectProperty<ClaimRouteHandler> objectProperty,
@@ -115,8 +114,8 @@ public abstract class MapViewCreator {
                 // pour s'emparer de la route
                 // la méthode onClaimRoute du gestionnaire d'action passé à
                 // createMapView peut être appelée
-                //1 correspond au scénario ou une seule combinaison de 
-                //cartes peut prendre pocéssion de la route
+                // 1 correspond au scénario ou une seule combinaison de
+                // cartes peut prendre pocéssion de la route
                 if (possibleClaimCards.size() == 1) {
                     claimRouteH.onClaimRoute(route, possibleClaimCards.get(0));
                 }
@@ -136,34 +135,38 @@ public abstract class MapViewCreator {
             // que la longueur de cette route)
             for (int i = 1; i <= route.length(); ++i) {
                 Group groupCase = new Group();
-                
-                //donne le Id à la case et la rajoute aux enfants du Group de la route
+
+                // donne le Id à la case et la rajoute aux enfants du Group de
+                // la route
                 groupCase.setId(String.join("_",
                         List.of(route.id(), String.valueOf(i))));
                 groupRoute.getChildren().add(groupCase);
 
-                //chacuns des groupCase a deux enfants: un Rectangle(rec1) et un group (groupWagon)
+                // chacuns des groupCase a deux enfants: un Rectangle(rec1) et
+                // un group (groupWagon)
                 Rectangle rec1 = new Rectangle(36, 12);
                 rec1.getStyleClass().addAll("track", "filled");
 
                 Group groupWagon = new Group();
                 groupWagon.getStyleClass().add("car");
 
-                //créé le lien de parenté entre groupeCase et ses enfants: rec1,
-                //groupWagon
+                // créé le lien de parenté entre groupeCase et ses enfants:
+                // rec1,
+                // groupWagon
                 groupCase.getChildren().addAll(rec1, groupWagon);
 
-                //créé les enfants de groupCase en leur donnant leur dimensions 
-                //et pour les cercles leur positions
+                // créé les enfants de groupCase en leur donnant leur dimensions
+                // et pour les cercles leur positions
                 Rectangle rec2 = new Rectangle(36, 12);
-                //3 correspond au rayon et les autres valeurs sont leur position
+                // 3 correspond au rayon et les autres valeurs sont leur
+                // position
                 Circle circ1 = new Circle(12, 6, 3);
                 Circle circ2 = new Circle(24, 6, 3);
 
-                //la classe de style est ajouté à rec2
+                // la classe de style est ajouté à rec2
                 rec2.getStyleClass().add("filled");
 
-                //attribut les enfants de groupWagon
+                // attribut les enfants de groupWagon
                 groupWagon.getChildren().addAll(rec2, circ1, circ2);
             }
         }

@@ -32,7 +32,7 @@ public final class RemotePlayerProxy implements Player {
 
     /**
      * Construit le BufferedWriter et BufferedReader de cette instance de
-     * RemotePlayerProxy Nul besoin de garder socket en attribut car il sert
+     * RemotePlayerProxy. Nul besoin de garder socket en attribut car il sert
      * seulement pour la création de w et r
      */
     public RemotePlayerProxy(Socket socket) throws IOException {
@@ -40,7 +40,6 @@ public final class RemotePlayerProxy implements Player {
                 StandardCharsets.US_ASCII));
         r = new BufferedReader(new InputStreamReader(socket.getInputStream(),
                 StandardCharsets.US_ASCII));
-
     }
 
     /**
@@ -124,14 +123,12 @@ public final class RemotePlayerProxy implements Player {
         String argument2 = Serdes.serdeListeOfString
                 .serialize(List.of(playerNames.get(PlayerId.PLAYER_1),
                         playerNames.get(PlayerId.PLAYER_2)));
-
         messageOut(MessageId.INIT_PLAYERS.name(), argument1, argument2);
     }
 
     @Override
     public void receiveInfo(String info) {
         String argument1 = Serdes.serdeString.serialize(info);
-
         messageOut(MessageId.RECEIVE_INFO.name(), argument1, null);
     }
 
@@ -139,53 +136,50 @@ public final class RemotePlayerProxy implements Player {
     public void updateState(PublicGameState newState, PlayerState ownState) {
         String argument1 = Serdes.serdePublicGameState.serialize(newState);
         String argument2 = Serdes.serdePlayerState.serialize(ownState);
-
         messageOut(MessageId.UPDATE_STATE.name(), argument1, argument2);
     }
 
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
         String argument1 = Serdes.serdeSortedBagOfTicket.serialize(tickets);
-
         messageOut(MessageId.SET_INITIAL_TICKETS.name(), argument1, null);
     }
 
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
         messageOut(MessageId.CHOOSE_INITIAL_TICKETS.name(), null, null);
-        return Serdes.serdeSortedBagOfTicket.deserialize(this.messageIn());
+        return Serdes.serdeSortedBagOfTicket.deserialize(messageIn());
     }
 
     @Override
     public TurnKind nextTurn() {
         messageOut(MessageId.NEXT_TURN.name(), null, null);
-        return Serdes.serdeTurnKind.deserialize(this.messageIn());
+        return Serdes.serdeTurnKind.deserialize(messageIn());
     }
 
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
         String argument1 = Serdes.serdeSortedBagOfTicket.serialize(options);
-
         messageOut(MessageId.CHOOSE_TICKETS.name(), argument1, null);
-        return Serdes.serdeSortedBagOfTicket.deserialize(this.messageIn());
+        return Serdes.serdeSortedBagOfTicket.deserialize(messageIn());
     }
 
     @Override
     public int drawSlot() {
         messageOut(MessageId.DRAW_SLOT.name(), null, null);
-        return Serdes.serdeInteger.deserialize(this.messageIn());
+        return Serdes.serdeInteger.deserialize(messageIn());
     }
 
     @Override
     public Route claimedRoute() {
         messageOut(MessageId.ROUTE.name(), null, null);
-        return Serdes.serdeRoute.deserialize(this.messageIn());
+        return Serdes.serdeRoute.deserialize(messageIn());
     }
 
     @Override
     public SortedBag<Card> initialClaimCards() {
         messageOut(MessageId.CARDS.name(), null, null);
-        return Serdes.serdeSortedBagOfCard.deserialize(this.messageIn());
+        return Serdes.serdeSortedBagOfCard.deserialize(messageIn());
     }
 
     @Override
@@ -194,8 +188,7 @@ public final class RemotePlayerProxy implements Player {
         String argument1 = Serdes.serdeListeOfSortedBagOfCard
                 .serialize(options);
 
-        messageOut(MessageId.CHOOSE_ADDITIONAL_CARDS.name(), argument1,
-                null);
+        messageOut(MessageId.CHOOSE_ADDITIONAL_CARDS.name(), argument1, null);
         return Serdes.serdeSortedBagOfCard.deserialize(this.messageIn());
     }
 

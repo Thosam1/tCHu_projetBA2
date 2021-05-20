@@ -22,6 +22,7 @@ import javafx.scene.text.TextFlow;
  * informations sur le déroulement de la partie.
  */
 
+
 abstract class InfoViewCreator {
     public static VBox createInfoView(PlayerId playerId,
             Map<PlayerId, String> mapPlayerNames,

@@ -10,6 +10,7 @@ import ch.epfl.tchu.game.Player;
 import ch.epfl.tchu.game.PlayerId;
 import ch.epfl.tchu.game.Ticket;
 import javafx.application.Application;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public final class Stage11Test extends Application {
@@ -27,4 +28,11 @@ public final class Stage11Test extends Application {
       new Thread(() -> Game.play(players, names, tickets, rng))
         .start();
     }
-  }
+
+    public static final class CheckJavaFx {
+      public static void main(String[] args) {
+        Color c = Color.RED;
+        System.out.println(c.getRed());
+      }
+    }
+}

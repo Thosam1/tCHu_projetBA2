@@ -1,8 +1,7 @@
 package ch.epfl.tchu.net;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import ch.epfl.tchu.SortedBag;
@@ -17,9 +16,6 @@ import ch.epfl.tchu.game.PublicPlayerState;
 import ch.epfl.tchu.game.Route;
 import ch.epfl.tchu.game.Ticket;
 
-import java.util.ArrayList;
-import java.util.Base64;
-
 /**
  * Classe contenant des attributs static public qui permettent de serialiser ou
  * deserialiser des messages (grace aux appels des méthodes serialize et
@@ -30,9 +26,9 @@ import java.util.Base64;
 public final class Serdes {
 
     /**
-     * Serde pour les Integer et les String
-     * sont créés en passant deux lambdas à la méthode of de Serde
-     * */
+     * Serde pour les Integer et les String sont créés en passant deux lambdas à
+     * la méthode of de Serde
+     */
     public static final Serde<Integer> serdeInteger = Serde
             .of(i -> Integer.toString(i), Integer::parseInt);
 
@@ -76,10 +72,12 @@ public final class Serdes {
 
     /**
      * Serde pour les valeurs de types composites
-     * */
+     */
     public static final Serde<PublicCardState> serdePublicCardState = new Serde<PublicCardState>() {
         @Override
         public String serialize(PublicCardState objet) {
+            Objects.requireNonNull(objet); // ToDo ça vaut la peine de mettre
+                                           // ceci ici ?
             List<String> liste = new ArrayList<String>();
             liste.add(serdeListeOfCard.serialize(objet.faceUpCards()));
             liste.add(serdeInteger.serialize(objet.deckSize()));
@@ -90,7 +88,6 @@ public final class Serdes {
         @Override
         public PublicCardState deserialize(String string) {
             String[] stringListe = string.split(Pattern.quote(";"), -1);
-
             List<Card> faceUpCards = serdeListeOfCard
                     .deserialize(stringListe[0]);
             int deckSize = serdeInteger.deserialize(stringListe[1]);
@@ -103,6 +100,8 @@ public final class Serdes {
     public static final Serde<PublicPlayerState> serdePublicPlayerState = new Serde<PublicPlayerState>() {
         @Override
         public String serialize(PublicPlayerState objet) {
+            Objects.requireNonNull(objet); // ToDo ça vaut la peine de mettre
+                                           // ceci ici ?
             List<String> liste = new ArrayList<String>();
             liste.add(serdeInteger.serialize(objet.ticketCount()));
             liste.add(serdeInteger.serialize(objet.cardCount()));
@@ -125,6 +124,8 @@ public final class Serdes {
     public static final Serde<PlayerState> serdePlayerState = new Serde<PlayerState>() {
         @Override
         public String serialize(PlayerState objet) {
+            Objects.requireNonNull(objet); // ToDo ça vaut la peine de mettre
+                                           // ceci ici ?
             List<String> liste = new ArrayList<String>();
             liste.add(serdeSortedBagOfTicket.serialize(objet.tickets()));
             liste.add(serdeSortedBagOfCard.serialize(objet.cards()));
@@ -149,6 +150,8 @@ public final class Serdes {
 
         @Override
         public String serialize(PublicGameState objet) {
+            Objects.requireNonNull(objet); // ToDo ça vaut la peine de mettre
+                                           // ceci ici ?
             List<String> liste = new ArrayList<String>();
 
             liste.add(serdeInteger.serialize(objet.ticketsCount()));

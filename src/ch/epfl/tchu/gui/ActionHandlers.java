@@ -28,8 +28,8 @@ public interface ActionHandlers {
         /**
          *  appelée lorsque le joueur désire s'emparer de la route donnée au moyen
          *  des cartes (initiales) données
-         * @param route
-         * @param cards
+         * @param route route ciblée
+         * @param cards cartes (initiales) que le joueur veut utiliser pour s'emparer de la route
          */
         public abstract void onClaimRoute(Route route, SortedBag<Card> cards);
     }
