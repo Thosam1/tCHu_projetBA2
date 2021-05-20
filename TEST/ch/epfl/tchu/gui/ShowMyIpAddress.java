@@ -37,5 +37,4 @@ public final class ShowMyIpAddress {
  *
  * et un paragraphe que je n'ai pas compris
  *
- *
  */
