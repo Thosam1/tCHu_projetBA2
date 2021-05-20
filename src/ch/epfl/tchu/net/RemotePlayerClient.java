@@ -109,7 +109,7 @@ public final class RemotePlayerClient {
                         break;
                     case DRAW_SLOT:
                         int slot = player.drawSlot();
-                        String encoded3 = Serdes.serdeInt.serialize(slot);
+                        String encoded3 = Serdes.serdeInteger.serialize(slot);
                         w.write(encoded3 + '\n');
                         w.flush();
                         break;

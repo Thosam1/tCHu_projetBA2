@@ -17,6 +17,8 @@ public class SerdesTest {
         assertEquals(null, Serdes.serdeTurnKind.deserialize(""));
         assertEquals(null, Serdes.serdeTicket.deserialize(""));
         
+        //TEST
+        assertEquals("", Serdes.serdeListeOfCard.serialize(List.of()));
     }
     
     @Test
