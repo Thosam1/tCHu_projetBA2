@@ -24,14 +24,13 @@ import ch.epfl.tchu.game.Ticket;
 public final class Serdes {
 
     
-    public static final Serde<Integer> serdeInt = Serde.of(
+    public static final Serde<Integer> serdeInteger = Serde.of(
             i -> Integer.toString(i),
             Integer::parseInt);
     
     public static final Serde<String> serdeString = Serde.of(
             i -> Base64.getEncoder().encodeToString(i.getBytes(StandardCharsets.UTF_8)),
             j -> new String(Base64.getDecoder().decode(j), StandardCharsets.UTF_8));
-
 
     public static final Serde<PlayerId> serdePlayerId = Serde.oneOf(PlayerId.ALL);
     public static final Serde<TurnKind> serdeTurnKind = Serde.oneOf(TurnKind.ALL);
@@ -47,15 +46,14 @@ public final class Serdes {
     public static final Serde<List<SortedBag<Card>>> serdeListeOfSortedBagOfCard = Serde.listOf(serdeSortedBagOfCard, ';');
     
     
-    //est ce qu il faut vérifier que les valeurs ne sont pas vide? Je crois que je l ai suffisament implémenté
     public static final Serde<PublicCardState> serdePublicCardState = new Serde<PublicCardState>() {
         @Override
         public String serialize(PublicCardState objet) {
             Objects.requireNonNull(objet);  //ToDo ça vaut la peine de mettre ceci ici ?
             List<String> liste = new ArrayList<String>();
             liste.add(serdeListeOfCard.serialize(objet.faceUpCards()));
-            liste.add(serdeInt.serialize(objet.deckSize()));
-            liste.add(serdeInt.serialize(objet.discardsSize()));
+            liste.add(serdeInteger.serialize(objet.deckSize()));
+            liste.add(serdeInteger.serialize(objet.discardsSize()));
             return String.join(";", liste);
         }
 
@@ -63,8 +61,8 @@ public final class Serdes {
         public PublicCardState deserialize(String string) {
             String[] stringListe = string.split(Pattern.quote(";"), -1);
             List<Card> faceUpCards = serdeListeOfCard.deserialize(stringListe[0]);
-            int deckSize = serdeInt.deserialize(stringListe[1]);
-            int discardsSize = serdeInt.deserialize(stringListe[2]);
+            int deckSize = serdeInteger.deserialize(stringListe[1]);
+            int discardsSize = serdeInteger.deserialize(stringListe[2]);
             return new PublicCardState(faceUpCards, deckSize, discardsSize);
         }
         
@@ -78,8 +76,8 @@ public final class Serdes {
         public String serialize(PublicPlayerState objet) {
             Objects.requireNonNull(objet);  //ToDo ça vaut la peine de mettre ceci ici ?
             List<String> liste = new ArrayList<String>();
-            liste.add(serdeInt.serialize(objet.ticketCount()));
-            liste.add(serdeInt.serialize(objet.cardCount()));
+            liste.add(serdeInteger.serialize(objet.ticketCount()));
+            liste.add(serdeInteger.serialize(objet.cardCount()));
             liste.add(serdeListeOfRoute.serialize(objet.routes()));
             return String.join(";", liste);
         }
@@ -88,8 +86,8 @@ public final class Serdes {
         public PublicPlayerState deserialize(String string) {
             String[] stringListe = string.split(Pattern.quote(";"), -1);
             
-            int ticketCount = serdeInt.deserialize(stringListe[0]);
-            int cardCount = serdeInt.deserialize(stringListe[1]);
+            int ticketCount = serdeInteger.deserialize(stringListe[0]);
+            int cardCount = serdeInteger.deserialize(stringListe[1]);
             List<Route> routes = serdeListeOfRoute.deserialize(stringListe[2]);
             return new PublicPlayerState(ticketCount, cardCount, routes);
         }
@@ -128,7 +126,7 @@ public final class Serdes {
             Objects.requireNonNull(objet);  //ToDo ça vaut la peine de mettre ceci ici ?
             List<String> liste = new ArrayList<String>();
             
-            liste.add(serdeInt.serialize(objet.ticketsCount()));
+            liste.add(serdeInteger.serialize(objet.ticketsCount()));
             liste.add(serdePublicCardState.serialize(objet.cardState()));
             liste.add(serdePlayerId.serialize(objet.currentPlayerId()));
             liste.add(serdePublicPlayerState.serialize(objet.playerState(PlayerId.PLAYER_1)));
@@ -141,7 +139,7 @@ public final class Serdes {
         public PublicGameState deserialize(String string) {
             String[] stringListe = string.split(Pattern.quote(":"), -1);
             
-            int ticketsCount = serdeInt.deserialize(stringListe[0]);
+            int ticketsCount = serdeInteger.deserialize(stringListe[0]);
             PublicCardState cardState = serdePublicCardState.deserialize(stringListe[1]);
             PlayerId currentPlayerId = serdePlayerId.deserialize(stringListe[2]);
             PublicPlayerState playerState1 = serdePublicPlayerState.deserialize(stringListe[3]);

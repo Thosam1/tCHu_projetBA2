@@ -150,7 +150,7 @@ public final class RemotePlayerProxy implements Player{
     @Override
     public int drawSlot() {
         this.messageOut(MessageId.DRAW_SLOT.name(), null, null);
-        return Serdes.serdeInt.deserialize(this.messageIn());
+        return Serdes.serdeInteger.deserialize(this.messageIn());
     }
 
     @Override

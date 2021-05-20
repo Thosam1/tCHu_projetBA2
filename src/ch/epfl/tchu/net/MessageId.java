@@ -7,7 +7,7 @@ import java.util.List;
  * @author Aymeric de chillaz (326617)
  * */
 public enum MessageId {
-    //Correspondent directement aux méthodes de l'interface Player
+    //ces messages correspondent directement aux méthodes de l'interface Player
     INIT_PLAYERS,
     RECEIVE_INFO,
     UPDATE_STATE,
