@@ -201,7 +201,7 @@ public final class Info {
     }
 
     private static String routeString(Route route){
-        return (route.station1().name() + StringsFr.EN_DASH_SEPARATOR + route.station2().name());   // fonctionne avec " - "
+        return (route.station1().name() + StringsFr.EN_DASH_SEPARATOR + route.station2().name());
     }
 
     /**
@@ -210,21 +210,6 @@ public final class Info {
      * @return les cartes du multi-ensemble donné en format String, plus lisible
      */
     public static String cardListString(SortedBag<Card> cardSortedBag){
-//        String cardList = "";
-//
-//        int i = 0;
-//        for (Card c: cardSortedBag.toSet()) {
-//            int n = cardSortedBag.countOf(c);
-//            if(i == cardSortedBag.toSet().size() - 2){
-//                cardList = cardList + n + " " + cardName(c, n) + StringsFr.AND_SEPARATOR;
-//            }else if(i == cardSortedBag.toSet().size() - 1){
-//                cardList = cardList + n + " " + cardName(c, n);
-//            }else{
-//                cardList = cardList + n + " " + cardName(c, n) + ", ";
-//            }
-//            i += 1;
-//        }
-//        return cardList;
         StringBuilder str = new StringBuilder();
         int i = 0;
         for (Card c: cardSortedBag.toSet()) {

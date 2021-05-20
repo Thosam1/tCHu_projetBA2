@@ -40,15 +40,11 @@ public class ClientMain extends Application {
             List<String> argList = getParameters().getRaw();    // ici index 0 et index 1 ?? avec le run edit config ?
             String hostName = (argList.size() == 2) ? argList.get(0) : "localhost";
             String portNumber = (argList.size() == 2) ? argList.get(1) : "5108";
-            System.out.println(portNumber); // TODO EFFACER
             // 2)
             GraphicalPlayerAdapter graphicalPlayerAdapter = new GraphicalPlayerAdapter();//GraphicalPlayerAdapter.initPlayers();
-            System.out.println("creating the client server");
             RemotePlayerClient client = new RemotePlayerClient(graphicalPlayerAdapter, hostName, Integer.parseInt(portNumber));
-            System.out.println("client créé");
             // 3)
-            new Thread(() -> client.run()).start();    // TODO EFFACER
-            System.out.println("client running");    // TODO EFFACER
+            new Thread(() -> client.run()).start();
 
         } catch(Exception e){
             System.out.println("ERROR OCCURRED");

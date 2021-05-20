@@ -21,6 +21,13 @@ import javafx.stage.Stage;
  * @author Thösam Norlha-Tsang (330163)
  */
 
+/**
+ * Contient 2 arguments optionnels : 1) le nom du premier joueur
+ * start ou avec main ? 2) le nom du second joueur
+ */
+
+//TODO OU mettre le commentaire dessus
+
 public class ServerMain extends Application {
     public static void main(String[] args) {
         launch(args);
@@ -35,9 +42,6 @@ public class ServerMain extends Application {
      * fil d'exécution gérant la partie, qui ne fait rien d'autre qu'exécuter la
      * méthode play de Game.
      *
-     * Contient 2 arguments optionnels : 1) le nom du premier joueur todo avec
-     * start ou avec main ? 2) le nom du second joueur
-     *
      * @param stage
      * @throws Exception
      */
@@ -51,8 +55,8 @@ public class ServerMain extends Application {
         Map<PlayerId, String> playerNames = Map.of(PlayerId.PLAYER_1, firstName,
                 PlayerId.PLAYER_2, secondName);
 
-        // 2) etape 8
-        Player secondPlayer = null;
+        // 2)
+        Player secondPlayer;
 
         Socket socket;
         try (ServerSocket serverSocket = new ServerSocket(5108)) {
@@ -61,11 +65,8 @@ public class ServerMain extends Application {
         Player playerProxy = new RemotePlayerProxy(socket);
         secondPlayer = playerProxy;
 
-        System.out.println("Server done !"); // todo à effacer
-
         // 3)
         GraphicalPlayerAdapter firstGraphicalPlayerAdapter = new GraphicalPlayerAdapter();
-        // toDo un mandataire du joueur distant ?
 
         // 4)
         Map<PlayerId, Player> players = Map.of(PlayerId.PLAYER_1,
