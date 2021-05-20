@@ -9,6 +9,7 @@ import java.io.UncheckedIOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,23 +26,20 @@ import ch.epfl.tchu.game.Ticket;
 /**
  * représente un mandataire (proxy en anglais) de joueur distant
  * @author Aymeric de chillaz (326617)
- * @param <E>
  * */
 public final class RemotePlayerProxy implements Player{
-    private Socket socket; //pour l'instant on se sert que de socket dans le constructeur
-    BufferedWriter w;
-    BufferedReader r;
+//    final private Socket socket; //pour l'instant on se sert que de socket dans le constructeur
+    final BufferedWriter w;
+    final BufferedReader r;
     
     public RemotePlayerProxy(Socket socket) throws IOException {
-        this.socket = socket;
+//        this.socket = socket;     //ToDo on pourrait carrément enlever l'attribut socket lol
         w = new BufferedWriter(
                 new OutputStreamWriter(socket.getOutputStream(),
                         StandardCharsets.US_ASCII));
         r = new BufferedReader(
                 new InputStreamReader(socket.getInputStream(),
                         StandardCharsets.US_ASCII));
-            
-                
         }
     
     /**
@@ -52,8 +50,6 @@ public final class RemotePlayerProxy implements Player{
      * et de les lever à nouveau, en quelque sorte, sous forme d'exceptions équivalentes 
      * mais de type UncheckedIOException. La différence entre les deux types d'exception 
      * est que le premier est un type d'exception checked, le second pas.
-     * @param <T>
-     * @param <E>
      * 
      * @param messageId : l'identité du message (de type MessageId)
      * @param argument1 : la chaine de caractère correspondant au premier argument de la classe (peut etre null)
@@ -61,13 +57,9 @@ public final class RemotePlayerProxy implements Player{
      * */
     
     private void messageOut(String messageId, String argument1, String argument2) {
-        
-//        List<String> liste = List.of(messageId, argument1, argument2);    //TODO avec cette ligne, on a un null pointer exception qui est lancé
-        List<String> liste = new ArrayList<>();
-        liste.add(messageId);
-        liste.add(argument1);   //on ajoute argument1 et argument2 meme si ils sont null
-        liste.add(argument2);
-        
+
+        List<String> liste = new ArrayList<>(Arrays.asList(messageId, argument1, argument2));
+
         //créé un stream à partir des trois String, retire les valeurs null et les join en mettant un espace au mileu
         String string = liste.stream().filter(value -> value != null)
                          .collect(Collectors.joining(" "));
@@ -78,7 +70,6 @@ public final class RemotePlayerProxy implements Player{
             w.flush();
             
             } catch (IOException e) {
-            
                 throw new UncheckedIOException(e);
                } 
     }
@@ -92,11 +83,9 @@ public final class RemotePlayerProxy implements Player{
     private String messageIn() {
         try {    
             return r.readLine();
-            
             } catch (IOException e) {
-                
                 throw new UncheckedIOException(e);
-               }
+            }
         }
     
  /**
@@ -116,16 +105,13 @@ public final class RemotePlayerProxy implements Player{
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
         String argument1 = Serdes.serdePlayerId.serialize(ownId);
         String argument2 = Serdes.serdeListeOfString
-                .serialize(List.of(playerNames.get(PlayerId.PLAYER_1),
-                        playerNames.get(PlayerId.PLAYER_2)));
-        
+                .serialize(List.of(playerNames.get(PlayerId.PLAYER_1), playerNames.get(PlayerId.PLAYER_2)));
         this.messageOut(MessageId.INIT_PLAYERS.name(), argument1, argument2);
     }
 
     @Override
     public void receiveInfo(String info) {
         String argument1 = Serdes.serdeString.serialize(info);
-        
         this.messageOut(MessageId.RECEIVE_INFO.name(), argument1, null);
     }
 
@@ -133,14 +119,12 @@ public final class RemotePlayerProxy implements Player{
     public void updateState(PublicGameState newState, PlayerState ownState) {
         String argument1 = Serdes.serdePublicGameState.serialize(newState);
         String argument2 = Serdes.serdePlayerState.serialize(ownState);
-        
         this.messageOut(MessageId.UPDATE_STATE.name(), argument1, argument2);
     }
 
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
         String argument1 = Serdes.serdeSortedBagOfTicket.serialize(tickets);
-        
         this.messageOut(MessageId.SET_INITIAL_TICKETS.name(), argument1, null);
     }
 
@@ -159,7 +143,6 @@ public final class RemotePlayerProxy implements Player{
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
         String argument1 = Serdes.serdeSortedBagOfTicket.serialize(options);
-        
         this.messageOut(MessageId.CHOOSE_TICKETS.name(), argument1, null);
         return Serdes.serdeSortedBagOfTicket.deserialize(this.messageIn());
     }
@@ -183,10 +166,8 @@ public final class RemotePlayerProxy implements Player{
     }
 
     @Override
-    public SortedBag<Card> chooseAdditionalCards(
-            List<SortedBag<Card>> options) {
+    public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
         String argument1 = Serdes.serdeListeOfSortedBagOfCard.serialize(options);
-        
         this.messageOut(MessageId.CHOOSE_ADDITIONAL_CARDS.name(), argument1, null);
         return Serdes.serdeSortedBagOfCard.deserialize(this.messageIn());
     }

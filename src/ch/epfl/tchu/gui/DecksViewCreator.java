@@ -2,7 +2,6 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Constants;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.scene.Group;
@@ -18,7 +17,7 @@ import javafx.scene.text.Text;
  * @author Thösam Norlha-Tsang (330163)
  * classe non-instanciable dont le but est de contenir 2 méthodes qui construisent un graphe de scène représentant des cartes
  */
-class DecksViewCreator{
+final class DecksViewCreator {
     //constructeur privé
     private DecksViewCreator(){}
 
@@ -96,7 +95,7 @@ class DecksViewCreator{
      *          1.7.1.1)Rectangle pour l'arrière-plan
      *          1.7.1.2)Rectangle pour l'avant-plan
      */
-    public static VBox createCardsView(ObservableGameState game, ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketHandler, ObjectProperty<ActionHandlers.DrawCardHandler> drawCardsHandler){  //ToDo faut-il mettre le ObjectProperty<> ?
+    public static VBox createCardsView(ObservableGameState game, ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketHandler, ObjectProperty<ActionHandlers.DrawCardHandler> drawCardsHandler){
         VBox cardPaneRoot = new VBox();
         cardPaneRoot.getStylesheets().addAll("decks.css", "colors.css");
         cardPaneRoot.setId("card-pane");
@@ -105,12 +104,12 @@ class DecksViewCreator{
          *  carte
          */
         for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++){
-            StackPane pane = cardEmptyLayout(); //TODO rechanger    !!!!!!!!!!!!!!! DEMANDER A UN ASSISTANT Comment les initialiser à null ?
+            StackPane pane = cardEmptyLayout(); //TODO rechanger    !!!!!!!!!!!!!!! DEMANDER A UN ASSISTANT faut-il initialiser à null ? juste pour être sûr
             final int I = i;
             pane.setOnMouseClicked(e -> {
                 ActionHandlers.DrawCardHandler drawCards = drawCardsHandler.get();
 //                drawCards.onDrawCard(I);  // ici null pointer exception
-                if(drawCards != null){drawCards.onDrawCard(I);}        //ToDo vérifier que c'est une bonne solution
+                if(drawCards != null){drawCards.onDrawCard(I);}               //TODO ICI   RECHANGER - vérifier avec un assistant si c'est une bonne solution ou si ça risque de ne pas passer les tests du prof
             });
             game.faceUpCard(i).addListener((p, o, n) -> {
                 if ((pane.getStyleClass().size() == 2)) {
@@ -138,11 +137,9 @@ class DecksViewCreator{
             drawCards.onDrawCard(-1);
         });
 
-        /**
-         *  ajout facultatif d'un label bouton
-         */
-        cardPaneRoot.getChildren().add(0, gaugedTickets);   // has to be first
-        cardPaneRoot.getChildren().add(gaugedDeck);     // has to be last
+
+        cardPaneRoot.getChildren().add(0, gaugedTickets);   // has to be first (index)
+        cardPaneRoot.getChildren().add(gaugedDeck);     // has to be last (index)
         return cardPaneRoot;
     }
 
@@ -215,9 +212,9 @@ class DecksViewCreator{
 
         Rectangle foreground = new Rectangle(50, 5);
         foreground.getStyleClass().add("foreground");
-        foreground.widthProperty().bind(percentage.multiply(50).divide(100));   //toDo
+        foreground.widthProperty().bind(percentage.multiply(50).divide(100));
 
-        Group group = new Group(background, foreground);  //-> mieux
+        Group group = new Group(background, foreground);
         button.setGraphic(group);
         button.setText(label);
         return button;

@@ -11,9 +11,7 @@ import ch.epfl.tchu.gui.ActionHandlers.ClaimRouteHandler;
 import ch.epfl.tchu.gui.ActionHandlers.DrawCardHandler;
 import ch.epfl.tchu.gui.ActionHandlers.DrawTicketsHandler;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableNumberValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,34 +30,45 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
-
 import static javafx.application.Platform.isFxApplicationThread;
 
 
+/**
+ * La classe instanciable GraphicalPlayer du paquetage ch.epfl.tchu.gui représente l'interface graphique d'un joueur de tCHu
+ * @author Thösam Norlha-Tsang (330163)
+ * @author Aymeric de chillaz (326617)
+ */
+
 public final class GraphicalPlayer {
-    private ObservableGameState observableGame;
-    private ObservableList<Text> messageList = FXCollections.observableList(new ArrayList<>());
+    private final ObservableGameState observableGame;
+    private final ObservableList<Text> messageList = FXCollections.observableList(new ArrayList<>());       //TODO poser des questions au niveau final, classe, set
     private final PlayerId playerId;
     private final Map<PlayerId, String> mapPlayerNames;
-    private Stage main;
+    private final Stage main;
 
     //propriétés contenant les gestionnaires d'action
     //si elle contient null, alors l'action en question est actuellement interdite
-    private ObjectProperty<DrawCardHandler> drawCardProperty = new SimpleObjectProperty<>();
-    private ObjectProperty<ClaimRouteHandler> claimRouteProperty = new SimpleObjectProperty<>();
-    private ObjectProperty<DrawTicketsHandler> drawTicketsProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<DrawCardHandler> drawCardProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<ClaimRouteHandler> claimRouteProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<DrawTicketsHandler> drawTicketsProperty = new SimpleObjectProperty<>();
 
+    /**
+     * Constructeur de la classe GraphicalPlayer
+     * @param playerId l'id du joueur
+     * @param mapPlayerNames la map contenant les id des joueurs et leur map correspondant
+     */
     public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> mapPlayerNames) {
         assert isFxApplicationThread();
         this.playerId = playerId;
         this.mapPlayerNames = mapPlayerNames;
         observableGame = new ObservableGameState(playerId);
-
-
         MapViewCreator.CardChooser chooseCard = (list, handler) -> {
             chooseClaimCards(list, handler);
         };
 
+        /**
+         * Ici on créé la vue/la fenêtre du jeu
+         */
         Node mapView = MapViewCreator
                 .createMapView(observableGame, claimRouteProperty, chooseCard);
         Node cardsView = DecksViewCreator
@@ -72,20 +81,34 @@ public final class GraphicalPlayer {
         main.show();
     }
 
+    /**
+     * mêmes arguments que la méthode setState de ObservableGameState et ne faisant rien d'autre que d'appeler cette méthode sur l'état observable du joueur
+     * @param newGameState
+     * @param newPlayerState
+     */
     public void setState(PublicGameState newGameState, PlayerState newPlayerState) {
         assert isFxApplicationThread();
         observableGame.setState(newGameState, newPlayerState);
     }
 
+    /**
+     * prenant un message (String) et l'ajoutant au bas des informations sur le déroulement de la partie, qui sont présentées dans la partie inférieure de la vue des informations; pour mémoire, cette vue ne doit contenir que les cinq derniers messages reçus
+     * @param message
+     */
     public void receiveInfo(String message) {
         assert isFxApplicationThread();
-        messageList.add(new Text(/*"\n" + */message));
-        if (messageList.size() == 6) {
+        messageList.add(new Text(message));
+        if (messageList.size() == 6) {                  //içi pas de constante...
             messageList.remove(0);
         }
     }
 
-
+    /**
+     * prend en arguments trois gestionnaires d'action, un par types d'actions que le joueur peut effectuer lors d'un tour, et qui permet au joueur d'en effectuer une
+     * @param drawTicketsHandler
+     * @param drawCardHandler
+     * @param claimRouteHandler
+     */
     public void startTurn(ActionHandlers.DrawTicketsHandler drawTicketsHandler, DrawCardHandler drawCardHandler,
                           ClaimRouteHandler claimRouteHandler) {
         assert isFxApplicationThread();
@@ -94,7 +117,7 @@ public final class GraphicalPlayer {
                 drawTicketsHandler.onDrawTickets();
                 drawCardProperty.set(null);
                 claimRouteProperty.set(null);
-                drawTicketsProperty.set(null);      //je ne suis pas sur de ça
+                drawTicketsProperty.set(null);
             });
         }
 
@@ -102,9 +125,8 @@ public final class GraphicalPlayer {
             drawCardProperty.set((a) -> {
                 drawCardHandler.onDrawCard(a);
                 drawTicketsProperty.set(null);
-                claimRouteProperty.set(null);   // todo parfois ça beug et on arrive à choper une route au lieu de piocher la seconde carte
-                drawCardProperty.set(null);//je ne suis pas sur de ça
-                //this.drawCard(drawCardHandler);
+                claimRouteProperty.set(null);
+                drawCardProperty.set(null);
             });
         }
 
@@ -118,17 +140,25 @@ public final class GraphicalPlayer {
         });
     }
 
+    /**
+     * ouvre une fenêtre permettant au joueur de faire son choix; une fois celui-ci confirmé, le gestionnaire de choix est appelé avec ce choix en argument
+     * @param ticketsToChoose un multiensemble contenant cinq ou trois billets que le joueur peut choisir
+     * @param chooseTicketsHandler gestionnaire de choix de billets
+     */
     public void chooseTickets(SortedBag<Ticket> ticketsToChoose, ChooseTicketsHandler chooseTicketsHandler) {
         assert isFxApplicationThread();
-        Preconditions.checkArgument(ticketsToChoose.size() == 3 || ticketsToChoose.size() == 5);
-        //TODO
+        Preconditions.checkArgument(ticketsToChoose.size() == Constants.IN_GAME_TICKETS_COUNT || ticketsToChoose.size() == Constants.INITIAL_TICKETS_COUNT);
         int min = ticketsToChoose.size() - Constants.DISCARDABLE_TICKETS_COUNT;
-        ListView listView = listViewTicket(ticketsToChoose, true);  //toDo utiliser des constantes ici ?      //que ce passe-t-il s'il ne reste que 2 tickets -> 2-2 = 0
+        ListView listView = listViewTicket(ticketsToChoose, true);
         Button chooseTicketsButton = chooseTicketsButton(listView, min, chooseTicketsHandler);
         Stage chooseWindow = chooseGraph(main, StringsFr.TICKETS_CHOICE, String.format(StringsFr.CHOOSE_TICKETS, min, StringsFr.plural(min)), listView, chooseTicketsButton);
         chooseWindow.show();
     }
 
+    /**
+     * autorise le joueur a choisir une carte wagon/locomotive, soit l'une des cinq dont la face est visible, soit celle du sommet de la pioche ; une fois que le joueur a cliqué sur l'une de ces cartes, le gestionnaire est appelé avec le choix du joueur ; cette méthode est destinée à être appelée lorsque le joueur a déjà tiré une première carte et doit maintenant tirer la seconde
+     * @param drawCardHandler un gestionnaire de tirage de carte
+     */
     public void drawCard(DrawCardHandler drawCardHandler) {
         assert isFxApplicationThread();
         drawCardProperty.set((a) -> {
@@ -139,26 +169,42 @@ public final class GraphicalPlayer {
         });
     }
 
+    /**
+     * ouvre une fenêtre permettant au joueur de faire son choix; une fois que celui-ci a été fait et confirmé, le gestionnaire de choix est appelé avec le choix du joueur en argument; cette méthode n'est destinée qu'à être passée en argument à createMapView en tant que valeur de type CardChooser
+     * @param possibleClaimCards liste de multiensembles de cartes, qui sont les cartes initiales que le joueur peut utiliser pour s'emparer d'une route
+     * @param chooseCardsHandler un gestionnaire de choix de cartes
+     */
     public void chooseClaimCards(List<SortedBag<Card>> possibleClaimCards, ChooseCardsHandler chooseCardsHandler) {
         assert isFxApplicationThread();
-        ObservableList<SortedBag<Card>> observableListCards = FXCollections.observableArrayList(possibleClaimCards);    //toDo checker que ça fonctionne
+        ObservableList<SortedBag<Card>> observableListCards = FXCollections.observableArrayList(possibleClaimCards);
         ListView listView = listViewCard(observableListCards, false);
         Button chooseClaimCardsButton = chooseCardsButton(listView, chooseCardsHandler, false);
         Stage chooseWindow = chooseGraph(main, StringsFr.CARDS_CHOICE, StringsFr.CHOOSE_CARDS, listView, chooseClaimCardsButton);
         chooseWindow.show();
     }
 
-    //ToDo où faut-il appeler cette méthode ?
+    /**
+     * ouvre une fenêtre permettant au joueur de faire son choix; une fois que celui-ci a été fait et confirmé, le gestionnaire de choix est appelé avec le choix du joueur en argument
+     * @param possibleAdditionalCards liste de multiensembles de cartes, qui sont les cartes additionnelles que le joueur peut utiliser pour s'emparer d'un tunnel
+     * @param chooseCardsHandler gestionnaire de choix de cartes
+     */
     public void choosedAdditionalCards(List<SortedBag<Card>> possibleAdditionalCards, ChooseCardsHandler chooseCardsHandler) {
         assert isFxApplicationThread();
-        ObservableList<SortedBag<Card>> observableListCards = FXCollections.observableArrayList(possibleAdditionalCards);    //toDo checker que ça fonctionne
+        ObservableList<SortedBag<Card>> observableListCards = FXCollections.observableArrayList(possibleAdditionalCards);
         ListView listView = listViewCard(observableListCards, false);
         Button choosedAdditionalCardsButton = chooseCardsButton(listView, chooseCardsHandler, true);
         Stage chooseWindow = chooseGraph(main, StringsFr.CARDS_CHOICE, StringsFr.CHOOSE_ADDITIONAL_CARDS, listView, choosedAdditionalCardsButton);
         chooseWindow.show();
     }
 
-
+    /**
+     * méthode appelée dans le constructeur, pour mettre ensemble les différentes parties de la fenêtre du jeu
+     * @param mapView
+     * @param drawView
+     * @param handView
+     * @param infoView
+     * @return une stage de la fenêtre principale
+     */
     private Stage mainSceneGraph(Node mapView, Node drawView, Node handView, Node infoView) {
         assert isFxApplicationThread();
         BorderPane borderPane = new BorderPane(mapView, null, drawView, handView, infoView);
@@ -169,7 +215,17 @@ public final class GraphicalPlayer {
     }
 
 
-    private Stage chooseGraph(Stage root, String title, String introText, /*ObservableList<E> list*/ ListView listView, Button caseButton) {  // titre est donné soit par la constante TICKETS_CHOICE, soit par la constante CARDS_CHOICE de StringsFr
+    /**
+     * méthode pour créer la fenêtre pour choisir les billets ou les cartes
+     * titre est donné soit par la constante TICKETS_CHOICE, soit par la constante CARDS_CHOICE de StringsFr
+     * @param root
+     * @param title
+     * @param introText
+     * @param listView
+     * @param caseButton
+     * @return
+     */
+    private Stage chooseGraph(Stage root, String title, String introText, ListView listView, Button caseButton) {
         assert isFxApplicationThread();
         Stage stage = new Stage(StageStyle.UTILITY);
         stage.initOwner(root);
@@ -177,15 +233,13 @@ public final class GraphicalPlayer {
 
         VBox vBox = new VBox();
 
-        Text text = new Text(introText); //toDo mieux de formater en dehors mieux
+        Text text = new Text(introText);
         TextFlow textFlow = new TextFlow(text);
 
 
         caseButton.getStyleClass().add("gauged");
         caseButton.setText(StringsFr.CHOOSE);
-//        caseButton.setOnAction(e -> { caseButton
-//            stage.hide();   // toDo c'est bien sur le stage // et que ça fait bien les deux avec le setOnAction qui lui est appelé dans la méthode spécifique
-//        });
+
         caseButton.addEventHandler(ActionEvent.ACTION, e -> {
             stage.hide();
         });
@@ -197,7 +251,6 @@ public final class GraphicalPlayer {
         scene.getStylesheets().add("chooser.css");
         stage.setTitle(title);      //depends
         stage.setScene(scene);
-//        stage.setOnCloseRequest(e -> {e.consume();});   //todo vérifier que c'est juste ça
         stage.setOnCloseRequest(Event::consume);
 
         return stage;
@@ -237,8 +290,7 @@ public final class GraphicalPlayer {
             Button button = new Button();
             button.disableProperty().bind(Bindings.lessThan(Bindings.size(list.getSelectionModel().getSelectedItems()), min));
             button.setOnAction(e -> {
-                //handler.onChooseTickets(SortedBag.of(list.getSelectionModel().getSelectedItems().get(0)));    //toDo c'est bien l'index 0 ? non parceque sinon tu gardes juste un ticket
-                handler.onChooseTickets(SortedBag.of(list.getSelectionModel().getSelectedItems())); 
+                handler.onChooseTickets(SortedBag.of(list.getSelectionModel().getSelectedItems()));
             });
             return button;
         }
@@ -265,11 +317,14 @@ public final class GraphicalPlayer {
             return button;
         }
 
-        private class CardBagStringConverter extends StringConverter<SortedBag<Card>> {
+    /**
+     * Pour rendre les multiensembles de cartes plus agréable à lire dans les annonces
+     */
+    private class CardBagStringConverter extends StringConverter<SortedBag<Card>> {
             @Override
             public String toString(SortedBag<Card> cardSortedBag) {
                 return Info.cardListString(cardSortedBag);
-            }
+            } //parce qu'une méthode se trouve déjà dans la classe info
 
             @Override
             public SortedBag<Card> fromString(String s) {

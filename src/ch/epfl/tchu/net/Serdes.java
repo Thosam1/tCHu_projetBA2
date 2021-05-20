@@ -1,8 +1,7 @@
 package ch.epfl.tchu.net;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import ch.epfl.tchu.SortedBag;
@@ -17,9 +16,6 @@ import ch.epfl.tchu.game.PublicPlayerState;
 import ch.epfl.tchu.game.Route;
 import ch.epfl.tchu.game.Ticket;
 
-import java.util.ArrayList;
-import java.util.Base64;
-
 /**
  * Classe contenant des attributs static public qui permettent de serialiser ou deserialiser
  * des messages (grace aux appels des méthodes serialize et deserialize qui sont spécifiques à chaque Serde)
@@ -33,8 +29,7 @@ public final class Serdes {
             Integer::parseInt);
     
     public static final Serde<String> serdeString = Serde.of(
-            i -> Base64.getEncoder().encodeToString(i.getBytes(StandardCharsets.UTF_8)), //TODO écrit à la série 7, 3.3.1 mettre StandardCharsets.UTF_8 dans la méthode getByte
-//            j -> Base64.getDecoder().decode(j).toString());
+            i -> Base64.getEncoder().encodeToString(i.getBytes(StandardCharsets.UTF_8)),
             j -> new String(Base64.getDecoder().decode(j), StandardCharsets.UTF_8));
 
 
@@ -56,6 +51,7 @@ public final class Serdes {
     public static final Serde<PublicCardState> serdePublicCardState = new Serde<PublicCardState>() {
         @Override
         public String serialize(PublicCardState objet) {
+            Objects.requireNonNull(objet);  //ToDo ça vaut la peine de mettre ceci ici ?
             List<String> liste = new ArrayList<String>();
             liste.add(serdeListeOfCard.serialize(objet.faceUpCards()));
             liste.add(serdeInt.serialize(objet.deckSize()));
@@ -66,7 +62,6 @@ public final class Serdes {
         @Override
         public PublicCardState deserialize(String string) {
             String[] stringListe = string.split(Pattern.quote(";"), -1);
-            
             List<Card> faceUpCards = serdeListeOfCard.deserialize(stringListe[0]);
             int deckSize = serdeInt.deserialize(stringListe[1]);
             int discardsSize = serdeInt.deserialize(stringListe[2]);
@@ -81,6 +76,7 @@ public final class Serdes {
     public static final Serde<PublicPlayerState> serdePublicPlayerState = new Serde<PublicPlayerState>() {
         @Override
         public String serialize(PublicPlayerState objet) {
+            Objects.requireNonNull(objet);  //ToDo ça vaut la peine de mettre ceci ici ?
             List<String> liste = new ArrayList<String>();
             liste.add(serdeInt.serialize(objet.ticketCount()));
             liste.add(serdeInt.serialize(objet.cardCount()));
@@ -104,6 +100,7 @@ public final class Serdes {
     public static final Serde<PlayerState> serdePlayerState = new Serde<PlayerState>() {
         @Override
         public String serialize(PlayerState objet) {
+            Objects.requireNonNull(objet);  //ToDo ça vaut la peine de mettre ceci ici ?
             List<String> liste = new ArrayList<String>();
             liste.add(serdeSortedBagOfTicket.serialize(objet.tickets()));
             liste.add(serdeSortedBagOfCard.serialize(objet.cards()));
@@ -128,6 +125,7 @@ public final class Serdes {
 
         @Override
         public String serialize(PublicGameState objet) {
+            Objects.requireNonNull(objet);  //ToDo ça vaut la peine de mettre ceci ici ?
             List<String> liste = new ArrayList<String>();
             
             liste.add(serdeInt.serialize(objet.ticketsCount()));

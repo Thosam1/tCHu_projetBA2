@@ -5,15 +5,12 @@ import java.util.List;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.ChMap;
-import ch.epfl.tchu.game.PlayerId;
 import ch.epfl.tchu.game.Route;
 import ch.epfl.tchu.gui.ActionHandlers.ChooseCardsHandler;
 import ch.epfl.tchu.gui.ActionHandlers.ClaimRouteHandler;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Group;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -23,15 +20,15 @@ import javafx.scene.shape.Rectangle;
  * La classe MapViewCreator, non instanciable et package private (!), 
  * contient une unique méthode publique et statique, nommée createMapView et permettant de créer la vue de la carte.
  * */
-class MapViewCreator {
-    public Pane pane;
+final class MapViewCreator {
+    public final Pane pane; //TODO j'ai rajouté ça ici, à toi de voir si on laisse ça ici
     
     /**
      * Le seul attribut de la classe est une instance de Pane
      * */
     private MapViewCreator(Pane pane) {
         this.pane = pane;
-    }
+    }   //TODO non instanciable veut dire que le constructeur doit être private et vide ? - du coup on peut enlever l'attribut pane et rendre le constructeur vide ?
     
     /**
      * Cette méthode prend trois paramètres:
@@ -88,7 +85,7 @@ class MapViewCreator {
             
             //désactive le groupe représentant une route lorsque le joueur ne peut pas s'en emparer
             groupRoute.disableProperty().bind(
-                    objectProperty.isNull().or(observableGame.claimable(route).not()));
+                    objectProperty.isNull().or(observableGame.canClaimRoute(route).not()));
             
             //Lorsqu'un joueur clique sur un élément quelconque d'un groupe représentant une route, cela signifie qu'il désire s'en emparer — 
             //ou tenter de le faire dans le cas d'un tunnel.
@@ -102,7 +99,6 @@ class MapViewCreator {
                     
                     claimRouteH.onClaimRoute(route, possibleClaimCards.get(0));
                 }
-                
                 else {//cas ou il y a plusieurs possibilité de cartes qui peuvent permettre de prendre pocession de la route
                     //provoque l'apparition d'un dialogue demandant au joueur de choisir l'ensemble de cartes qu'il désire utiliser pour essayer de  s'emparer de la route
                     ChooseCardsHandler chooseCardsH =
@@ -151,7 +147,6 @@ class MapViewCreator {
      * */
     @FunctionalInterface
     interface CardChooser {
-      void chooseCards(List<SortedBag<Card>> options,
-               ChooseCardsHandler handler);
+      void chooseCards(List<SortedBag<Card>> options, ChooseCardsHandler handler);
     }
 }

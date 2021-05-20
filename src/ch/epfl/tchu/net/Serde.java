@@ -77,7 +77,7 @@ public interface Serde<T> {
      * @return un serde capable de (dé)sérialiser
      * des listes de valeurs (dé)sérialisées) par le serde donné
      * */
-    public static <T> Serde<List<T>> listOf(Serde<T> serde, Character separateur){      //TODO on peut aussi mettre String
+    public static <T> Serde<List<T>> listOf(Serde<T> serde, Character separateur){
         //Le fait d avoir separateur en Character et pas char permet d appeler la méthode toString
         //comment faire la différence entre les T et les List<T>
         return new Serde<List<T>>() {

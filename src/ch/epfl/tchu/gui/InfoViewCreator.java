@@ -1,6 +1,5 @@
 package ch.epfl.tchu.gui;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +8,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Separator;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
@@ -24,14 +22,11 @@ import javafx.scene.text.TextFlow;
  */
 
 class InfoViewCreator {
-    public VBox vBox;
-    
+
     /**
      * Le seul attribut de la classe est une instance de VBox
      * */
-    private InfoViewCreator(VBox vBox) {
-        this.vBox = vBox;
-    }
+    private InfoViewCreator() {}
     
     
     public static VBox createInfoView(PlayerId playerId, 
@@ -83,4 +78,4 @@ class InfoViewCreator {
         
         return vBox;
     }
-   }
+}

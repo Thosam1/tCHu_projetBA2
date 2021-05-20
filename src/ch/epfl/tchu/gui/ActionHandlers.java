@@ -15,7 +15,7 @@ public interface ActionHandlers {
         /**
          * appelée lorsque le joueur désire tirer des billets
          */
-        public abstract void onDrawTickets();    //TODO les types de retour ? void ?
+        public abstract void onDrawTickets();
     }
     public interface DrawCardHandler{
         /**
@@ -28,10 +28,10 @@ public interface ActionHandlers {
         /**
          *  appelée lorsque le joueur désire s'emparer de la route donnée au moyen
          *  des cartes (initiales) données
-         * @param route
-         * @param cards
+         * @param route route ciblée
+         * @param cards cartes (initiales) que le joueur veut utiliser pour s'emparer de la route
          */
-        public abstract void onClaimRoute(Route route, SortedBag<Card> cards);   //TODO est-ce que les cartes initiales données sont le sortedBag? (multiensenble)
+        public abstract void onClaimRoute(Route route, SortedBag<Card> cards);
     }
     public interface ChooseTicketsHandler{
         /**

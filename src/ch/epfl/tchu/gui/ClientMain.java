@@ -1,7 +1,5 @@
 package ch.epfl.tchu.gui;
 
-import ch.epfl.tchu.game.Constants;
-import ch.epfl.tchu.game.Player;
 import ch.epfl.tchu.net.RemotePlayerClient;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -37,7 +35,6 @@ public class ClientMain extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-
         try {
             // 1)
             List<String> argList = getParameters().getRaw();    // ici index 0 et index 1 ?? avec le run edit config ?

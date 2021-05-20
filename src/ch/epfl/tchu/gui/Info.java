@@ -59,7 +59,7 @@ public final class Info {
                 cardInFrench = StringsFr.LOCOMOTIVE_CARD;
                 break;
             default:
-                throw new Error("Didn't find a case for Card"); // !!!
+                throw new Error("Didn't find a case for Card");
         }
         cardInFrench = cardInFrench + StringsFr.plural(count);
         return cardInFrench;

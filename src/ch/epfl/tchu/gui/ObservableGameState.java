@@ -2,7 +2,6 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
@@ -19,12 +18,12 @@ import java.util.Map;
  * @author Thösam Norlha-Tsang (330163)
  * représente l'état observable d'une partie de tCHu - une instance de ObservableGameState est spécifique à un joueur
  */
-public class ObservableGameState {
+public final class ObservableGameState {
 
     /**A la création, la totalité des propriétés de l'état sont null pour celles contenant un objet
      * 0 pour celles contenant un entrier, false pour celles contenant une valeur booléenne*/
     
-    private PlayerId playerId;
+    private final PlayerId playerId;
     private PublicGameState publicGameState = null;
     private PlayerState playerState = null;
 
@@ -32,13 +31,10 @@ public class ObservableGameState {
      *  Propriétés concernant l'état public de la partie
      */
     
-    private final IntegerProperty percentTicketsLeft;   //TODO checker que c'est bien IntegerProperty et pas ObjectProperty
-    
+    private final IntegerProperty percentTicketsLeft;
     private final IntegerProperty percentCardsLeft;
-
     private final List<ObjectProperty<Card>> faceUpCards;
-
-    private final Map<Route, ObjectProperty<PlayerId>> routeOwners; //TODO can we change values if we declare it final, casse l'immuabilité?
+    private final Map<Route, ObjectProperty<PlayerId>> routeOwners;
 
     /**
      *  Propriétés concernant l'état public des de chacun des joueurs
@@ -59,15 +55,15 @@ public class ObservableGameState {
 
     public ObservableGameState(PlayerId playerId){
         this.playerId = playerId;
-        this.percentTicketsLeft = new SimpleIntegerProperty(0); //TODO vérifier que c'est bien SimpleIntegerProperty
+        this.percentTicketsLeft = new SimpleIntegerProperty(0);
         this.percentCardsLeft = new SimpleIntegerProperty(0);
         this.faceUpCards = initFaceUpCards();
         this.routeOwners = initRouteOwners();
 
-        this.nbTicketsInHand = intPropertyIdMap();
-        this.nbCardsInHand = intPropertyIdMap();
-        this.nbCarsInHand = intPropertyIdMap();
-        this.nbConstructionPoints = intPropertyIdMap();
+        this.nbTicketsInHand = initPropertyIdMap();
+        this.nbCardsInHand = initPropertyIdMap();
+        this.nbCarsInHand = initPropertyIdMap();
+        this.nbConstructionPoints = initPropertyIdMap();
 
         this.playerTickets = FXCollections.observableArrayList();
         this.cardsOfInHand = initCardsOfInHand();
@@ -85,18 +81,16 @@ public class ObservableGameState {
         
         percentTicketsLeft.set(percent(newGameState.ticketsCount(), ChMap.tickets().size()));
         percentCardsLeft.set(percent(newGameState.cardState().deckSize(), Constants.ALL_CARDS.size()));
-        modifyFaceUpCards();
-        modifyRouteOwners();
-        
-      //est ce que ce ne serait pas plus propre en faisant un appel à des modify
+
         for(PlayerId id: PlayerId.ALL) {
             PublicPlayerState state = publicGameState.playerState(id);
-            nbTicketsInHand.get(id).set(state.ticketCount());   //TODO est-ce qu'on set bien des objectproperty?
+            nbTicketsInHand.get(id).set(state.ticketCount());
             nbCardsInHand.get(id).set(state.cardCount());
             nbCarsInHand.get(id).set(state.carCount());
             nbConstructionPoints.get(id).set(state.claimPoints());
         }
-
+        modifyFaceUpCards();
+        modifyRouteOwners();
         modifyPlayerTickets();
         modifyCardsOfInHand();
         modifyCanClaimRoute();
@@ -106,17 +100,17 @@ public class ObservableGameState {
     /**
      *  Méthodes appelées à l'initialisation
      */
-    private static Map<PlayerId, IntegerProperty> intPropertyIdMap(){
-        Map<PlayerId, IntegerProperty> temp = new HashMap<PlayerId, IntegerProperty>(); //ToDo
+    private static Map<PlayerId, IntegerProperty> initPropertyIdMap(){  //TODO faudrait-il laisser toutes ces méthodes en statique ou pas ?
+        Map<PlayerId, IntegerProperty> temp = new HashMap<PlayerId, IntegerProperty>();
         for(PlayerId id : PlayerId.ALL){
             temp.put(id, new SimpleIntegerProperty(0));
         }
-        return Collections.unmodifiableMap(temp);
+        return Collections.unmodifiableMap(temp);           //TODO A EFFACER ICI ON A UNMODIFIABLEMAP ??!!
     }
     private static List<ObjectProperty<Card>> initFaceUpCards(){
         List<ObjectProperty<Card>> temp = new ArrayList<ObjectProperty<Card>>();
         for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++){
-            SimpleObjectProperty<Card> card = new SimpleObjectProperty<>();
+            ObjectProperty<Card> card = new SimpleObjectProperty<>();
             temp.add(card);
         }
         return Collections.unmodifiableList(temp);
@@ -160,7 +154,7 @@ public class ObservableGameState {
         
         for(Route route : ChMap.routes()) {
             if(routesPlayer1.contains(route)){
-                routeOwners.get(route).set(PlayerId.PLAYER_1);
+                routeOwners.get(route).set(PlayerId.PLAYER_1);  //ToDo, je ne suis pas sûr que ce soit bien de faire des actions directement dessus, dans l'exemple 3.2.1 le prof le fait comme ça
             }
             else if(routesPlayer2.contains(route)){
                 routeOwners.get(route).set(PlayerId.PLAYER_2);
@@ -170,12 +164,8 @@ public class ObservableGameState {
     }
 
     private void modifyPlayerTickets(){
-        playerTickets.setAll(playerState.tickets().toList());
+        playerTickets.setAll(playerState.tickets().toList());   //ToDo, je ne suis pas sûr que ce soit bient de faire des actions directement dessus
     }
-                                                                        /**neuf propriétés contenant, pour chaque type de carte wagon/locomotive,
-                                                                         * le nombre de cartes de ce type que le joueur a en main
-                                                                         * les retourne dans l ordre de l enumeration Card avec locomotive à la fin
-                                                                         * */
 
     private void modifyCardsOfInHand(){
         for(Card card : Card.ALL){
@@ -201,7 +191,7 @@ public class ObservableGameState {
     public ReadOnlyObjectProperty<Card> faceUpCard(int slot) {
         return faceUpCards.get(slot);
     }
-    public ReadOnlyObjectProperty routeOwner(Route route){return routeOwners.get(route);}
+//    public ReadOnlyObjectProperty routeOwner(Route route){return routeOwners.get(route);} //TODO EFFACER CEUX EN COMMENTAIRE PLUS TARD
 
     public ReadOnlyIntegerProperty nbTicketsInHand(PlayerId id){return nbTicketsInHand.get(id);}
     public ReadOnlyIntegerProperty nbCardsInHand(PlayerId id){return nbCardsInHand.get(id);}
@@ -212,13 +202,13 @@ public class ObservableGameState {
     public ReadOnlyIntegerProperty cardsOfInHand(Card card){return cardsOfInHand.get(card);}
     public ReadOnlyBooleanProperty canClaimRoute(Route route){return canClaimRoute.get(route);}
 
-    public String faceUpCardName(int slot){return publicGameState.cardState().faceUpCard(slot).name();} //toDo comment faire ce truc d'une façon plus jolie ?
+//    public String faceUpCardName(int slot){return publicGameState.cardState().faceUpCard(slot).name();} //toDo comment faire ce truc d'une façon plus jolie ?
     public boolean getCanDrawTickets() {
         return publicGameState.canDrawTickets();
     }
-    public boolean getCanDrawCards() {
-        return publicGameState.canDrawCards();
-    }
+//    public boolean getCanDrawCards() {
+//        return publicGameState.canDrawCards();
+//    }
     public List<SortedBag<Card>> getPossibleClaimCards(Route route) {
         return playerState.possibleClaimCards(route);
     }
@@ -236,8 +226,7 @@ public class ObservableGameState {
     private static Integer percent(int a, int b) {
         Preconditions.checkArgument(a<=b);
         return (a * 100) / b;
-    }   //TODO pourrait-on garder entre 0 et 1 ? -enlever le *100 ? non parce qu on veut une valeur entre 0 et 100
-    
+    }
     
     /**méthode qui retourne vraie que si le joueur peut actuellement s'emparer de la route
      * Cette méthode prend listePaireStations en paramètre car elle a pour objectif d'etre appelé dans le corps
@@ -247,14 +236,6 @@ public class ObservableGameState {
                 && publicGameState.currentPlayerId() == playerId 
                 && freeRoute(route, listePaireStations);
 
-    }
-    
-    /**méthode qui retourne un ReadOnlyBooleanProperty: contient la valeur true que si le joueur peut actuellement s'emparer de la route
-     * Ce qui est déterminé lors des updates de canClaimRoute
-     * Cette méthode est appelé dans MapViewCreator
-     * */
-    public ReadOnlyBooleanProperty claimable(Route route) {
-        return canClaimRoute.get(route);
     }
     
     /**
