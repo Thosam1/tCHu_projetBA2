@@ -27,7 +27,7 @@ import javafx.application.Platform;
  *         JavaFX
  */
 public final class GraphicalPlayerAdapter implements Player {
-    private GraphicalPlayer graphicalPlayer;    //todo
+    private GraphicalPlayer graphicalPlayer;
 
     /**
      * Les méthodes de GraphicalplayerAdapter et les ActionHandlers en attribut
@@ -71,7 +71,6 @@ public final class GraphicalPlayerAdapter implements Player {
         drawTicketsHandler = () -> {
             try {
                 qTurnKind.put(TurnKind.DRAW_TICKETS);
-                // pas d'argument à ajouter à une BlockingQueue
             } catch (InterruptedException e) {
                 throw new Error();
             }

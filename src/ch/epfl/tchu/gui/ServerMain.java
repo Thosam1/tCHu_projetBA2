@@ -52,15 +52,6 @@ public class ServerMain extends Application {
         Map<PlayerId, String> playerNames = Map.of(PlayerId.PLAYER_1, firstName,
                 PlayerId.PLAYER_2, secondName);
 
-        /*
-         * TODO généralization potentielle List<String> nameList =
-         * (argList.size() == PlayerId.COUNT)? argList : List.of("Ada",
-         * "Charles", "Manu"); //permet un jeu entre 2 ou 3 joueurs
-         * Map<PlayerId, String> playerNamesGeneralized = new HashMap<>();
-         * for(int i = 0; i < PlayerId.COUNT; ++i) {
-         * playerNamesGeneralized.put(PlayerId.ALL.get(i), nameList.get(i)); }
-         */
-
         // 2)
         Player secondPlayer;
 

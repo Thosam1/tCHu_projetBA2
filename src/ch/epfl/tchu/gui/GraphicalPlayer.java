@@ -142,11 +142,6 @@ public final class GraphicalPlayer {
             drawTicketsProperty.set(() -> {
                 drawTicketsHandler.onDrawTickets();
                 makeHandlerPropertiesNull();
-                // TODO vérifier
-                /*
-                 * drawCardProperty.set(null); claimRouteProperty.set(null);
-                 * drawTicketsProperty.set(null);
-                 */
             });
         }
 
@@ -154,10 +149,6 @@ public final class GraphicalPlayer {
             drawCardProperty.set((a) -> {
                 drawCardHandler.onDrawCard(a);
                 makeHandlerPropertiesNull();
-                /*
-                 * drawTicketsProperty.set(null); claimRouteProperty.set(null);
-                 * drawCardProperty.set(null);
-                 */
             });
         }
 
@@ -168,10 +159,6 @@ public final class GraphicalPlayer {
         claimRouteProperty.set((route, cards) -> {
             claimRouteHandler.onClaimRoute(route, cards);
             makeHandlerPropertiesNull();
-            /*
-             * drawTicketsProperty.set(null); claimRouteProperty.set(null);
-             * drawCardProperty.set(null);
-             */
         });
     }
 
@@ -225,10 +212,6 @@ public final class GraphicalPlayer {
         drawCardProperty.set((a) -> {
             drawCardHandler.onDrawCard(a);
             makeHandlerPropertiesNull();
-            /*
-             * drawCardProperty.set(null); claimRouteProperty.set(null);
-             * drawTicketsProperty.set(null);
-             */
         });
     }
 
@@ -306,10 +289,7 @@ public final class GraphicalPlayer {
                 handView, infoView);
         Stage root = new Stage();
         root.setScene(new Scene(borderPane));
-        root.setTitle("tCHu" + " - " + mapPlayerNames.get(playerId));// TODO
-                                                                     // utiliser
-                                                                     // join je
-                                                                     // pense
+        root.setTitle(String.join("", "tCHu", " - ", mapPlayerNames.get(playerId)));
         return root;
     }
 
@@ -362,15 +342,13 @@ public final class GraphicalPlayer {
         ListView<SortedBag<Card>> listView = new ListView<>(list);
         listView.setCellFactory(
                 v -> new TextFieldListCell<>(new CardBagStringConverter()));
-        // iff cards à cause de sortedBag TODO enlever
         if (multiple) {
             listView.getSelectionModel()
                     .setSelectionMode(SelectionMode.MULTIPLE);
         }
         return listView;
-    } // iff multiple TODO enlever
-      // return listView;
-
+    } 
+    
     private ListView<Ticket> listViewTicket(SortedBag<Ticket> ticketsToChoose,
                                                 boolean multiple) {
         assert isFxApplicationThread();
@@ -421,7 +399,7 @@ public final class GraphicalPlayer {
             button.disableProperty().bind(Bindings
                     .isEmpty(list.getSelectionModel().getSelectedItems()));
         }
-        button.setOnAction(e -> {// TODO vérifier
+        button.setOnAction(e -> {
             handler.onChooseCards((temp.isEmpty()) ? SortedBag.of()
                     : temp.get(0));
         });
@@ -448,12 +426,12 @@ public final class GraphicalPlayer {
         @Override
         public String toString(SortedBag<Card> cardSortedBag) {
             return Info.cardListString(cardSortedBag);
-        } // parce qu'une méthode se trouve déjà dans la classe info
+        }
 
         @Override
         public SortedBag<Card> fromString(String s) {
             throw new UnsupportedOperationException();
-        } // StringConverter<SortedBag<Card>> quelle librairie ?
+        }
 
     }
 

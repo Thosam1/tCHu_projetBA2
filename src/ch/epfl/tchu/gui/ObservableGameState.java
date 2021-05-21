@@ -218,14 +218,6 @@ public final class ObservableGameState {
                 propertyRouteOwners.get(route).set(null);
             }
         }
-        /*
-         * TODO vérifier que cette version fonctionne for (Route route :
-         * ChMap.routes()) { if (routesPlayer1.contains(route)) {
-         * routeOwners.get(route).set(PlayerId.PLAYER_1); } else if
-         * (routesPlayer2.contains(route)) {
-         * routeOwners.get(route).set(PlayerId.PLAYER_2); } else {
-         * routeOwners.get(route).set(null); } }
-         */
     }
 
     /**
