@@ -5,6 +5,7 @@ import ch.epfl.tchu.game.*;
 import ch.epfl.tchu.net.Serdes;
 import org.junit.jupiter.api.Test;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,6 +20,7 @@ public class SerdesTest {
         
         //TEST
         assertEquals("", Serdes.serdeListeOfCard.serialize(List.of()));
+     //   assertEquals(0, "".split(Pattern.quote(" "), -1).length);
     }
     
     @Test

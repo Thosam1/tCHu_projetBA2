@@ -113,8 +113,10 @@ public interface Serde<T> {
                         .split(Pattern.quote(separator.toString()), -1);
 
                 for (String element : stringList) {
-                    if (!string.isEmpty()) {// si string est vide output doit
-                                            // etre vide
+                    if (!string.isEmpty()) {
+                        //si string est vide output doit etre vide
+                        //si string est vide, stringList n'est pas vide
+                        //ainsi le for each a lieu, d'ou le if
                         output.add(serde.deserialize(element));
                     }
                 }
