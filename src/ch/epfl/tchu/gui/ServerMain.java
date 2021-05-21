@@ -22,14 +22,12 @@ import javafx.stage.Stage;
  * @author Thösam Norlha-Tsang (330163)
  */
 
-/**
- * Contient 2 arguments optionnels : 1) le nom du premier joueur
- * start ou avec main ? 2) le nom du second joueur
- */
-
-//TODO OU mettre le commentaire dessus
 
 public class ServerMain extends Application {
+    /**
+     * Contient 2 arguments optionnels : 1) le nom du premier joueur
+     *                                   2) le nom du second joueur
+     */
     public static void main(String[] args) {
         launch(args);
     }
