@@ -2,9 +2,11 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Constants;
+import ch.epfl.tchu.game.Ticket;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.Group;
 
 import javafx.scene.control.Button;
@@ -25,27 +27,27 @@ final class DecksViewCreator {
 
     /**
      * Cette méthode prend un paramètre:
-     * @param game qui est une instance de ObservableGameState (l'état du jeu observable)
-     *      nous en avons besoin pour accéder à ses propriétés cardsOfInHand() et playerTickets
-     *             -pour avoir le nombre de chaque type de carte et les billets en possession
+     * 
+     * @param game
+     *            qui est une instance de ObservableGameState (l'état du jeu
+     *            observable) nous en avons besoin pour accéder à ses propriétés
+     *            cardsOfInHand() et playerTickets -pour avoir le nombre de
+     *            chaque type de carte et les billets en possession
      * @return la vue de la main
      *
-     *      La hiérarchie du graphe de scène est la suivante:
-     *          1)HBox
-     *          2.1)ListView contenant les billets en possession du joueur enfant de HBox
-     *          2.2)HBox enfant de HBox
+     *         La hiérarchie du graphe de scène est la suivante: 1)HBox
+     *         2.1)ListView contenant les billets en possession du joueur enfant
+     *         de HBox 2.2)HBox enfant de HBox
      *
-     *          2.2.1)StackPane enfant de HBox
-     *          2.2.1.1) Rectangle représentant le dehors de la carte
-     *          2.2.1.2) Rectangle représentant l'intérieur de la carte
-     *          2.2.1.3) Rectangle représentant le train-image de la carte
-     *          2.2.1.4) Text affichant le nombre de carte de la sorte actuelle (Stackpane) correspondant/en possession
-     *          )Chaque groupCase a deux enfants de types différents
+     *         2.2.1)StackPane enfant de HBox 2.2.1.1) Rectangle représentant le
+     *         dehors de la carte 2.2.1.2) Rectangle représentant l'intérieur de
+     *         la carte 2.2.1.3) Rectangle représentant le train-image de la
+     *         carte 2.2.1.4) Text affichant le nombre de carte de la sorte
+     *         actuelle (Stackpane) correspondant/en possession )Chaque
+     *         groupCase a deux enfants de types différents
      *
-     *          2.2.2) la même que StackPane 2.2.1) mais pour la deuxième couleur
-     *          .
-     *          .
-     *          . (total 8 couleurs -> 8 StackPane)
+     *         2.2.2) la même que StackPane 2.2.1) mais pour la deuxième couleur
+     *         . . . (total 8 couleurs -> 8 StackPane)
      *
      */
     public static HBox createHandView(ObservableGameState game) {
@@ -87,24 +89,17 @@ final class DecksViewCreator {
      * @return la vue sur les cartes visibles, la pioche des cartes et la pioche
      *         des billets
      *
-     *         La hiérarchie du graphe de scène est la suivante:
-     *          1)VBox
-     *          1.1)Button représentant la pioche de billets
-     *          1.1.1)Group
-     *          1.1.1.1)Rectangle pour l'arrière-plan
-     *          1.1.1.2)Rectangle pour l'avant-plan
+     *         La hiérarchie du graphe de scène est la suivante: 1)VBox
+     *         1.1)Button représentant la pioche de billets 1.1.1)Group
+     *         1.1.1.1)Rectangle pour l'arrière-plan 1.1.1.2)Rectangle pour
+     *         l'avant-plan
      *
-     *          1.2)StackPane (x5 cars 5 FaceUpCards)
-     *          1.2.1)Rectangle représentant le dehors de la carte
-     *          1.2.2)Rectangle représentant l'intérieur de la carte
-     *          1.2.3)Rectangle représentant le train-image de la carte
-     *          .
-     *          .
-     *          .
-     *          1.7)Button représentant la pioche de cartes - le deck
-     *          1.7.1)Group
-     *          1.7.1.1)Rectangle pour l'arrière-plan
-     *          1.7.1.2)Rectangle pour l'avant-plan
+     *         1.2)StackPane (x5 cars 5 FaceUpCards) 1.2.1)Rectangle
+     *         représentant le dehors de la carte 1.2.2)Rectangle représentant
+     *         l'intérieur de la carte 1.2.3)Rectangle représentant le
+     *         train-image de la carte . . . 1.7)Button représentant la pioche
+     *         de cartes - le deck 1.7.1)Group 1.7.1.1)Rectangle pour
+     *         l'arrière-plan 1.7.1.2)Rectangle pour l'avant-plan
      */
     public static VBox createCardsView(ObservableGameState game,
             ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketHandler,
@@ -185,7 +180,7 @@ final class DecksViewCreator {
      *         couleur la carte prendra)
      */
     private static StackPane cardEmptyLayout() {
-        // les deux valeurs passées aux constructeur de Rectangle 
+        // les deux valeurs passées aux constructeur de Rectangle
         // correspondent au dimensions largeur et hauteur
         Rectangle outside = new Rectangle(60, 90);
         outside.getStyleClass().add("outside");
@@ -247,7 +242,8 @@ final class DecksViewCreator {
         Button button = new Button();
         button.getStyleClass().add("gauged");
 
-      //les deux valeurs passées aux constructeur de Rectangle correspondent au dimensions largeur et hauteur
+        // les deux valeurs passées aux constructeur de Rectangle correspondent
+        // au dimensions largeur et hauteur
         Rectangle background = new Rectangle(50, 5);
         background.getStyleClass().add("background");
 

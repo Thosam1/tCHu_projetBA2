@@ -55,8 +55,8 @@ public final class GraphicalPlayerAdapter implements Player {
     private final ActionHandlers.ChooseCardsHandler chooseCardsHandler;
 
     /**
-     * construit les instances de ActionHandlers et les stocke en attribut. Leurs
-     * unique méthode manipule les BlockingQueue
+     * construit les instances de ActionHandlers et les stocke en attribut.
+     * Leurs unique méthode manipule les BlockingQueue
      */
     public GraphicalPlayerAdapter() {
         // créé les handlers
@@ -217,7 +217,7 @@ public final class GraphicalPlayerAdapter implements Player {
                 }
             }));
             return take(qCardIndex);
-            
+
         } else {// drawSlot est appelée pour la première fois du tour
             return qCardIndex.remove();
         }

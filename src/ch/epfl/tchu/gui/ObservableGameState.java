@@ -35,45 +35,45 @@ public final class ObservableGameState {
      * Propriétés concernant l'état public de la partie
      */
 
-    private final IntegerProperty percentTicketsLeft;
-    private final IntegerProperty percentCardsLeft;
-    private final List<ObjectProperty<Card>> faceUpCards;
-    private final Map<Route, ObjectProperty<PlayerId>> routeOwners;
+    private final IntegerProperty propertyPercentTicketsLeft;
+    private final IntegerProperty propertyPercentCardsLeft;
+    private final List<ObjectProperty<Card>> propertyFaceUpCards;
+    private final Map<Route, ObjectProperty<PlayerId>> propertyRouteOwners;
 
     /**
      * Propriétés concernant l'état public des de chacun des joueurs
      */
 
-    private final Map<PlayerId, IntegerProperty> nbTicketsInHand;
-    private final Map<PlayerId, IntegerProperty> nbCardsInHand;
-    private final Map<PlayerId, IntegerProperty> nbCarsInHand;
-    private final Map<PlayerId, IntegerProperty> nbConstructionPoints;
+    private final Map<PlayerId, IntegerProperty> propertyNbTicketsInHand;
+    private final Map<PlayerId, IntegerProperty> propertyNbCardsInHand;
+    private final Map<PlayerId, IntegerProperty> propertyNbCarsInHand;
+    private final Map<PlayerId, IntegerProperty> propertyNbConstructionPoints;
 
     /**
      * Propriétés concernant l'état complet du joueur auquel l'instance
      * correspond
      */
-    private final ObservableList<Ticket> playerTickets;
-    private final Map<Card, IntegerProperty> cardsOfInHand;
-    private final Map<Route, BooleanProperty> canClaimRoute;
+    private final ObservableList<Ticket> propertyPlayerTickets;
+    private final Map<Card, IntegerProperty> propertyCardsOfInHand;
+    private final Map<Route, BooleanProperty> propertyCanClaimRoute;
 
     public ObservableGameState(PlayerId playerId) {
         this.playerId = playerId;
-        this.percentTicketsLeft = new SimpleIntegerProperty(
+        this.propertyPercentTicketsLeft = new SimpleIntegerProperty(
                 Constants.INITIAL_VALUE_OF_INTEGER_PROPERTY);
-        this.percentCardsLeft = new SimpleIntegerProperty(
+        this.propertyPercentCardsLeft = new SimpleIntegerProperty(
                 Constants.INITIAL_VALUE_OF_INTEGER_PROPERTY);
-        this.faceUpCards = initFaceUpCards();
-        this.routeOwners = initRouteOwners();
+        this.propertyFaceUpCards = initFaceUpCards();
+        this.propertyRouteOwners = initRouteOwners();
 
-        this.nbTicketsInHand = initPropertyIdMap();
-        this.nbCardsInHand = initPropertyIdMap();
-        this.nbCarsInHand = initPropertyIdMap();
-        this.nbConstructionPoints = initPropertyIdMap();
+        this.propertyNbTicketsInHand = initPropertyIdMap();
+        this.propertyNbCardsInHand = initPropertyIdMap();
+        this.propertyNbCarsInHand = initPropertyIdMap();
+        this.propertyNbConstructionPoints = initPropertyIdMap();
 
-        this.playerTickets = FXCollections.observableArrayList();
-        this.cardsOfInHand = initCardsOfInHand();
-        this.canClaimRoute = initCanClaimRoute();
+        this.propertyPlayerTickets = FXCollections.observableArrayList();
+        this.propertyCardsOfInHand = initCardsOfInHand();
+        this.propertyCanClaimRoute = initCanClaimRoute();
     }
 
     /**
@@ -103,10 +103,13 @@ public final class ObservableGameState {
          * le cas
          * 
          */
-        percentTicketsLeft.set(
+        propertyPercentTicketsLeft.set(
                 percent(newGameState.ticketsCount(), ChMap.tickets().size()));
-        percentCardsLeft.set(percent(newGameState.cardState().deckSize(),
-                Constants.ALL_CARDS.size()));
+        propertyPercentCardsLeft
+                .set(percent(newGameState.cardState().deckSize(),
+                        Constants.ALL_CARDS.size()));
+        modifyFaceUpCards();
+        modifyRouteOwners();
 
         /**
          * Ce second groupe est celui des propriétés concernant l'état public de
@@ -114,18 +117,17 @@ public final class ObservableGameState {
          */
         for (PlayerId id : PlayerId.ALL) {
             PublicPlayerState state = publicGameState.playerState(id);
-            nbTicketsInHand.get(id).set(state.ticketCount());
-            nbCardsInHand.get(id).set(state.cardCount());
-            nbCarsInHand.get(id).set(state.carCount());
-            nbConstructionPoints.get(id).set(state.claimPoints());
+            propertyNbTicketsInHand.get(id).set(state.ticketCount());
+            propertyNbCardsInHand.get(id).set(state.cardCount());
+            propertyNbCarsInHand.get(id).set(state.carCount());
+            propertyNbConstructionPoints.get(id).set(state.claimPoints());
         }
 
         /**
          * Ce dernier groupe est celui des propriétés concernant l'état privé du
          * joueur auquel l'instance de ObservableGameState correspond
          */
-        modifyFaceUpCards();
-        modifyRouteOwners();
+
         modifyPlayerTickets();
         modifyCardsOfInHand();
         modifyCanClaimRoute();
@@ -196,7 +198,7 @@ public final class ObservableGameState {
     private void modifyFaceUpCards() {
         for (int slot : Constants.FACE_UP_CARD_SLOTS) {
             Card newCard = publicGameState.cardState().faceUpCard(slot);
-            faceUpCards.get(slot).set(newCard);
+            propertyFaceUpCards.get(slot).set(newCard);
         }
     }
 
@@ -213,10 +215,10 @@ public final class ObservableGameState {
         for (Route route : ChMap.routes()) {
             for (PlayerId player : PlayerId.ALL) {
                 if (mapOfPlayerRoutes.get(player).contains(route)) {
-                    routeOwners.get(route).set(player);
+                    propertyRouteOwners.get(route).set(player);
                     break;
                 }
-                routeOwners.get(route).set(null);
+                propertyRouteOwners.get(route).set(null);
             }
         }
         /*
@@ -233,7 +235,7 @@ public final class ObservableGameState {
      * update les tickets du joueur auquel la classe correspond
      */
     private void modifyPlayerTickets() {
-        playerTickets.setAll(playerState.tickets().toList());
+        propertyPlayerTickets.setAll(playerState.tickets().toList());
     }
 
     /**
@@ -243,7 +245,8 @@ public final class ObservableGameState {
      */
     private void modifyCardsOfInHand() {
         for (Card card : Card.ALL) {
-            cardsOfInHand.get(card).set(playerState.cards().countOf(card));
+            propertyCardsOfInHand.get(card)
+                    .set(playerState.cards().countOf(card));
         }
     }
 
@@ -269,9 +272,9 @@ public final class ObservableGameState {
         // une nouvelle à chaque fois
         for (Route route : ChMap.routes()) {
             if (claimable(route, listePaireStations)) {
-                canClaimRoute.get(route).set(true);
+                propertyCanClaimRoute.get(route).set(true);
             } else {
-                canClaimRoute.get(route).set(false);
+                propertyCanClaimRoute.get(route).set(false);
             }
         }
     }
@@ -280,43 +283,43 @@ public final class ObservableGameState {
      * Getters des propriétés
      */
     public ReadOnlyIntegerProperty percentTicketsLeft() {
-        return percentTicketsLeft;
+        return propertyPercentTicketsLeft;
     }
 
     public ReadOnlyIntegerProperty percentCardsLeft() {
-        return percentCardsLeft;
+        return propertyPercentCardsLeft;
     }
 
     public ReadOnlyObjectProperty<Card> faceUpCard(int slot) {
-        return faceUpCards.get(slot);
+        return propertyFaceUpCards.get(slot);
     }
 
     public ReadOnlyIntegerProperty nbTicketsInHand(PlayerId id) {
-        return nbTicketsInHand.get(id);
+        return propertyNbTicketsInHand.get(id);
     }
 
     public ReadOnlyIntegerProperty nbCardsInHand(PlayerId id) {
-        return nbCardsInHand.get(id);
+        return propertyNbCardsInHand.get(id);
     }
 
     public ReadOnlyIntegerProperty nbCarsInHand(PlayerId id) {
-        return nbCarsInHand.get(id);
+        return propertyNbCarsInHand.get(id);
     }
 
     public ReadOnlyIntegerProperty nbConstructionPoints(PlayerId id) {
-        return nbConstructionPoints.get(id);
+        return propertyNbConstructionPoints.get(id);
     }
 
     public ObservableList<Ticket> playerTickets() {
-        return playerTickets;
+        return propertyPlayerTickets;
     }
 
     public ReadOnlyIntegerProperty cardsOfInHand(Card card) {
-        return cardsOfInHand.get(card);
+        return propertyCardsOfInHand.get(card);
     }
 
     public ReadOnlyBooleanProperty canClaimRoute(Route route) {
-        return canClaimRoute.get(route);
+        return propertyCanClaimRoute.get(route);
     }
 
     public boolean getCanDrawTickets() {
@@ -328,7 +331,7 @@ public final class ObservableGameState {
     }
 
     public ObjectProperty<PlayerId> getRouteOwner(Route route) {
-        return routeOwners.get(route);
+        return propertyRouteOwners.get(route);
     }
 
     public PublicGameState getPublicGameState() {
@@ -376,6 +379,12 @@ public final class ObservableGameState {
     /**
      * retourne vraie si la route n'appartient à personne et, dans le cas d'une
      * route double, sa voisine non plus
+     * 
+     * contains fait appel à equals donc ici nous avons un test par référence et
+     * non par structure néanmoins ceci n'est pas problématique car nous nous
+     * assurons qu’à chaque gare correspond un seul objet ainsi égalité par
+     * référence = égalité structurelle ainsi égalité par référence = égalité
+     * structurelle
      */
     private boolean freeRoute(Route paramRoute,
             List<List<Station>> listePaireStations) {
@@ -385,12 +394,7 @@ public final class ObservableGameState {
         for (List<Station> paireStation : listePaireStations) {
             if (paireStation.contains(paramRoute.station1())
                     && paireStation.contains(paramRoute.station2())) {
-                // contains fait appel à equals donc ici nous avons un test
-                // par référence et non par structure
-                // néanmoins ceci n'est pas problématique car nous nous assurons
-                // qu’à chaque gare correspond un seul objet ainsi égalité par
-                // référence = égalité structurelle
-                // ainsi égalité par référence = égalité structurelle
+                
                 output = false;
             }
         }
