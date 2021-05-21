@@ -30,7 +30,7 @@ public interface Serde<T> {
     /**
      * En plus des méthodes abstraites de (dé)sérialisation, l'interface Serde
      * définit quatre méthodes statiques permettant de créer différents types de
-     * serdes 
+     * serdes
      */
 
     /**
@@ -60,7 +60,7 @@ public interface Serde<T> {
     }
 
     /**
-     * @param liste
+     * @param list
      *            de toutes les valeurs d'un ensemble de valeurs énuméré
      *            (énumérations et types dont il existe un nombre restraint(ex:
      *            gares, routes etc.))
@@ -89,7 +89,7 @@ public interface Serde<T> {
 
     /**
      * @param serde
-     * @param separateur
+     * @param separator
      *            caractère de séparation
      * @return un serde capable de (dé)sérialiser des listes de valeurs
      *         (dé)sérialisées) par le serde donné (celui est défini par une
@@ -129,7 +129,7 @@ public interface Serde<T> {
      * Serialisation et deserialisation des SortedBag
      * 
      * @param serde
-     * @param separateur
+     * @param separator
      *            caractère de séparation
      * @return un serde capable de (dé)sérialiser des multiensembles listes de
      *         valeurs (dé)sérialisées) par le serde donné
