@@ -1,4 +1,5 @@
 package ch.epfl.tchu.gui;
+
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Constants;
 import javafx.beans.binding.Bindings;
@@ -12,14 +13,17 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
-
 /**
- * @author Thösam Norlha-Tsang (330163)
- * classe non-instanciable dont le but est de contenir 2 méthodes qui construisent un graphe de scène représentant des cartes
+ * @author Thösam Norlha-Tsang (330163) classe non-instanciable dont le but est
+ *         de contenir 2 méthodes qui construisent un graphe de scène
+ *         représentant des cartes
  */
-final class DecksViewCreator {      //todo, demander si c'est bien final et pas abstract, de meme avec mapview creator et infoViewCreator
-    //constructeur privé
-    private DecksViewCreator(){}
+final class DecksViewCreator { // TODO, demander si c'est bien final et pas
+                               // abstract, de meme avec mapview creator et
+                               // infoViewCreator
+    // constructeur privé
+    private DecksViewCreator() {
+    }
 
     /**
      * Cette méthode prend un paramètre:
@@ -46,24 +50,27 @@ final class DecksViewCreator {      //todo, demander si c'est bien final et pas 
      *          . (total 8 couleurs -> 8 StackPane)
      *
      */
-    public static HBox createHandView(ObservableGameState game){
+    public static HBox createHandView(ObservableGameState game) {
         /**
-         *  cartes + tickets
+         * cartes + tickets
          */
         HBox cardsBox = new HBox();
         cardsBox.setId("hand-pane");
-        for(Card card : Card.ALL){
-            StackPane pane = cardAndTextLayout(card.name(), game.cardsOfInHand(card));  //ToDo comment bind le text et le nombre de cartes
-            pane.visibleProperty().bind(Bindings.greaterThan(game.cardsOfInHand(card), 0));
+        for (Card card : Card.ALL) {
+            StackPane pane = cardAndTextLayout(card.name(),
+                    game.cardsOfInHand(card)); // ToDo comment bind le text et
+                                               // le nombre de cartes
+            pane.visibleProperty()
+                    .bind(Bindings.greaterThan(game.cardsOfInHand(card), 0));
             cardsBox.getChildren().add(pane);
         }
 
         ListView tickets = new ListView(game.playerTickets());
         tickets.setId("tickets");
         /**
-         *  Construction du plus bas haut plus haut de la pyramide/hiérarchie
+         * Construction du plus bas haut plus haut de la pyramide/hiérarchie
          */
-        HBox root = new HBox();//new HBox(tickets, cards);
+        HBox root = new HBox();// new HBox(tickets, cards);
         root.getStylesheets().addAll("decks.css", "colors.css");
         root.getChildren().addAll(tickets, cardsBox);
         return root;
@@ -71,12 +78,19 @@ final class DecksViewCreator {      //todo, demander si c'est bien final et pas 
 
     /**
      *
-     * @param game qui est une instance de ObservableGameState (l'état de jeu observable)
-     * @param drawTicketHandler un gestionnaire d'action: la première contient celui gérant le tirage de billets
-     * @param drawCardsHandler un gestionnaire d'action: la seconde contient celui gérant le tirage de cartes
-     * @return la vue sur les cartes visibles, la pioche des cartes et la pioche des billets
+     * @param game
+     *            qui est une instance de ObservableGameState (l'état de jeu
+     *            observable)
+     * @param drawTicketHandler
+     *            un gestionnaire d'action: la première contient celui gérant le
+     *            tirage de billets
+     * @param drawCardsHandler
+     *            un gestionnaire d'action: la seconde contient celui gérant le
+     *            tirage de cartes
+     * @return la vue sur les cartes visibles, la pioche des cartes et la pioche
+     *         des billets
      *
-     *      La hiérarchie du graphe de scène est la suivante:
+     *         La hiérarchie du graphe de scène est la suivante:
      *          1)VBox
      *          1.1)Button représentant la pioche de billets
      *          1.1.1)Group
@@ -95,67 +109,93 @@ final class DecksViewCreator {      //todo, demander si c'est bien final et pas 
      *          1.7.1.1)Rectangle pour l'arrière-plan
      *          1.7.1.2)Rectangle pour l'avant-plan
      */
-    public static VBox createCardsView(ObservableGameState game, ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketHandler, ObjectProperty<ActionHandlers.DrawCardHandler> drawCardsHandler){
+    public static VBox createCardsView(ObservableGameState game,
+            ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketHandler,
+            ObjectProperty<ActionHandlers.DrawCardHandler> drawCardsHandler) {
         VBox cardPaneRoot = new VBox();
         cardPaneRoot.getStylesheets().addAll("decks.css", "colors.css");
         cardPaneRoot.setId("card-pane");
 
         /**
-         *  carte
+         * carte
          */
-        for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++){
-            StackPane pane = cardEmptyLayout(); //TODO rechanger    !!!!!!!!!!!!!!! DEMANDER A UN ASSISTANT faut-il initialiser à null ? juste pour être sûr
+        for (int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++) {
+            StackPane pane = cardEmptyLayout(); // TODO rechanger
+                                                // !!!!!!!!!!!!!!! DEMANDER A UN
+                                                // ASSISTANT faut-il initialiser
+                                                // à null ? juste pour être sûr
             final int I = i;
             pane.setOnMouseClicked(e -> {
-                ActionHandlers.DrawCardHandler drawCards = drawCardsHandler.get();
-//                drawCards.onDrawCard(I);  // ici null pointer exception
-                if(drawCards != null){drawCards.onDrawCard(I);}               //TODO ICI   RECHANGER - vérifier avec un assistant si c'est une bonne solution ou si ça risque de ne pas passer les tests du prof
+                ActionHandlers.DrawCardHandler drawCards = drawCardsHandler
+                        .get();
+                // drawCards.onDrawCard(I); // ici null pointer exception
+                if (drawCards != null) {
+                    drawCards.onDrawCard(I);
+                } // TODO ICI RECHANGER - vérifier avec un assistant si c'est
+                  // une bonne solution ou si ça risque de ne pas passer les
+                  // tests du prof
             });
             game.faceUpCard(i).addListener((p, o, n) -> {
                 if ((pane.getStyleClass().size() == 2)) {
                     pane.getStyleClass().set(0, assignCardStyle(n.name()));
                 } else {
-                    pane.getStyleClass().add(0, assignCardStyle(n.name()));   //(n.name() == Card.LOCOMOTIVE.name()) ? "NEUTRAL" : n.name()
+                    pane.getStyleClass().add(0, assignCardStyle(n.name())); // (n.name()
+                                                                            // ==
+                                                                            // Card.LOCOMOTIVE.name())
+                                                                            // ?
+                                                                            // "NEUTRAL"
+                                                                            // :
+                                                                            // n.name()
                 }
             });
             cardPaneRoot.getChildren().add(pane);
         }
         /**
-         *  Pioche billets et cartes
+         * Pioche billets et cartes
          */
-        Button gaugedTickets = gaugedButtonLayout(StringsFr.TICKETS, game.percentTicketsLeft());
+        Button gaugedTickets = gaugedButtonLayout(StringsFr.TICKETS,
+                game.percentTicketsLeft());
         gaugedTickets.disableProperty().bind(drawTicketHandler.isNull());
-        gaugedTickets.setOnMouseClicked(e -> {    // ou bien setOnAction
-            ActionHandlers.DrawTicketsHandler drawTickets = drawTicketHandler.get();;
+        gaugedTickets.setOnMouseClicked(e -> { // ou bien setOnAction
+            ActionHandlers.DrawTicketsHandler drawTickets = drawTicketHandler
+                    .get();
+            ;
             drawTickets.onDrawTickets();
         });
 
-        Button gaugedDeck = gaugedButtonLayout(StringsFr.CARDS, game.percentCardsLeft());
+        Button gaugedDeck = gaugedButtonLayout(StringsFr.CARDS,
+                game.percentCardsLeft());
         gaugedDeck.disableProperty().bind(drawCardsHandler.isNull());
         gaugedDeck.setOnMouseClicked(e -> {
             ActionHandlers.DrawCardHandler drawCards = drawCardsHandler.get();
             drawCards.onDrawCard(-1);
         });
 
-
-        cardPaneRoot.getChildren().add(0, gaugedTickets);   // has to be first (index)
-        cardPaneRoot.getChildren().add(gaugedDeck);     // has to be last (index)
+        cardPaneRoot.getChildren().add(0, gaugedTickets); // has to be first
+                                                          // (index)
+        cardPaneRoot.getChildren().add(gaugedDeck); // has to be last (index)
         return cardPaneRoot;
     }
 
     /**
-     *  méthode pour donner un "style" au cartes, permets d'éviter de recopier du code
+     * méthode pour donner un "style" au cartes, permets d'éviter de recopier du
+     * code
+     * 
      * @param cardName
      * @return
      */
-    private static String assignCardStyle(String cardName){
+    private static String assignCardStyle(String cardName) {
         return (cardName.equals(Card.LOCOMOTIVE.name()) ? "NEUTRAL" : cardName);
     }
 
     /**
-     * @return une pane/image de carte, vide dans le sens "couleur-style" utilisé pour l'initialisation (on ne sait pas encore quelle couleur la carte prendra)
+     * @return une pane/image de carte, vide dans le sens "couleur-style"
+     *         utilisé pour l'initialisation (on ne sait pas encore quelle
+     *         couleur la carte prendra)
      */
-    private static StackPane cardEmptyLayout(){
+    private static StackPane cardEmptyLayout() {
+        // les deux valeurs passées aux constructeur de Rectangle 
+        // correspondent au dimensions largeur et hauteur
         Rectangle outside = new Rectangle(60, 90);
         outside.getStyleClass().add("outside");
 
@@ -172,10 +212,11 @@ final class DecksViewCreator {      //todo, demander si c'est bien final et pas 
     }
 
     /**
-     * @param cardName le nom de la carte
+     * @param cardName
+     *            le nom de la carte
      * @return une pane/image de carte dont le nom de la carte pris en argument
      */
-    private static StackPane cardLayout(String cardName){
+    private static StackPane cardLayout(String cardName) {
         StackPane pane = cardEmptyLayout();
         cardName = assignCardStyle(cardName);
         pane.getStyleClass().add(0, cardName);
@@ -183,11 +224,16 @@ final class DecksViewCreator {      //todo, demander si c'est bien final et pas 
     }
 
     /**
-     * @param cardName le nom de la carte
-     * @param integer le nombre qui doit être affiché par dessus (utilisé dans le handview)
-     * @return une pane/image de carte dont le nom de la carte et le nombre sont pris en argument
+     * @param cardName
+     *            le nom de la carte
+     * @param integer
+     *            le nombre qui doit être affiché par dessus (utilisé dans le
+     *            handview)
+     * @return une pane/image de carte dont le nom de la carte et le nombre sont
+     *         pris en argument
      */
-    private static StackPane cardAndTextLayout(String cardName, ReadOnlyIntegerProperty integer){
+    private static StackPane cardAndTextLayout(String cardName,
+            ReadOnlyIntegerProperty integer) {
         Text count = new Text();
         count.getStyleClass().add("count");
         count.textProperty().bind(Bindings.convert(integer));
@@ -199,20 +245,24 @@ final class DecksViewCreator {      //todo, demander si c'est bien final et pas 
     }
 
     /**
-     * @param label le titre/label/nom/texte du button
-     * @param percentage le pourcentage de la barre/jauge qui doit être remplie
-     * @return  un bouton avec un titre et une barre remplie selon le pourcentage
+     * @param label
+     *            le titre/label/nom/texte du button
+     * @param percentage
+     *            le pourcentage de la barre/jauge qui doit être remplie
+     * @return un bouton avec un titre et une barre remplie selon le pourcentage
      */
-    private static Button gaugedButtonLayout(String label, ReadOnlyIntegerProperty percentage){
+    private static Button gaugedButtonLayout(String label,
+            ReadOnlyIntegerProperty percentage) {
         Button button = new Button();
         button.getStyleClass().add("gauged");
 
+      //les deux valeurs passées aux constructeur de Rectangle correspondent au dimensions largeur et hauteur
         Rectangle background = new Rectangle(50, 5);
         background.getStyleClass().add("background");
 
         Rectangle foreground = new Rectangle(50, 5);
         foreground.getStyleClass().add("foreground");
-        foreground.widthProperty().bind(percentage.multiply(50).divide(100));
+        foreground.widthProperty().bind(percentage.multiply(50).divide(100)); //TODO pourquoi 50 et 100
 
         Group group = new Group(background, foreground);
         button.setGraphic(group);
