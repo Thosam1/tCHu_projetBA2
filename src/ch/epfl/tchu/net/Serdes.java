@@ -76,7 +76,6 @@ public final class Serdes {
     public static final Serde<PublicCardState> serdePublicCardState = new Serde<PublicCardState>() {
         @Override
         public String serialize(PublicCardState objet) {
-            Objects.requireNonNull(objet);
             List<String> liste = new ArrayList<String>();
             liste.add(serdeListeOfCard.serialize(objet.faceUpCards()));
             liste.add(serdeInteger.serialize(objet.deckSize()));
@@ -99,8 +98,6 @@ public final class Serdes {
     public static final Serde<PublicPlayerState> serdePublicPlayerState = new Serde<PublicPlayerState>() {
         @Override
         public String serialize(PublicPlayerState objet) {
-            Objects.requireNonNull(objet); // ToDo ça vaut la peine de mettre
-                                           // ceci ici ?
             List<String> liste = new ArrayList<String>();
             liste.add(serdeInteger.serialize(objet.ticketCount()));
             liste.add(serdeInteger.serialize(objet.cardCount()));
@@ -111,7 +108,6 @@ public final class Serdes {
         @Override
         public PublicPlayerState deserialize(String string) {
             String[] stringListe = string.split(Pattern.quote(";"), -1);
-
             int ticketCount = serdeInteger.deserialize(stringListe[0]);
             int cardCount = serdeInteger.deserialize(stringListe[1]);
             List<Route> routes = serdeListeOfRoute.deserialize(stringListe[2]);
@@ -123,8 +119,6 @@ public final class Serdes {
     public static final Serde<PlayerState> serdePlayerState = new Serde<PlayerState>() {
         @Override
         public String serialize(PlayerState objet) {
-            Objects.requireNonNull(objet); // ToDo ça vaut la peine de mettre
-                                           // ceci ici ?
             List<String> liste = new ArrayList<String>();
             liste.add(serdeSortedBagOfTicket.serialize(objet.tickets()));
             liste.add(serdeSortedBagOfCard.serialize(objet.cards()));
@@ -149,8 +143,6 @@ public final class Serdes {
 
         @Override
         public String serialize(PublicGameState objet) {
-            Objects.requireNonNull(objet); // ToDo ça vaut la peine de mettre
-                                           // ceci ici ?
             List<String> liste = new ArrayList<String>();
 
             liste.add(serdeInteger.serialize(objet.ticketsCount()));

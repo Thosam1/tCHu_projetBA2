@@ -106,7 +106,7 @@ public final class RemotePlayerProxy implements Player {
      * 1) les éventuels arguments de la méthode sont sérialisés individuellement
      * au moyen des serdes écrits à l'étape précédente 2) le texte du message
      * est construit en séparant au moyen du caractère d'espacement les éléments
-     * suivants, dans l'ordre : MessageId, les arguments dans le meme ordre que
+     * suivants, dans l'ordre: MessageId, les arguments dans le meme ordre que
      * la méthode les accepte, un retour à la ligne 3) le message est envoyé sur
      * le réseau via la méthode messageOut qui passe par la "prise" 4) si la
      * méthode retourne une valeur, alors une ligne est lue grace à la méthode

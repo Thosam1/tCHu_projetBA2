@@ -21,11 +21,11 @@ import javafx.scene.shape.Rectangle;
  *         publique et statique, nommée createMapView et permettant de créer la
  *         vue de la carte.
  */
-abstract class MapViewCreator {
+final class MapViewCreator {
     /**
      * Le seul attribut de la classe est une instance de Pane
      */
-    private MapViewCreator(Pane pane) {
+    private MapViewCreator() {
     } 
 
     /**

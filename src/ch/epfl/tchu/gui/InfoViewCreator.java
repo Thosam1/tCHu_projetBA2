@@ -22,7 +22,7 @@ import javafx.scene.text.TextFlow;
  *         informations sur le déroulement de la partie.
  */
 
-abstract class InfoViewCreator {
+final class InfoViewCreator {
     private InfoViewCreator() {
     }
 
@@ -83,7 +83,7 @@ abstract class InfoViewCreator {
         TextFlow textGameInfo = new TextFlow();
         textGameInfo.setId("game-info");
         
-        // Le contenu de la liste d'enfants — retournée par getChildren — de
+        // Le contenu de la liste d'enfants—retournée par getChildren — de
         // l'instance de TextFlow contenant les messages d'information doit être
         // lié à celui de la liste d'informations passée à la méthode
         // createInfoView.

@@ -70,6 +70,7 @@ public interface Serde<T> {
         // retourne un nouveau Serde en créant une classe anonyme qui redéfinit
         // serialize et deserialize
         return new Serde<T>() {
+            @Override           //TODO a faire
             public String serialize(T object) {
                 // retourne "" si objet est null
                 return object == null ? ""
@@ -146,7 +147,7 @@ public interface Serde<T> {
                 return String.join(separator.toString(), list);
             }
 
-            public SortedBag<T> deserialize(String string) {
+            public SortedBag<T> deserialize(String string) { //TODO on peut faire .of() et utiliser des lambdas, ou faire une méthode en bas pour les deserialise du bag et de la liste
                 List<T> output = new ArrayList<T>();
                 String[] stringList = string
                         .split(Pattern.quote(separator.toString()), -1);
