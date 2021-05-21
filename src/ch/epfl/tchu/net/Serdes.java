@@ -99,8 +99,7 @@ public final class Serdes {
     public static final Serde<PublicPlayerState> serdePublicPlayerState = new Serde<PublicPlayerState>() {
         @Override
         public String serialize(PublicPlayerState objet) {
-            Objects.requireNonNull(objet); // ToDo ça vaut la peine de mettre
-                                           // ceci ici ?
+            Objects.requireNonNull(objet); 
             List<String> liste = new ArrayList<String>();
             liste.add(serdeInteger.serialize(objet.ticketCount()));
             liste.add(serdeInteger.serialize(objet.cardCount()));
@@ -123,8 +122,7 @@ public final class Serdes {
     public static final Serde<PlayerState> serdePlayerState = new Serde<PlayerState>() {
         @Override
         public String serialize(PlayerState objet) {
-            Objects.requireNonNull(objet); // ToDo ça vaut la peine de mettre
-                                           // ceci ici ?
+            Objects.requireNonNull(objet);
             List<String> liste = new ArrayList<String>();
             liste.add(serdeSortedBagOfTicket.serialize(objet.tickets()));
             liste.add(serdeSortedBagOfCard.serialize(objet.cards()));
@@ -149,8 +147,7 @@ public final class Serdes {
 
         @Override
         public String serialize(PublicGameState objet) {
-            Objects.requireNonNull(objet); // ToDo ça vaut la peine de mettre
-                                           // ceci ici ?
+            Objects.requireNonNull(objet);
             List<String> liste = new ArrayList<String>();
 
             liste.add(serdeInteger.serialize(objet.ticketsCount()));

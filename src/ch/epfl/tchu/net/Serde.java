@@ -112,6 +112,16 @@ public interface Serde<T> {
                 String[] stringList = string
                         .split(Pattern.quote(separator.toString()), -1);
 
+                if(string.isEmpty()) {
+                    return output;
+                    //si string est vide nous voulons retourner une liste vide
+                }
+                for (String element : stringList) {
+                    output.add(serde.deserialize(element));
+                    }
+                return output;
+                }
+                /*TODO changer bagOf si cette version fonctionne
                 for (String element : stringList) {
                     if (!string.isEmpty()) {
                         // si string est vide output doit etre vide
@@ -120,10 +130,8 @@ public interface Serde<T> {
                         output.add(serde.deserialize(element));
                     }
                 }
-                return output;
-            }
-        };
-    }
+                return output;*/
+        };}
 
     /**
      * Serialisation et deserialisation des SortedBag
