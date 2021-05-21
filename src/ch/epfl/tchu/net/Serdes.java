@@ -76,8 +76,7 @@ public final class Serdes {
     public static final Serde<PublicCardState> serdePublicCardState = new Serde<PublicCardState>() {
         @Override
         public String serialize(PublicCardState objet) {
-            Objects.requireNonNull(objet); // ToDo ça vaut la peine de mettre
-                                           // ceci ici ?
+            Objects.requireNonNull(objet);
             List<String> liste = new ArrayList<String>();
             liste.add(serdeListeOfCard.serialize(objet.faceUpCards()));
             liste.add(serdeInteger.serialize(objet.deckSize()));

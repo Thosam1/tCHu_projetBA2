@@ -114,9 +114,9 @@ public interface Serde<T> {
 
                 for (String element : stringList) {
                     if (!string.isEmpty()) {
-                        //si string est vide output doit etre vide
-                        //si string est vide, stringList n'est pas vide
-                        //ainsi le for each a lieu, d'ou le if
+                        // si string est vide output doit etre vide
+                        // si string est vide, stringList n'est pas vide
+                        // ainsi le for each a lieu, d'ou le if
                         output.add(serde.deserialize(element));
                     }
                 }
