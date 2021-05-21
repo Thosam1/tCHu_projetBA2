@@ -64,7 +64,7 @@ final class DecksViewCreator {
             cardsBox.getChildren().add(pane);
         }
 
-        ListView tickets = new ListView(game.playerTickets());
+        ListView<Ticket> tickets = new ListView<>(game.playerTickets());
         tickets.setId("tickets");
         /**
          * Construction du plus bas haut plus haut de la pyramide/hiérarchie
@@ -112,20 +112,14 @@ final class DecksViewCreator {
          * carte
          */
         for (int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++) {
-            StackPane pane = cardEmptyLayout(); // TODO rechanger
-                                                // !!!!!!!!!!!!!!! DEMANDER A UN
-                                                // ASSISTANT faut-il initialiser
-                                                // à null ? juste pour être sûr
+            StackPane pane = cardEmptyLayout();
             final int I = i;
             pane.setOnMouseClicked(e -> {
                 ActionHandlers.DrawCardHandler drawCards = drawCardsHandler
                         .get();
-                // drawCards.onDrawCard(I); // ici null pointer exception
                 if (drawCards != null) {
                     drawCards.onDrawCard(I);
-                } // TODO ICI RECHANGER - vérifier avec un assistant si c'est
-                  // une bonne solution ou si ça risque de ne pas passer les
-                  // tests du prof
+                }
             });
             game.faceUpCard(i).addListener((p, o, n) -> {
                 if ((pane.getStyleClass().size() == 2)) {

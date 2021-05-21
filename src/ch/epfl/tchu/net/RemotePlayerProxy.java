@@ -8,10 +8,7 @@ import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
@@ -82,7 +79,7 @@ public final class RemotePlayerProxy implements Player {
 
         // créé un stream à partir des trois String, retire les valeurs null et
         // les join en mettant un espace au mileu
-        String string = list.stream().filter(value -> value != null)
+        String string = list.stream().filter(Objects::nonNull)
                 .collect(Collectors.joining(" "));
 
         try {

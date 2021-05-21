@@ -11,18 +11,18 @@ import ch.epfl.tchu.game.Ticket;
  */
 public interface ActionHandlers {
 
-    public interface DrawTicketsHandler{
+    interface DrawTicketsHandler{
         /**
          * appelée lorsque le joueur désire tirer des billets
          */
-        public abstract void onDrawTickets();
+        void onDrawTickets();
     }
-    public interface DrawCardHandler{
+    interface DrawCardHandler{
         /**
          *  prenant un numéro d'emplacement (0 à 4, ou -1 pour la pioche)
          *  appelée lorsque le joueur désire tirer une carte de l'emplacement donné
          */
-        public abstract void onDrawCard(int a);
+         void onDrawCard(int a);
     }
     public interface ClaimRouteHandler{
         /**

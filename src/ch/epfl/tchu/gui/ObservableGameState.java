@@ -26,7 +26,6 @@ public final class ObservableGameState {
      * contenant un objet 0 pour celles contenant un entier, false pour celles
      * contenant une valeur booléenne
      */
-
     private final PlayerId playerId;
     private PublicGameState publicGameState = null;
     private PlayerState playerState = null;
@@ -34,7 +33,6 @@ public final class ObservableGameState {
     /**
      * Propriétés concernant l'état public de la partie
      */
-
     private final IntegerProperty propertyPercentTicketsLeft;
     private final IntegerProperty propertyPercentCardsLeft;
     private final List<ObjectProperty<Card>> propertyFaceUpCards;
@@ -43,7 +41,6 @@ public final class ObservableGameState {
     /**
      * Propriétés concernant l'état public des de chacun des joueurs
      */
-
     private final Map<PlayerId, IntegerProperty> propertyNbTicketsInHand;
     private final Map<PlayerId, IntegerProperty> propertyNbCardsInHand;
     private final Map<PlayerId, IntegerProperty> propertyNbCarsInHand;
@@ -268,14 +265,8 @@ public final class ObservableGameState {
     private void modifyCanClaimRoute() {
         List<List<Station>> listePaireStations = listePaireStations(
                 publicGameState.claimedRoutes());
-        // cette liste est créé avant le for each pour ne pas avoir à en créer
-        // une nouvelle à chaque fois
         for (Route route : ChMap.routes()) {
-            if (claimable(route, listePaireStations)) {
-                propertyCanClaimRoute.get(route).set(true);
-            } else {
-                propertyCanClaimRoute.get(route).set(false);
-            }
+            propertyCanClaimRoute.get(route).set(claimable(route, listePaireStations));
         }
     }
 
@@ -388,7 +379,7 @@ public final class ObservableGameState {
      */
     private boolean freeRoute(Route paramRoute,
             List<List<Station>> listePaireStations) {
-        Boolean output = true; // true si la route et sa voisine (si elle en a)
+        boolean output = true; // true si la route et sa voisine (si elle en a)
                                // n'appartiennent à personne
 
         for (List<Station> paireStation : listePaireStations) {
@@ -396,6 +387,7 @@ public final class ObservableGameState {
                     && paireStation.contains(paramRoute.station2())) {
                 
                 output = false;
+                break;
             }
         }
         return output;

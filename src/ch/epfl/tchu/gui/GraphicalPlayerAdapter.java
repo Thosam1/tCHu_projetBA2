@@ -27,7 +27,7 @@ import javafx.application.Platform;
  *         JavaFX
  */
 public final class GraphicalPlayerAdapter implements Player {
-    private GraphicalPlayer graphicalPlayer;
+    private GraphicalPlayer graphicalPlayer;    //todo
 
     /**
      * Les méthodes de GraphicalplayerAdapter et les ActionHandlers en attribut
@@ -60,57 +60,47 @@ public final class GraphicalPlayerAdapter implements Player {
      */
     public GraphicalPlayerAdapter() {
         // créé les handlers
-        chooseTicketHandler = new ActionHandlers.ChooseTicketsHandler() {
-            public void onChooseTickets(SortedBag<Ticket> ticketsHandler) {
-                try {
-                    qTickets.put(ticketsHandler);
-                } catch (InterruptedException e) {
-                    throw new Error();
-                }
+        chooseTicketHandler = ticketsHandler -> {
+            try {
+                qTickets.put(ticketsHandler);
+            } catch (InterruptedException e) {
+                throw new Error();
             }
         };
 
-        drawTicketsHandler = new ActionHandlers.DrawTicketsHandler() {
-            public void onDrawTickets() {
-                try {
-                    qTurnKind.put(TurnKind.DRAW_TICKETS);
-                    // pas d'argument à ajouter à une BlockingQueue
-                } catch (InterruptedException e) {
-                    throw new Error();
-                }
+        drawTicketsHandler = () -> {
+            try {
+                qTurnKind.put(TurnKind.DRAW_TICKETS);
+                // pas d'argument à ajouter à une BlockingQueue
+            } catch (InterruptedException e) {
+                throw new Error();
             }
         };
 
-        drawCardsHandler = new ActionHandlers.DrawCardHandler() {
-            public void onDrawCard(int a) {
-                try {
-                    qCardIndex.put(a);
-                    qTurnKind.put(TurnKind.DRAW_CARDS);
-                } catch (InterruptedException e) {
-                    throw new Error();
-                }
+        drawCardsHandler = a -> {
+            try {
+                qCardIndex.put(a);
+                qTurnKind.put(TurnKind.DRAW_CARDS);
+            } catch (InterruptedException e) {
+                throw new Error();
             }
         };
 
-        claimRouteHandler = new ActionHandlers.ClaimRouteHandler() {
-            public void onClaimRoute(Route route, SortedBag<Card> cards) {
-                try {
-                    qRoute.put(route);
-                    qCards.put(cards);
-                    qTurnKind.put(TurnKind.CLAIM_ROUTE);
-                } catch (InterruptedException e) {
-                    throw new Error();
-                }
+        claimRouteHandler = (route, cards) -> {
+            try {
+                qRoute.put(route);
+                qCards.put(cards);
+                qTurnKind.put(TurnKind.CLAIM_ROUTE);
+            } catch (InterruptedException e) {
+                throw new Error();
             }
         };
 
-        chooseCardsHandler = new ActionHandlers.ChooseCardsHandler() {
-            public void onChooseCards(SortedBag<Card> cards) {
-                try {
-                    qCards.put(cards);
-                } catch (InterruptedException e) {
-                    throw new Error();
-                }
+        chooseCardsHandler = cards -> {
+            try {
+                qCards.put(cards);
+            } catch (InterruptedException e) {
+                throw new Error();
             }
         };
     }
