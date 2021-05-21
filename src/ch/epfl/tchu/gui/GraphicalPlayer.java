@@ -43,8 +43,7 @@ import static javafx.application.Platform.isFxApplicationThread;
 public final class GraphicalPlayer {
     private final ObservableGameState observableGame;
     private final ObservableList<Text> messageList = FXCollections
-            .observableList(new ArrayList<>());// TODO est ce que ça doit etre
-                                               // final
+            .observableList(new ArrayList<>());
     private final PlayerId playerId;
     private final Map<PlayerId, String> mapPlayerNames;
     private final Stage main;

@@ -18,9 +18,7 @@ import javafx.scene.text.Text;
  *         de contenir 2 méthodes qui construisent un graphe de scène
  *         représentant des cartes
  */
-final class DecksViewCreator { // TODO, demander si c'est bien final et pas
-                               // abstract, de meme avec mapview creator et
-                               // infoViewCreator
+final class DecksViewCreator {
     // constructeur privé
     private DecksViewCreator() {
     }
@@ -58,8 +56,7 @@ final class DecksViewCreator { // TODO, demander si c'est bien final et pas
         cardsBox.setId("hand-pane");
         for (Card card : Card.ALL) {
             StackPane pane = cardAndTextLayout(card.name(),
-                    game.cardsOfInHand(card)); // ToDo comment bind le text et
-                                               // le nombre de cartes
+                    game.cardsOfInHand(card));
             pane.visibleProperty()
                     .bind(Bindings.greaterThan(game.cardsOfInHand(card), 0));
             cardsBox.getChildren().add(pane);
@@ -139,13 +136,7 @@ final class DecksViewCreator { // TODO, demander si c'est bien final et pas
                 if ((pane.getStyleClass().size() == 2)) {
                     pane.getStyleClass().set(0, assignCardStyle(n.name()));
                 } else {
-                    pane.getStyleClass().add(0, assignCardStyle(n.name())); // (n.name()
-                                                                            // ==
-                                                                            // Card.LOCOMOTIVE.name())
-                                                                            // ?
-                                                                            // "NEUTRAL"
-                                                                            // :
-                                                                            // n.name()
+                    pane.getStyleClass().add(0, assignCardStyle(n.name()));
                 }
             });
             cardPaneRoot.getChildren().add(pane);
@@ -262,7 +253,7 @@ final class DecksViewCreator { // TODO, demander si c'est bien final et pas
 
         Rectangle foreground = new Rectangle(50, 5);
         foreground.getStyleClass().add("foreground");
-        foreground.widthProperty().bind(percentage.multiply(50).divide(100)); //TODO pourquoi 50 et 100
+        foreground.widthProperty().bind(percentage.multiply(50).divide(100));
 
         Group group = new Group(background, foreground);
         button.setGraphic(group);

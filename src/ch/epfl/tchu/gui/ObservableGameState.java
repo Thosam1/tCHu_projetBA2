@@ -148,8 +148,7 @@ public final class ObservableGameState {
             temp.put(id, new SimpleIntegerProperty(
                     Constants.INITIAL_VALUE_OF_INTEGER_PROPERTY));
         }
-        return Collections.unmodifiableMap(temp); // TODO A EFFACER ICI ON A
-                                                  // UNMODIFIABLEMAP ??!!
+        return Collections.unmodifiableMap(temp);
     }
 
     private static List<ObjectProperty<Card>> initFaceUpCards() {
@@ -178,7 +177,7 @@ public final class ObservableGameState {
         return Collections.unmodifiableMap(map);
     }
 
-    private Map<Route, BooleanProperty> initCanClaimRoute() {
+    private static Map<Route, BooleanProperty> initCanClaimRoute() {
         Map<Route, BooleanProperty> map = new HashMap<Route, BooleanProperty>();
         for (Route route : ChMap.routes()) {
             map.put(route, new SimpleBooleanProperty(false));
@@ -291,8 +290,6 @@ public final class ObservableGameState {
     public ReadOnlyObjectProperty<Card> faceUpCard(int slot) {
         return faceUpCards.get(slot);
     }
-    // public ReadOnlyObjectProperty routeOwner(Route route){return
-    // routeOwners.get(route);} //TODO EFFACER CEUX EN COMMENTAIRE PLUS TARD
 
     public ReadOnlyIntegerProperty nbTicketsInHand(PlayerId id) {
         return nbTicketsInHand.get(id);
@@ -322,16 +319,10 @@ public final class ObservableGameState {
         return canClaimRoute.get(route);
     }
 
-    // public String faceUpCardName(int slot){return TODO
-    // publicGameState.cardState().faceUpCard(slot).name();} //toDo comment
-    // faire ce truc d'une façon plus jolie ?
     public boolean getCanDrawTickets() {
         return publicGameState.canDrawTickets();
     }
 
-    // public boolean getCanDrawCards() {TODO
-    // return publicGameState.canDrawCards();
-    // }
     public List<SortedBag<Card>> getPossibleClaimCards(Route route) {
         return playerState.possibleClaimCards(route);
     }

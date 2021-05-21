@@ -60,6 +60,7 @@ public final class RemotePlayerClient {
                 MessageId message = MessageId.valueOf(textSplit[0]);
                 String arg1 = (textSplit.length >= 2) ? textSplit[1] : null;
                 String arg2 = (textSplit.length >= 3) ? textSplit[2] : null;
+                String encoded = "";
 
                 switch (message) {
                 case INIT_PLAYERS:
@@ -92,63 +93,48 @@ public final class RemotePlayerClient {
                 case CHOOSE_INITIAL_TICKETS:
                     SortedBag<Ticket> initChosenTickets = player
                             .chooseInitialTickets();
-                    String encoded = Serdes.serdeSortedBagOfTicket
-                            .serialize(initChosenTickets); // j'ai mis
-                                                           // encoded...encoded6
-                                                           // parce que c'est
-                                                           // justement "encodé"
-                                                           // et parce que sinon
-                                                           // les noms de
-                                                           // variables sont
-                                                           // trop longues ex:
-                                                           // encodedInitChosenTickets
-                    w.write(encoded + '\n');
-                    w.flush();
+                    encoded = Serdes.serdeSortedBagOfTicket
+                            .serialize(initChosenTickets);
+                    writeFlush(w, encoded);
                     break;
                 case NEXT_TURN:
                     Player.TurnKind turn = player.nextTurn();
-                    String encoded1 = Serdes.serdeTurnKind.serialize(turn);
-                    w.write(encoded1 + '\n');
-                    w.flush();
+                    encoded = Serdes.serdeTurnKind.serialize(turn);
+                    writeFlush(w, encoded);
                     break;
                 case CHOOSE_TICKETS:
                     SortedBag<Ticket> options = Serdes.serdeSortedBagOfTicket
                             .deserialize(arg1);
                     SortedBag<Ticket> chosenTickets = player
                             .chooseTickets(options);
-                    String encoded2 = Serdes.serdeSortedBagOfTicket
+                    encoded = Serdes.serdeSortedBagOfTicket
                             .serialize(chosenTickets);
-                    w.write(encoded2 + '\n');
-                    w.flush();
+                    writeFlush(w, encoded);
                     break;
                 case DRAW_SLOT:
                     int slot = player.drawSlot();
-                    String encoded3 = Serdes.serdeInteger.serialize(slot);
-                    w.write(encoded3 + '\n');
-                    w.flush();
+                    encoded = Serdes.serdeInteger.serialize(slot);
+                    writeFlush(w, encoded);
                     break;
                 case ROUTE:
                     Route claimed = player.claimedRoute();
-                    String encoded4 = Serdes.serdeRoute.serialize(claimed);
-                    w.write(encoded4 + '\n');
-                    w.flush();
+                    encoded = Serdes.serdeRoute.serialize(claimed);
+                    writeFlush(w, encoded);
                     break;
                 case CARDS:
                     SortedBag<Card> initialCards = player.initialClaimCards();
-                    String encoded5 = Serdes.serdeSortedBagOfCard
+                    encoded = Serdes.serdeSortedBagOfCard
                             .serialize(initialCards);
-                    w.write(encoded5 + '\n');
-                    w.flush();
+                    writeFlush(w, encoded);
                     break;
                 case CHOOSE_ADDITIONAL_CARDS:
                     List<SortedBag<Card>> optionsCards = Serdes.serdeListeOfSortedBagOfCard
                             .deserialize(arg1);
                     SortedBag<Card> chosenAdditional = player
                             .chooseAdditionalCards(optionsCards);
-                    String encoded6 = Serdes.serdeSortedBagOfCard
+                    encoded = Serdes.serdeSortedBagOfCard
                             .serialize(chosenAdditional);
-                    w.write(encoded6 + '\n');
-                    w.flush();
+                    writeFlush(w, encoded);
                     break;
                 default:
                     throw new IllegalArgumentException(
@@ -159,6 +145,11 @@ public final class RemotePlayerClient {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private void writeFlush(BufferedWriter w, String s) throws IOException {
+        w.write(s + '\n');
+        w.flush();
     }
 
 }
