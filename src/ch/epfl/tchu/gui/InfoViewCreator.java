@@ -13,66 +13,81 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
-
 /**
- * la partie de l'interface montrant :
- *  en haut: pour chaque joueur, un disque de la couleur de ses wagons, suivi des statistiques le concernant—
- *  nombre de billets et de cartes en main, wagons restants et points de construction obtenus,
- *  en bas: les cinq dernières informations sur le déroulement de la partie.
+ * @author Aymeric de chillaz (326617) La classe InfoViewCreator consiste en la
+ *         partie de l'interface montrant : en haut: pour chaque joueur, un
+ *         disque de la couleur de ses wagons, suivi des statistiques le
+ *         concernant— nombre de billets et de cartes en main, wagons restants
+ *         et points de construction obtenus, en bas: les cinq dernières
+ *         informations sur le déroulement de la partie.
  */
 
-class InfoViewCreator {
-
-    /**
-     * Le seul attribut de la classe est une instance de VBox
-     * */
-    private InfoViewCreator() {}
-
+abstract class InfoViewCreator {
+    private InfoViewCreator() {
+    }
 
     public static VBox createInfoView(PlayerId playerId,
-                                      Map<PlayerId, String> mapPlayerNames,
-                                      ObservableGameState observableGame,
-                                      ObservableList<Text> messageList) {
+            Map<PlayerId, String> mapPlayerNames,
+            ObservableGameState observableGame,
+            ObservableList<Text> messageList) {
 
+        // créé un VBox et lui attribut ses feuilles de style
         VBox vBox = new VBox();
         vBox.getStylesheets().addAll("info.css", "colors.css");
 
-        Separator separator = new Separator();//séparateur orienté horizontalement
+        // créé un séparateur orienté horizontalement
+        Separator separator = new Separator();
 
-        /**Statistiques joueurs*/
+        /** Statistiques joueurs */
         VBox vBoxPlayerStats = new VBox();
         vBoxPlayerStats.setId("player-stats");
 
         List<PlayerId> playerIdList = List.of(playerId, playerId.next());
 
-        for(PlayerId player : playerIdList) {
+        for (PlayerId player : playerIdList) {
             TextFlow textFlowPlayerStatistics = new TextFlow();
-            vBoxPlayerStats.getChildren().add(textFlowPlayerStatistics);//rajouter le joueur courant en premier permet de le placer en haut du VBox
+            vBoxPlayerStats.getChildren().add(textFlowPlayerStatistics);
+            // rajouter le joueur courant en premier permet de le placer en haut
+            // du VBox
+            textFlowPlayerStatistics.getStyleClass().add(player.toString());
 
-            textFlowPlayerStatistics.getStyleClass()
-                    .add(player.toString());
-
-            Circle circle = new Circle(5);//il est placé en haut à gauche par défaut
+            // Ce cercle de rayon 5 est placé en haut à gauche du
+            // TextFlowPlayerStatistics par défaut
+            Circle circle = new Circle(5);
             circle.getStyleClass().add("filled");
 
             Text textPlayerStatistics = new Text();
 
-            StringExpression stringExpression = Bindings.format(StringsFr.PLAYER_STATS, mapPlayerNames.get(player), observableGame.nbTicketsInHand(player),
-                    observableGame.nbCardsInHand(player), observableGame.nbCarsInHand(player), observableGame.nbConstructionPoints(player));
+            /**
+             * L'instance de Text contenant les statistiques de chacun des
+             * joueurs doit contenir la chaîne PLAYER_STATS de StringsFr,
+             * formatée de manière à ce que les différentes occurrences de %s
+             * soit remplacées par les bonnes valeurs. Ceci se fait avec la
+             * méthode format de Bindings
+             */
+            StringExpression stringExpression = Bindings.format(
+                    StringsFr.PLAYER_STATS, mapPlayerNames.get(player),
+                    observableGame.nbTicketsInHand(player),
+                    observableGame.nbCardsInHand(player),
+                    observableGame.nbCarsInHand(player),
+                    observableGame.nbConstructionPoints(player));
 
             textPlayerStatistics.textProperty().bind(stringExpression);
 
-            textFlowPlayerStatistics.getChildren().addAll(circle, textPlayerStatistics);
+            textFlowPlayerStatistics.getChildren().addAll(circle,
+                    textPlayerStatistics);
         }
 
-
-
-        /**Messages*/
+        /** Messages */
+      //créé le text flow qui contiendra les 5 derniers messages
         TextFlow textGameInfo = new TextFlow();
         textGameInfo.setId("game-info");
+        
+        // Le contenu de la liste d'enfants — retournée par getChildren — de
+        // l'instance de TextFlow contenant les messages d'information doit être
+        // lié à celui de la liste d'informations passée à la méthode
+        // createInfoView.
         Bindings.bindContent(textGameInfo.getChildren(), messageList);
-
-
 
         vBox.getChildren().addAll(vBoxPlayerStats, separator, textGameInfo);
 
