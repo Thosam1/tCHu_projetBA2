@@ -34,7 +34,8 @@ public interface Serde<T> {
      */
 
     /**
-     * méthode générique qui permet de créer un Serde
+     * méthode générique qui permet de créer un Serde en créant une classe
+     * anonyme
      * 
      * @param fnSerialisation
      * @param fnDeserialisation
@@ -43,12 +44,7 @@ public interface Serde<T> {
      */
     public static <T> Serde<T> of(Function<T, String> fnSerialisation,
             Function<String, T> fnDeserialisation) {
-        // retourne un nouveau Serde en créant une classe anonyme qui redéfinit
-        // serialize et deserialize
         return new Serde<T>() {
-            // Les deux fonctions passées en paramètre sont utilisées pour
-            // définir serialize et deserialize (les méthodes font appel à la
-            // méthode apply des Function)
             public String serialize(T object) {
                 return fnSerialisation.apply(object);
             }
@@ -60,6 +56,8 @@ public interface Serde<T> {
     }
 
     /**
+     * retourne une classe anonyme de Serde
+     * 
      * @param list
      *            de toutes les valeurs d'un ensemble de valeurs énuméré
      *            (énumérations et types dont il existe un nombre restraint(ex:
@@ -67,23 +65,18 @@ public interface Serde<T> {
      * @return le Serde correspondant
      */
     public static <T> Serde<T> oneOf(List<T> list) {
-        // retourne un nouveau Serde en créant une classe anonyme qui redéfinit
-        // serialize et deserialize
         return new Serde<T>() {
-            @Override           //TODO a faire
+            @Override // TODO a faire
             public String serialize(T object) {
                 // retourne "" si objet est null
                 return object == null ? ""
                         : String.valueOf(list.indexOf(object));
-                // trouve l index de l'objet dans la liste et le retourne en
-                // String
             }
 
             public T deserialize(String string) {
                 // retourne null si string est vide
                 return string.equals("") ? null
                         : list.get(Integer.parseInt(string));
-                // sinon, retourne l'élément stocké dans liste à l'index string
             }
         };
     }
@@ -113,26 +106,17 @@ public interface Serde<T> {
                 String[] stringList = string
                         .split(Pattern.quote(separator.toString()), -1);
 
-                if(string.isEmpty()) {
+                if (string.isEmpty()) {
                     return output;
-                    //si string est vide nous voulons retourner une liste vide
+                    // si string est vide nous voulons retourner une liste vide
                 }
                 for (String element : stringList) {
                     output.add(serde.deserialize(element));
-                    }
+                }
                 return output;
-                }
-                /*TODO changer bagOf si cette version fonctionne
-                for (String element : stringList) {
-                    if (!string.isEmpty()) {
-                        // si string est vide output doit etre vide
-                        // si string est vide, stringList n'est pas vide
-                        // ainsi le for each a lieu, d'ou le if
-                        output.add(serde.deserialize(element));
-                    }
-                }
-                return output;*/
-        };}
+            }
+        };
+    }
 
     /**
      * Serialisation et deserialisation des SortedBag
@@ -145,31 +129,10 @@ public interface Serde<T> {
      */
     public static <T extends Comparable<T>> Serde<SortedBag<T>> bagOf(
             Serde<T> serde, Character separator) {
-        // retourne un nouveau Serde en créant une classe anonyme qui redéfinit
-        // serialize et deserialize
-        return new Serde<SortedBag<T>>() {
-            public String serialize(SortedBag<T> sortedBag) {
-                List<String> list = new ArrayList<String>();
-                sortedBag.forEach(x -> list.add(serde.serialize(x)));
-
-                return String.join(separator.toString(), list);
-            }
-
-            public SortedBag<T> deserialize(String string) { //TODO on peut faire .of() et utiliser des lambdas, ou faire une méthode en bas pour les deserialise du bag et de la liste
-                List<T> output = new ArrayList<T>();
-                String[] stringList = string
-                        .split(Pattern.quote(separator.toString()), -1);
-
-                for (String element : stringList) {
-                    if (!string.isEmpty()) {// si string est vide output doit
-                                            // etre vide
-                        output.add(serde.deserialize(element));
-                    }
-                }
-
-                return SortedBag.of(output);
-            }
-        };
+        Serde<List<T>> serdeList = listOf(serde, separator);
+        return of(sortedBag -> serdeList.serialize(sortedBag.toList()),
+                string -> SortedBag.of(serdeList.deserialize(string)));
+        // TODO vérifier
     }
 
 }

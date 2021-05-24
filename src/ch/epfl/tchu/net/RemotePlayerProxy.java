@@ -9,8 +9,6 @@ import java.io.UncheckedIOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
-
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Player;
@@ -47,30 +45,18 @@ public final class RemotePlayerProxy implements Player {
      * différence entre les deux types d'exception est que le premier est un
      * type d'exception checked, le second pas.
      *
-     * @param messageId
-     *            : l'identité du message (de type MessageId)
-     * @param argument1
-     *            : la chaine de caractère correspondant au premier argument de
-     *            la classe (peut etre null)
-     * @param argument2
-     *            : la chaine de caractère correspondant au deuxieme argument de
-     *            la classe (peut aussi etre null)
+     * le premier paramètre ne sera jamais nul, il correspond au MessageId de la
+     * méthode qui appelle cette méthode
      */
-
-    private void messageOut(String messageId, String argument1,
-            String argument2) {
-
-        List<String> list = new ArrayList<>(
-                Arrays.asList(messageId, argument1, argument2, "\n"));
-
-        // créé un stream à partir des trois String, retire les valeurs null et
-        // les join en mettant un espace au mileu
-        String string = list.stream().filter(Objects::nonNull)
-                .collect(Collectors.joining(" "));
-
+    private void messageOut(String... args) {
+        List<String> list = new ArrayList<>();
+        for(String string : args) {
+            list.add(string);
+        }
+        list.add("\n");
+        
         try {
-            // rajoute le string avec un retour à la ligne
-            w.write(string);
+            w.write(String.join(" ", list));
             w.flush();
 
         } catch (IOException e) {
@@ -112,8 +98,8 @@ public final class RemotePlayerProxy implements Player {
 
     @Override
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
-        String argument1 = Serdes.serdePlayerId.serialize(ownId);
-        String argument2 = Serdes.serdeListeOfString
+        String argument1 = Serdes.SERDE_PLAYER_ID.serialize(ownId);
+        String argument2 = Serdes.SERDE_LIST_OF_STRING
                 .serialize(List.of(playerNames.get(PlayerId.PLAYER_1),
                         playerNames.get(PlayerId.PLAYER_2)));
         messageOut(MessageId.INIT_PLAYERS.name(), argument1, argument2);
@@ -121,67 +107,67 @@ public final class RemotePlayerProxy implements Player {
 
     @Override
     public void receiveInfo(String info) {
-        String argument1 = Serdes.serdeString.serialize(info);
-        messageOut(MessageId.RECEIVE_INFO.name(), argument1, null);
+        String argument1 = Serdes.SERDE_STRING.serialize(info);
+        messageOut(MessageId.RECEIVE_INFO.name(), argument1);
     }
 
     @Override
     public void updateState(PublicGameState newState, PlayerState ownState) {
-        String argument1 = Serdes.serdePublicGameState.serialize(newState);
-        String argument2 = Serdes.serdePlayerState.serialize(ownState);
+        String argument1 = Serdes.SERDE_PUBLIC_GAME_STATE.serialize(newState);
+        String argument2 = Serdes.SERDE_PLAYER_STATE.serialize(ownState);
         messageOut(MessageId.UPDATE_STATE.name(), argument1, argument2);
     }
 
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
-        String argument1 = Serdes.serdeSortedBagOfTicket.serialize(tickets);
-        messageOut(MessageId.SET_INITIAL_TICKETS.name(), argument1, null);
+        String argument1 = Serdes.SERDE_SORTED_BAG_OF_TICKET.serialize(tickets);
+        messageOut(MessageId.SET_INITIAL_TICKETS.name(), argument1);
     }
 
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
-        messageOut(MessageId.CHOOSE_INITIAL_TICKETS.name(), null, null);
-        return Serdes.serdeSortedBagOfTicket.deserialize(messageIn());
+        messageOut(MessageId.CHOOSE_INITIAL_TICKETS.name());
+        return Serdes.SERDE_SORTED_BAG_OF_TICKET.deserialize(messageIn());
     }
 
     @Override
     public TurnKind nextTurn() {
-        messageOut(MessageId.NEXT_TURN.name(), null, null);
-        return Serdes.serdeTurnKind.deserialize(messageIn());
+        messageOut(MessageId.NEXT_TURN.name());
+        return Serdes.SERDE_TURN_KIND.deserialize(messageIn());
     }
 
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
-        String argument1 = Serdes.serdeSortedBagOfTicket.serialize(options);
-        messageOut(MessageId.CHOOSE_TICKETS.name(), argument1, null);
-        return Serdes.serdeSortedBagOfTicket.deserialize(messageIn());
+        String argument1 = Serdes.SERDE_SORTED_BAG_OF_TICKET.serialize(options);
+        messageOut(MessageId.CHOOSE_TICKETS.name(), argument1);
+        return Serdes.SERDE_SORTED_BAG_OF_TICKET.deserialize(messageIn());
     }
 
     @Override
     public int drawSlot() {
-        messageOut(MessageId.DRAW_SLOT.name(), null, null);
-        return Serdes.serdeInteger.deserialize(messageIn());
+        messageOut(MessageId.DRAW_SLOT.name());
+        return Serdes.SERDE_INTEGER.deserialize(messageIn());
     }
 
     @Override
     public Route claimedRoute() {
-        messageOut(MessageId.ROUTE.name(), null, null);
-        return Serdes.serdeRoute.deserialize(messageIn());
+        messageOut(MessageId.ROUTE.name());
+        return Serdes.SERDE_ROUTE.deserialize(messageIn());
     }
 
     @Override
     public SortedBag<Card> initialClaimCards() {
-        messageOut(MessageId.CARDS.name(), null, null);
-        return Serdes.serdeSortedBagOfCard.deserialize(messageIn());
+        messageOut(MessageId.CARDS.name());
+        return Serdes.SERDE_SORTED_BAG_OF_CARD.deserialize(messageIn());
     }
 
     @Override
     public SortedBag<Card> chooseAdditionalCards(
             List<SortedBag<Card>> options) {
-        String argument1 = Serdes.serdeListeOfSortedBagOfCard
+        String argument1 = Serdes.SERDE_LIST_OF_SORTED_BAG_OF_CARD
                 .serialize(options);
-        messageOut(MessageId.CHOOSE_ADDITIONAL_CARDS.name(), argument1, null);
-        return Serdes.serdeSortedBagOfCard.deserialize(messageIn());
+        messageOut(MessageId.CHOOSE_ADDITIONAL_CARDS.name(), argument1);
+        return Serdes.SERDE_SORTED_BAG_OF_CARD.deserialize(messageIn());
     }
 
 }

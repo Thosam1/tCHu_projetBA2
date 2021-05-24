@@ -27,7 +27,7 @@ import javafx.application.Platform;
  *         JavaFX
  */
 public final class GraphicalPlayerAdapter implements Player {
-    private GraphicalPlayer graphicalPlayer;    //todo
+    private GraphicalPlayer graphicalPlayer;
 
     /**
      * Les méthodes de GraphicalplayerAdapter et les ActionHandlers en attribut
@@ -55,8 +55,8 @@ public final class GraphicalPlayerAdapter implements Player {
     private final ActionHandlers.ChooseCardsHandler chooseCardsHandler;
 
     /**
-     * construit les instances de ActionHandlers et les stocke en attribut. Leurs
-     * unique méthode manipule les BlockingQueue
+     * construit les instances de ActionHandlers et les stocke en attribut.
+     * Leurs unique méthode manipule les BlockingQueue
      */
     public GraphicalPlayerAdapter() {
         // créé les handlers
@@ -71,7 +71,6 @@ public final class GraphicalPlayerAdapter implements Player {
         drawTicketsHandler = () -> {
             try {
                 qTurnKind.put(TurnKind.DRAW_TICKETS);
-                // pas d'argument à ajouter à une BlockingQueue
             } catch (InterruptedException e) {
                 throw new Error();
             }
@@ -207,7 +206,7 @@ public final class GraphicalPlayerAdapter implements Player {
                 }
             }));
             return take(qCardIndex);
-            
+
         } else {// drawSlot est appelée pour la première fois du tour
             return qCardIndex.remove();
         }
