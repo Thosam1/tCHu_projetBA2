@@ -20,6 +20,10 @@ import java.util.Map;
  *         un joueur
  */
 public final class ObservableGameState {
+    /**
+     * Valeur àl'initialisation des IntegerProperty dans ObservableGameState
+     */
+    private static final int INITIAL_VALUE_OF_INTEGER_PROPERTY = 0;
 
     /**
      * A la création, la totalité des propriétés de l'état sont null pour celles
@@ -57,9 +61,9 @@ public final class ObservableGameState {
     public ObservableGameState(PlayerId playerId) {
         this.playerId = playerId;
         this.propertyPercentTicketsLeft = new SimpleIntegerProperty(
-                Constants.INITIAL_VALUE_OF_INTEGER_PROPERTY);
+                INITIAL_VALUE_OF_INTEGER_PROPERTY);
         this.propertyPercentCardsLeft = new SimpleIntegerProperty(
-                Constants.INITIAL_VALUE_OF_INTEGER_PROPERTY);
+                INITIAL_VALUE_OF_INTEGER_PROPERTY);
         this.propertyFaceUpCards = initFaceUpCards();
         this.propertyRouteOwners = initRouteOwners();
 
@@ -145,7 +149,7 @@ public final class ObservableGameState {
         for (PlayerId id : PlayerId.ALL) {// TODO mettre des forEach avec des
                                           // lambdas dans toutes ces méthodes
             temp.put(id, new SimpleIntegerProperty(
-                    Constants.INITIAL_VALUE_OF_INTEGER_PROPERTY));
+                    INITIAL_VALUE_OF_INTEGER_PROPERTY));
         }
         return Collections.unmodifiableMap(temp);
     }
@@ -171,7 +175,7 @@ public final class ObservableGameState {
         Map<Card, IntegerProperty> map = new HashMap<Card, IntegerProperty>();
         for (Card card : Card.ALL) {
             map.put(card, new SimpleIntegerProperty(
-                    Constants.INITIAL_VALUE_OF_INTEGER_PROPERTY));
+                    INITIAL_VALUE_OF_INTEGER_PROPERTY));
         }
         return Collections.unmodifiableMap(map);
     }
@@ -204,18 +208,13 @@ public final class ObservableGameState {
      * possédant, ou null si elle n'appartient à personne
      */
     private void modifyRouteOwners() {
-        // contient les routes des joueurs
-        Map<PlayerId, List<Route>> mapOfPlayerRoutes = new HashMap<>();
-        PlayerId.ALL.forEach(player -> mapOfPlayerRoutes.put(player,
-                publicGameState.playerState(player).routes()));
-
-        for (Route route : ChMap.routes()) {
-            for (PlayerId player : PlayerId.ALL) {
-                if (mapOfPlayerRoutes.get(player).contains(route)) {
+        for (PlayerId player : PlayerId.ALL) {
+            List<Route> playerRoutes = publicGameState.playerState(player)
+                    .routes();
+            for (Route route : ChMap.routes()) {
+                if (playerRoutes.contains(route)) {
                     propertyRouteOwners.get(route).set(player);
-                    break;
                 }
-                propertyRouteOwners.get(route).set(null);
             }
         }
     }
@@ -258,7 +257,8 @@ public final class ObservableGameState {
         List<List<Station>> listePaireStations = listePaireStations(
                 publicGameState.claimedRoutes());
         for (Route route : ChMap.routes()) {
-            propertyCanClaimRoute.get(route).set(claimable(route, listePaireStations));
+            propertyCanClaimRoute.get(route)
+                    .set(claimable(route, listePaireStations));
         }
     }
 
@@ -377,7 +377,7 @@ public final class ObservableGameState {
         for (List<Station> paireStation : listePaireStations) {
             if (paireStation.contains(paramRoute.station1())
                     && paireStation.contains(paramRoute.station2())) {
-                
+
                 output = false;
                 break;
             }

@@ -17,16 +17,17 @@ import javafx.scene.shape.Rectangle;
 
 /**
  * @author Aymeric de chillaz (326617) La classe MapViewCreator, non
- *         instanciable et package private (, contient une unique méthode
- *         publique et statique, nommée createMapView et permettant de créer la
- *         vue de la carte.
+ *         instanciable et package private, contient une unique méthode publique
+ *         et statique, nommée createMapView et permettant de créer la vue de la
+ *         carte.
  */
 final class MapViewCreator {
-    /**
-     * Le seul attribut de la classe est une instance de Pane
-     */
+    private static final int RECTANGLE_WIDTH = 36;
+    private static final int RECTANGLE_HEIGHT = 12;
+    private static final int CIRCLE_RADIUS = 3;
+
     private MapViewCreator() {
-    } 
+    }
 
     /**
      * Cette méthode prend trois paramètres:
@@ -71,30 +72,21 @@ final class MapViewCreator {
             CardChooser cardChooser) {
         Pane pane = new Pane();
         pane.getStylesheets().addAll("map.css", "colors.css");
-        
-        // La pane a deux types d'enfants: un fond de type ImageView et un Group
-        // par route dans ChMap.routes()
+
         ImageView view = new ImageView();
         pane.getChildren().add(view);
 
         for (Route route : ChMap.routes()) {
-            // créé un group par route et en fait un enfant de pane
             Group groupRoute = new Group();
             pane.getChildren().add(groupRoute);
-            
-            // son id est celle de la route
             groupRoute.setId(route.id());
 
-            // la couleur d'une route peut etre null ce qui correspond à une
-            // route neutre, dans ce cas le String associé est "NEUTRAL"
             String color = route.color() == null ? "NEUTRAL"
                     : route.color().toString();
             groupRoute.getStyleClass().addAll("route", route.level().toString(),
                     color);
 
-            // ici on attache un auditeur à la propriété de l'état de jeu
-            // observable contenant le propriétaire de la route
-            // lorsque cette propriété change, on rajoute une classe de Style
+            // lorsque la propriété change, on rajoute une classe de Style
             // associé à l'identité de la nouvelle valeur i.e. n.toString()
             observableGame.getRouteOwner(route).addListener(
                     (p, o, n) -> groupRoute.getStyleClass().add(n.toString()));
@@ -122,8 +114,7 @@ final class MapViewCreator {
                 // cartes peut prendre pocéssion de la route
                 if (possibleClaimCards.size() == 1) {
                     claimRouteH.onClaimRoute(route, possibleClaimCards.get(0));
-                } 
-                else {// cas ou il y a plusieurs possibilité de cartes qui
+                } else {// cas ou il y a plusieurs possibilité de cartes qui
                         // peuvent permettre de prendre pocession de la route
                         // provoque l'apparition d'un dialogue demandant au
                         // joueur de choisir l'ensemble de cartes qu'il désire
@@ -138,38 +129,29 @@ final class MapViewCreator {
             // que la longueur de cette route)
             for (int i = 1; i <= route.length(); ++i) {
                 Group groupCase = new Group();
-                
-                // donne le Id à la case et la rajoute aux enfants du Group de
-                // la route
+
                 groupCase.setId(String.join("_",
                         List.of(route.id(), String.valueOf(i))));
                 groupRoute.getChildren().add(groupCase);
 
-                // chacuns des groupCase a deux enfants: un Rectangle(rec1) et
-                // un group (groupWagon)
-                Rectangle rec1 = new Rectangle(36, 12);
+                Rectangle rec1 = new Rectangle(RECTANGLE_WIDTH,
+                        RECTANGLE_HEIGHT);
                 rec1.getStyleClass().addAll("track", "filled");
 
                 Group groupWagon = new Group();
                 groupWagon.getStyleClass().add("car");
 
-             // créé le lien de parenté entre groupeCase et ses enfants:
-                // rec1,
-                // groupWagon
                 groupCase.getChildren().addAll(rec1, groupWagon);
 
-             // créé les enfants de groupCase en leur donnant leur dimensions
-                // et pour les cercles leur positions
-                Rectangle rec2 = new Rectangle(36, 12);
-             // 3 correspond au rayon et les autres valeurs sont leur
-                // position
-                Circle circ1 = new Circle(12, 6, 3);
-                Circle circ2 = new Circle(24, 6, 3);
-
-             // la classe de style est ajouté à rec2
+                Rectangle rec2 = new Rectangle(RECTANGLE_WIDTH,
+                        RECTANGLE_HEIGHT);
                 rec2.getStyleClass().add("filled");
 
-                // attribut les enfants de groupWagon
+                // les deux premieres valeurs correspondent aux coordonnées des
+                // cercles
+                Circle circ1 = new Circle(12, 6, CIRCLE_RADIUS);
+                Circle circ2 = new Circle(24, 6, CIRCLE_RADIUS);
+
                 groupWagon.getChildren().addAll(rec2, circ1, circ2);
             }
         }

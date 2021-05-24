@@ -46,15 +46,16 @@ public final class RemotePlayerProxy implements Player {
      * type d'exception checked, le second pas.
      *
      * le premier paramètre ne sera jamais nul, il correspond au MessageId de la
-     * méthode qui appelle cette méthode
+     * méthode qui appelle cette méthode les suivants (il n'y en a pas tout le
+     * temps) sont les paramètres de la méthode qui appelle messageOut
      */
     private void messageOut(String... args) {
         List<String> list = new ArrayList<>();
-        for(String string : args) {
+        for (String string : args) {
             list.add(string);
         }
         list.add("\n");
-        
+
         try {
             w.write(String.join(" ", list));
             w.flush();

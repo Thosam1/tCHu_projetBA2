@@ -12,48 +12,6 @@ public final class Constants {
     }
 
     /**
-     * Séparateur passer aux serdes pour la serialisation et deserialisation de
-     * List et SortedBag
-     */
-    public static final Character SEPARATOR_LIST = ',';
-
-    /**
-     * Séparateur passer aux serdes pour la serialisation et deserialisation de
-     * List de SortedBag
-     */
-    public static final Character SEPARATOR_LIST_SORTED_BAG = ';';
-
-    /**
-     * Séparateur passer aux serdes pour la serialisation et deserialisation des
-     * trois composites: PublicCardState, PublicPlayerState et PlayerState C'est
-     * la meme valeur que SEPARATOR_LIST_SORTED_BAG mais en string car nous
-     * passons directement ce separateur à la méthode join qui prend un String
-     */
-    public static final String SEPARATOR_LIST_COMPOSITE = ";";
-
-    /**
-     * Séparateur passer aux serdes pour la serialisation et deserialisation de
-     * composite de composite, autrement dit pour PublicGameState
-     */
-    public static final String SEPARATOR_PUBLIC_GAME_STATE = ":";
-
-    /**
-     * Taille des ArrayBlockingQueue de Graphical
-     */
-    public static final int ARRAY_BLOCKING_QUEUE_SIZE = 1;
-
-    /**
-     * Nombre maximum de messages qui peuvent etre affichés dans le
-     * InfoViewCreator
-     */
-    public static final int MAXIMUM_NUMBER_VISIBLE_INFO = 5;
-
-    /**
-     * Valeur àl'initialisation des IntegerProperty dans ObservableGameState
-     */
-    public static final int INITIAL_VALUE_OF_INTEGER_PROPERTY = 0;
-
-    /**
      * Nombre de wagons à partir duquel la partie entre dans le dernier tour
      */
     public static final int LAST_TURN_BEGINS_CAR_COUNT = 2;

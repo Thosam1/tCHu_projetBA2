@@ -7,7 +7,6 @@ import java.util.concurrent.BlockingQueue;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
-import ch.epfl.tchu.game.Constants;
 import ch.epfl.tchu.game.Player;
 import ch.epfl.tchu.game.PlayerId;
 import ch.epfl.tchu.game.PlayerState;
@@ -27,6 +26,11 @@ import javafx.application.Platform;
  *         JavaFX
  */
 public final class GraphicalPlayerAdapter implements Player {
+    /**
+     * Taille des ArrayBlockingQueue de Graphical
+     */
+    private static final int ARRAY_BLOCKING_QUEUE_SIZE = 1;
+
     private GraphicalPlayer graphicalPlayer;
 
     /**
@@ -35,15 +39,15 @@ public final class GraphicalPlayerAdapter implements Player {
      * le fil JavaFX et un autre fil
      */
     private final BlockingQueue<SortedBag<Ticket>> qTickets = new ArrayBlockingQueue<>(
-            Constants.ARRAY_BLOCKING_QUEUE_SIZE);
+            ARRAY_BLOCKING_QUEUE_SIZE);
     private final BlockingQueue<Integer> qCardIndex = new ArrayBlockingQueue<>(
-            Constants.ARRAY_BLOCKING_QUEUE_SIZE);
+            ARRAY_BLOCKING_QUEUE_SIZE);
     private final BlockingQueue<SortedBag<Card>> qCards = new ArrayBlockingQueue<>(
-            Constants.ARRAY_BLOCKING_QUEUE_SIZE);
+            ARRAY_BLOCKING_QUEUE_SIZE);
     private final BlockingQueue<Route> qRoute = new ArrayBlockingQueue<>(
-            Constants.ARRAY_BLOCKING_QUEUE_SIZE);
+            ARRAY_BLOCKING_QUEUE_SIZE);
     private final BlockingQueue<TurnKind> qTurnKind = new ArrayBlockingQueue<>(
-            Constants.ARRAY_BLOCKING_QUEUE_SIZE);
+            ARRAY_BLOCKING_QUEUE_SIZE);
 
     /**
      * les 5 handlers qui sont instanciés dans le constructeur

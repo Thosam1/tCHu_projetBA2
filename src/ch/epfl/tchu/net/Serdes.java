@@ -3,11 +3,9 @@ package ch.epfl.tchu.net;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
-
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.ChMap;
-import ch.epfl.tchu.game.Constants;
 import ch.epfl.tchu.game.Player.TurnKind;
 import ch.epfl.tchu.game.PlayerId;
 import ch.epfl.tchu.game.PlayerState;
@@ -25,6 +23,29 @@ import ch.epfl.tchu.game.Ticket;
  * @author Aymeric de chillaz (326617)
  */
 public final class Serdes {
+
+    /**
+     * Séparateur passer aux serdes pour la serialisation et deserialisation de
+     * List et SortedBag
+     */
+    private static final Character SEPARATOR_LIST = ',';
+    /**
+     * Séparateur passer aux serdes pour la serialisation et deserialisation de
+     * List de SortedBag
+     */
+    private static final Character SEPARATOR_LIST_SORTED_BAG = ';';
+    /**
+     * Séparateur passer aux serdes pour la serialisation et deserialisation des
+     * trois composites: PublicCardState, PublicPlayerState et PlayerState C'est
+     * la meme valeur que SEPARATOR_LIST_SORTED_BAG mais en string car nous
+     * passons directement ce separateur à la méthode join qui prend un String
+     */
+    private static final String SEPARATOR_LIST_COMPOSITE = ";";
+    /**
+     * Séparateur passer aux serdes pour la serialisation et deserialisation de
+     * composite de composite, autrement dit pour PublicGameState
+     */
+    private static final String SEPARATOR_PUBLIC_GAME_STATE = ":";
 
     /**
      * Serde pour les Integer et les String sont créés en passant deux lambdas à
@@ -63,23 +84,23 @@ public final class Serdes {
      * bagOf de Serde
      */
     public static final Serde<List<String>> SERDE_LIST_OF_STRING = Serde
-            .listOf(SERDE_STRING, Constants.SEPARATOR_LIST);
+            .listOf(SERDE_STRING, SEPARATOR_LIST);
 
     public static final Serde<List<Card>> SERDE_LIST_OF_CARD = Serde
-            .listOf(SERDE_CARD, Constants.SEPARATOR_LIST);
+            .listOf(SERDE_CARD, SEPARATOR_LIST);
 
     public static final Serde<List<Route>> SERDE_LIST_OF_ROUTE = Serde
-            .listOf(SERDE_ROUTE, Constants.SEPARATOR_LIST);
+            .listOf(SERDE_ROUTE, SEPARATOR_LIST);
 
     public static final Serde<SortedBag<Card>> SERDE_SORTED_BAG_OF_CARD = Serde
-            .bagOf(SERDE_CARD, Constants.SEPARATOR_LIST);
+            .bagOf(SERDE_CARD, SEPARATOR_LIST);
 
     public static final Serde<SortedBag<Ticket>> SERDE_SORTED_BAG_OF_TICKET = Serde
-            .bagOf(SERDE_TICKET, Constants.SEPARATOR_LIST);
+            .bagOf(SERDE_TICKET, SEPARATOR_LIST);
 
     public static final Serde<List<SortedBag<Card>>> SERDE_LIST_OF_SORTED_BAG_OF_CARD = Serde
             .listOf(SERDE_SORTED_BAG_OF_CARD,
-                    Constants.SEPARATOR_LIST_SORTED_BAG);
+                    SEPARATOR_LIST_SORTED_BAG);
 
     /**
      * Serde pour les valeurs de types composites
@@ -87,7 +108,7 @@ public final class Serdes {
     public static final Serde<PublicCardState> SERDE_PUBLIC_CARD_STATE = new Serde<PublicCardState>() {
         @Override
         public String serialize(PublicCardState objet) {
-            return String.join(Constants.SEPARATOR_LIST_COMPOSITE,
+            return String.join(SEPARATOR_LIST_COMPOSITE,
                     SERDE_LIST_OF_CARD.serialize(objet.faceUpCards()),
                     SERDE_INTEGER.serialize(objet.deckSize()),
                     SERDE_INTEGER.serialize(objet.discardsSize()));
@@ -96,7 +117,7 @@ public final class Serdes {
         @Override
         public PublicCardState deserialize(String string) {
             String[] stringListe = string.split(
-                    Pattern.quote(Constants.SEPARATOR_LIST_COMPOSITE), -1);
+                    Pattern.quote(SEPARATOR_LIST_COMPOSITE), -1);
             List<Card> faceUpCards = SERDE_LIST_OF_CARD
                     .deserialize(stringListe[0]);
             int deckSize = SERDE_INTEGER.deserialize(stringListe[1]);
@@ -109,7 +130,7 @@ public final class Serdes {
     public static final Serde<PublicPlayerState> SERDE_PUBLIC_PLAYER_STATE = new Serde<PublicPlayerState>() {
         @Override
         public String serialize(PublicPlayerState objet) {
-            return String.join(Constants.SEPARATOR_LIST_COMPOSITE,
+            return String.join(SEPARATOR_LIST_COMPOSITE,
                     SERDE_INTEGER.serialize(objet.ticketCount()),
                     SERDE_INTEGER.serialize(objet.cardCount()),
                     SERDE_LIST_OF_ROUTE.serialize(objet.routes()));
@@ -118,7 +139,7 @@ public final class Serdes {
         @Override
         public PublicPlayerState deserialize(String string) {
             String[] stringListe = string.split(
-                    Pattern.quote(Constants.SEPARATOR_LIST_COMPOSITE), -1);
+                    Pattern.quote(SEPARATOR_LIST_COMPOSITE), -1);
             int ticketCount = SERDE_INTEGER.deserialize(stringListe[0]);
             int cardCount = SERDE_INTEGER.deserialize(stringListe[1]);
             List<Route> routes = SERDE_LIST_OF_ROUTE
@@ -131,7 +152,7 @@ public final class Serdes {
     public static final Serde<PlayerState> SERDE_PLAYER_STATE = new Serde<PlayerState>() {
         @Override
         public String serialize(PlayerState objet) {
-            return String.join(Constants.SEPARATOR_LIST_COMPOSITE,
+            return String.join(SEPARATOR_LIST_COMPOSITE,
                     SERDE_SORTED_BAG_OF_TICKET.serialize(objet.tickets()),
                     SERDE_SORTED_BAG_OF_CARD.serialize(objet.cards()),
                     SERDE_LIST_OF_ROUTE.serialize(objet.routes()));
@@ -140,7 +161,7 @@ public final class Serdes {
         @Override
         public PlayerState deserialize(String string) {
             String[] stringListe = string.split(
-                    Pattern.quote(Constants.SEPARATOR_LIST_COMPOSITE), -1);
+                    Pattern.quote(SEPARATOR_LIST_COMPOSITE), -1);
 
             SortedBag<Ticket> tickets = SERDE_SORTED_BAG_OF_TICKET
                     .deserialize(stringListe[0]);
@@ -156,7 +177,7 @@ public final class Serdes {
 
         @Override
         public String serialize(PublicGameState objet) {
-            return String.join(Constants.SEPARATOR_PUBLIC_GAME_STATE,
+            return String.join(SEPARATOR_PUBLIC_GAME_STATE,
                     SERDE_INTEGER.serialize(objet.ticketsCount()),
                     SERDE_PUBLIC_CARD_STATE.serialize(objet.cardState()),
                     SERDE_PLAYER_ID.serialize(objet.currentPlayerId()),
@@ -170,7 +191,7 @@ public final class Serdes {
         @Override
         public PublicGameState deserialize(String string) {
             String[] stringListe = string.split(
-                    Pattern.quote(Constants.SEPARATOR_PUBLIC_GAME_STATE), -1);
+                    Pattern.quote(SEPARATOR_PUBLIC_GAME_STATE), -1);
 
             int ticketsCount = SERDE_INTEGER.deserialize(stringListe[0]);
             PublicCardState cardState = SERDE_PUBLIC_CARD_STATE

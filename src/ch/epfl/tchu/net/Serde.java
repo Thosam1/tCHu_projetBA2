@@ -66,15 +66,13 @@ public interface Serde<T> {
      */
     public static <T> Serde<T> oneOf(List<T> list) {
         return new Serde<T>() {
-            @Override // TODO a faire
+            @Override
             public String serialize(T object) {
-                // retourne "" si objet est null
                 return object == null ? ""
                         : String.valueOf(list.indexOf(object));
             }
 
             public T deserialize(String string) {
-                // retourne null si string est vide
                 return string.equals("") ? null
                         : list.get(Integer.parseInt(string));
             }
@@ -132,7 +130,6 @@ public interface Serde<T> {
         Serde<List<T>> serdeList = listOf(serde, separator);
         return of(sortedBag -> serdeList.serialize(sortedBag.toList()),
                 string -> SortedBag.of(serdeList.deserialize(string)));
-        // TODO vérifier
     }
 
 }
