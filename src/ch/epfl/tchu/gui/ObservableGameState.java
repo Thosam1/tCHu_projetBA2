@@ -149,7 +149,7 @@ public final class ObservableGameState {
     }
 
     private static List<ObjectProperty<Card>> initFaceUpCards() {
-        List<ObjectProperty<Card>> temp = new ArrayList<ObjectProperty<Card>>();
+        List<ObjectProperty<Card>> temp = new ArrayList<>();
         for (int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++) {
             ObjectProperty<Card> card = new SimpleObjectProperty<>();
             temp.add(card);
@@ -158,7 +158,7 @@ public final class ObservableGameState {
     }
 
     private static Map<Route, ObjectProperty<PlayerId>> initRouteOwners() {
-        Map<Route, ObjectProperty<PlayerId>> map = new HashMap<Route, ObjectProperty<PlayerId>>();
+        Map<Route, ObjectProperty<PlayerId>> map = new HashMap<>();
         for (Route route : ChMap.routes()) {
             map.put(route, new SimpleObjectProperty<>(null));
         }
@@ -166,7 +166,7 @@ public final class ObservableGameState {
     }
 
     private static Map<Card, IntegerProperty> initCardsOfInHand() {
-        Map<Card, IntegerProperty> map = new HashMap<Card, IntegerProperty>();
+        Map<Card, IntegerProperty> map = new HashMap<>();
         for (Card card : Card.ALL) {
             map.put(card, new SimpleIntegerProperty(
                     Constants.INITIAL_VALUE_OF_INTEGER_PROPERTY));
@@ -175,7 +175,7 @@ public final class ObservableGameState {
     }
 
     private static Map<Route, BooleanProperty> initCanClaimRoute() {
-        Map<Route, BooleanProperty> map = new HashMap<Route, BooleanProperty>();
+        Map<Route, BooleanProperty> map = new HashMap<>();
         for (Route route : ChMap.routes()) {
             map.put(route, new SimpleBooleanProperty(false));
         }

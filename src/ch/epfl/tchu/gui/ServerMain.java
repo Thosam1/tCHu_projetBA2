@@ -2,7 +2,6 @@ package ch.epfl.tchu.gui;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -68,8 +67,7 @@ public class ServerMain extends Application {
         try (ServerSocket serverSocket = new ServerSocket(5108)) {
             socket = serverSocket.accept();
         }
-        Player playerProxy = new RemotePlayerProxy(socket);
-        secondPlayer = playerProxy;
+        secondPlayer = new RemotePlayerProxy(socket);
 
         // 3)
         GraphicalPlayerAdapter firstGraphicalPlayerAdapter = new GraphicalPlayerAdapter();
