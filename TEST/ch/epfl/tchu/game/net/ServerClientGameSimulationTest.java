@@ -1,19 +1,15 @@
 package ch.epfl.tchu.game.net;
-import ch.epfl.tchu.SmartBot;
+import ch.epfl.tchu.game.SmartBot;
 import ch.epfl.tchu.SortedBag;
 
 import ch.epfl.tchu.game.*;
 import ch.epfl.tchu.net.RemotePlayerClient;
 import ch.epfl.tchu.net.RemotePlayerProxy;
-import ch.epfl.tchu.net.Serdes;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ServerClientGameSimulationTest {
 

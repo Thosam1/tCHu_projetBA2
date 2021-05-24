@@ -145,9 +145,8 @@ public final class ObservableGameState {
      * La constante INITIAL_VALUE_INTEGER_PROPERTY est égale à 0
      */
     private static Map<PlayerId, IntegerProperty> initPropertyIdMap() {
-        Map<PlayerId, IntegerProperty> temp = new HashMap<PlayerId, IntegerProperty>();
-        for (PlayerId id : PlayerId.ALL) {// TODO mettre des forEach avec des
-                                          // lambdas dans toutes ces méthodes
+        Map<PlayerId, IntegerProperty> temp = new HashMap<>();
+        for (PlayerId id : PlayerId.ALL) {
             temp.put(id, new SimpleIntegerProperty(
                     INITIAL_VALUE_OF_INTEGER_PROPERTY));
         }
@@ -155,7 +154,7 @@ public final class ObservableGameState {
     }
 
     private static List<ObjectProperty<Card>> initFaceUpCards() {
-        List<ObjectProperty<Card>> temp = new ArrayList<ObjectProperty<Card>>();
+        List<ObjectProperty<Card>> temp = new ArrayList<>();
         for (int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++) {
             ObjectProperty<Card> card = new SimpleObjectProperty<>();
             temp.add(card);
@@ -164,7 +163,7 @@ public final class ObservableGameState {
     }
 
     private static Map<Route, ObjectProperty<PlayerId>> initRouteOwners() {
-        Map<Route, ObjectProperty<PlayerId>> map = new HashMap<Route, ObjectProperty<PlayerId>>();
+        Map<Route, ObjectProperty<PlayerId>> map = new HashMap<>();
         for (Route route : ChMap.routes()) {
             map.put(route, new SimpleObjectProperty<>(null));
         }
@@ -172,7 +171,7 @@ public final class ObservableGameState {
     }
 
     private static Map<Card, IntegerProperty> initCardsOfInHand() {
-        Map<Card, IntegerProperty> map = new HashMap<Card, IntegerProperty>();
+        Map<Card, IntegerProperty> map = new HashMap<>();
         for (Card card : Card.ALL) {
             map.put(card, new SimpleIntegerProperty(
                     INITIAL_VALUE_OF_INTEGER_PROPERTY));
@@ -181,7 +180,7 @@ public final class ObservableGameState {
     }
 
     private static Map<Route, BooleanProperty> initCanClaimRoute() {
-        Map<Route, BooleanProperty> map = new HashMap<Route, BooleanProperty>();
+        Map<Route, BooleanProperty> map = new HashMap<>();
         for (Route route : ChMap.routes()) {
             map.put(route, new SimpleBooleanProperty(false));
         }
@@ -208,11 +207,14 @@ public final class ObservableGameState {
      * possédant, ou null si elle n'appartient à personne
      */
     private void modifyRouteOwners() {
-        for (PlayerId player : PlayerId.ALL) {
-            List<Route> playerRoutes = publicGameState.playerState(player)
-                    .routes();
-            for (Route route : ChMap.routes()) {
-                if (playerRoutes.contains(route)) {
+        // contient les routes des joueurs
+        Map<PlayerId, List<Route>> mapOfPlayerRoutes = new HashMap<>();
+        PlayerId.ALL.forEach(player -> mapOfPlayerRoutes.put(player,
+                publicGameState.playerState(player).routes()));
+        
+        for (Route route : ChMap.routes()) {
+            for (PlayerId player : PlayerId.ALL) {
+                if (mapOfPlayerRoutes.get(player).contains(route)) {
                     propertyRouteOwners.get(route).set(player);
                 }
             }

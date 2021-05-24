@@ -24,30 +24,30 @@ public interface ActionHandlers {
          */
          void onDrawCard(int a);
     }
-    public interface ClaimRouteHandler{
+    interface ClaimRouteHandler{
         /**
          *  appelée lorsque le joueur désire s'emparer de la route donnée au moyen
          *  des cartes (initiales) données
          * @param route route ciblée
          * @param cards cartes (initiales) que le joueur veut utiliser pour s'emparer de la route
          */
-        public abstract void onClaimRoute(Route route, SortedBag<Card> cards);
+        void onClaimRoute(Route route, SortedBag<Card> cards);
     }
-    public interface ChooseTicketsHandler{
+    interface ChooseTicketsHandler{
         /**
          * appelée lorsque le joueur a choisi de garder les billets donnés suite à un tirage de billets
-         * @param tickets
+         * @param tickets tickets gardés
          */
-        public abstract void onChooseTickets(SortedBag<Ticket> tickets);
+        void onChooseTickets(SortedBag<Ticket> tickets);
     }
-    public interface ChooseCardsHandler{
+    interface ChooseCardsHandler{
         /**
          * appelée lorsque le joueur a choisi d'utiliser les cartes données comme cartes initiales
          * ou additionnelles lors de la prise de possession d'une route; s'il s'agit de cartes additionnelles,
          * alors le multiensemble peut être vide, ce qui signifie que le joueur renonce à s'emparer du tunnel
-         * @param cards
+         * @param cards les cartes utilisées
          */
-        public abstract void onChooseCards(SortedBag<Card> cards);
+        void onChooseCards(SortedBag<Card> cards);
     }
 
 }

@@ -1,5 +1,4 @@
 package ch.epfl.tchu.net;
-
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -105,7 +104,7 @@ public final class Serdes {
     /**
      * Serde pour les valeurs de types composites
      */
-    public static final Serde<PublicCardState> SERDE_PUBLIC_CARD_STATE = new Serde<PublicCardState>() {
+    public static final Serde<PublicCardState> SERDE_PUBLIC_CARD_STATE = new Serde<>() {
         @Override
         public String serialize(PublicCardState objet) {
             return String.join(SEPARATOR_LIST_COMPOSITE,
@@ -127,7 +126,7 @@ public final class Serdes {
 
     };
 
-    public static final Serde<PublicPlayerState> SERDE_PUBLIC_PLAYER_STATE = new Serde<PublicPlayerState>() {
+    public static final Serde<PublicPlayerState> SERDE_PUBLIC_PLAYER_STATE = new Serde<>() {
         @Override
         public String serialize(PublicPlayerState objet) {
             return String.join(SEPARATOR_LIST_COMPOSITE,
@@ -149,7 +148,7 @@ public final class Serdes {
 
     };
 
-    public static final Serde<PlayerState> SERDE_PLAYER_STATE = new Serde<PlayerState>() {
+    public static final Serde<PlayerState> SERDE_PLAYER_STATE = new Serde<>() {
         @Override
         public String serialize(PlayerState objet) {
             return String.join(SEPARATOR_LIST_COMPOSITE,
@@ -173,7 +172,7 @@ public final class Serdes {
         }
     };
 
-    public static final Serde<PublicGameState> SERDE_PUBLIC_GAME_STATE = new Serde<PublicGameState>() {
+    public static final Serde<PublicGameState> SERDE_PUBLIC_GAME_STATE = new Serde<>() {
 
         @Override
         public String serialize(PublicGameState objet) {

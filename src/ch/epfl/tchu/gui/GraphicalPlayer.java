@@ -102,7 +102,9 @@ public final class GraphicalPlayer {
      * méthode sur l'état observable du joueur
      * 
      * @param newGameState
+     *            nouveau gameState
      * @param newPlayerState
+     *            nouveau playerState
      */
     public void setState(PublicGameState newGameState,
             PlayerState newPlayerState) {
@@ -111,13 +113,14 @@ public final class GraphicalPlayer {
     }
 
     /**
-     * méthode prenant un message — de type String — et l'ajoutant au bas des
+     * méthode prenant un message—de type String — et l'ajoutant au bas des
      * informations sur le déroulement de la partie, qui sont présentées dans la
-     * partie inférieure de la vue des informations ; cette vue ne doit contenir
+     * partie inférieure de la vue des informations; cette vue ne doit contenir
      * que les cinq derniers messages reçus (ce qui correspond à la constante
      * MAXIMUM_NUMBER_VISIBLE_INFO de Constants)
      * 
      * @param message
+     *            le message à afficher
      */
     public void receiveInfo(String message) {
         assert isFxApplicationThread();
@@ -137,8 +140,11 @@ public final class GraphicalPlayer {
      * Handler, ceci est fait par la méthode makeHandlerPropertiesNull
      * 
      * @param drawTicketsHandler
+     *            le handler du tirage de billets
      * @param drawCardHandler
+     *            le handler du tirage de cartes
      * @param claimRouteHandler
+     *            le handler qui se charge de la prise des routes
      */
     public void startTurn(ActionHandlers.DrawTicketsHandler drawTicketsHandler,
             DrawCardHandler drawCardHandler,
@@ -190,7 +196,7 @@ public final class GraphicalPlayer {
 
         int min = ticketsToChoose.size() - Constants.DISCARDABLE_TICKETS_COUNT;
 
-        ListView<Ticket> listView = listViewTicket(ticketsToChoose, true);
+        ListView<Ticket> listView = listViewTicket(ticketsToChoose);
         Button chooseTicketsButton = chooseTicketsButton(listView, min,
                 chooseTicketsHandler);
         Stage chooseWindow = chooseGraph(main, StringsFr.TICKETS_CHOICE, String
@@ -243,8 +249,7 @@ public final class GraphicalPlayer {
         assert isFxApplicationThread();
         ObservableList<SortedBag<Card>> observableListCards = FXCollections
                 .observableArrayList(possibleClaimCards);
-        ListView<SortedBag<Card>> listView = listViewCard(observableListCards,
-                false);
+        ListView<SortedBag<Card>> listView = listViewCard(observableListCards);
         Button chooseClaimCardsButton = chooseCardsButton(listView,
                 chooseCardsHandler, false);
         Stage chooseWindow = chooseGraph(main, StringsFr.CARDS_CHOICE,
@@ -270,8 +275,7 @@ public final class GraphicalPlayer {
         assert isFxApplicationThread();
         ObservableList<SortedBag<Card>> observableListCards = FXCollections
                 .observableArrayList(possibleAdditionalCards);
-        ListView<SortedBag<Card>> listView = listViewCard(observableListCards,
-                false);
+        ListView<SortedBag<Card>> listView = listViewCard(observableListCards);
         Button choosedAdditionalCardsButton = chooseCardsButton(listView,
                 chooseCardsHandler, true);
         Stage chooseWindow = chooseGraph(main, StringsFr.CARDS_CHOICE,
@@ -312,7 +316,7 @@ public final class GraphicalPlayer {
      * @param introText
      * @param listView
      * @param caseButton
-     * @return
+     * @return la fenêtre pour choisir les billets ou les cartes
      */
     private <T> Stage chooseGraph(Stage root, String title, String introText,
             ListView<T> listView, Button caseButton) {
@@ -343,30 +347,22 @@ public final class GraphicalPlayer {
     }
 
     /**
-     * Pour la liste view
+     * Pour les liste view
      */
     private ListView<SortedBag<Card>> listViewCard(
-            ObservableList<SortedBag<Card>> list, boolean multiple) {
+            ObservableList<SortedBag<Card>> list) {
         assert isFxApplicationThread();
         ListView<SortedBag<Card>> listView = new ListView<>(list);
         listView.setCellFactory(
                 v -> new TextFieldListCell<>(new CardBagStringConverter()));
-        if (multiple) {
-            listView.getSelectionModel()
-                    .setSelectionMode(SelectionMode.MULTIPLE);
-        }
         return listView;
     }
 
-    private ListView<Ticket> listViewTicket(SortedBag<Ticket> ticketsToChoose,
-            boolean multiple) {
+    private ListView<Ticket> listViewTicket(SortedBag<Ticket> ticketsToChoose) {
         assert isFxApplicationThread();
         ListView<Ticket> ticketList = new ListView<>(
                 FXCollections.observableList(ticketsToChoose.toList()));
-        if (multiple) {
-            ticketList.getSelectionModel()
-                    .setSelectionMode(SelectionMode.MULTIPLE);
-        }
+        ticketList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         return ticketList;
     }
 

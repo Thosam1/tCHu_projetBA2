@@ -1,5 +1,7 @@
-package ch.epfl.tchu;
+package ch.epfl.tchu.game;
 
+import ch.epfl.tchu.Preconditions;
+import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
 

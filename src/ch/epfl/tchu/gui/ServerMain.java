@@ -1,5 +1,4 @@
 package ch.epfl.tchu.gui;
-
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
@@ -39,7 +38,7 @@ public class ServerMain extends Application {
      * fil d'exécution gérant la partie, qui ne fait rien d'autre qu'exécuter la
      * méthode play de Game.
      *
-     * @param stage
+     * @param stage this is not used by the method
      * @throws Exception
      */
     @Override
@@ -54,13 +53,11 @@ public class ServerMain extends Application {
 
         // 2)
         Player secondPlayer;
-
         Socket socket;
         try (ServerSocket serverSocket = new ServerSocket(5108)) {
             socket = serverSocket.accept();
         }
-        Player playerProxy = new RemotePlayerProxy(socket);
-        secondPlayer = playerProxy;
+        secondPlayer = new RemotePlayerProxy(socket);
 
         // 3)
         GraphicalPlayerAdapter firstGraphicalPlayerAdapter = new GraphicalPlayerAdapter();
