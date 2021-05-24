@@ -45,7 +45,7 @@ public interface ActionHandlers {
          * appelée lorsque le joueur a choisi d'utiliser les cartes données comme cartes initiales
          * ou additionnelles lors de la prise de possession d'une route; s'il s'agit de cartes additionnelles,
          * alors le multiensemble peut être vide, ce qui signifie que le joueur renonce à s'emparer du tunnel
-         * @param cards
+         * @param cards les cartes utilisées
          */
         void onChooseCards(SortedBag<Card> cards);
     }

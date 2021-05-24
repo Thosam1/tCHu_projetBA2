@@ -23,6 +23,8 @@ import javafx.scene.text.TextFlow;
  */
 
 final class InfoViewCreator {
+    private static final int CIRCLE_RADIUS = 5;
+
     private InfoViewCreator() {
     }
 
@@ -53,7 +55,7 @@ final class InfoViewCreator {
 
             // Ce cercle de rayon 5 est placé en haut à gauche du
             // TextFlowPlayerStatistics par défaut
-            Circle circle = new Circle(5);
+            Circle circle = new Circle(CIRCLE_RADIUS);
             circle.getStyleClass().add("filled");
 
             Text textPlayerStatistics = new Text();

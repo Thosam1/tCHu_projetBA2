@@ -6,6 +6,7 @@ import ch.epfl.tchu.game.*;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -67,9 +68,10 @@ public final class RemotePlayerClient {
                     PlayerId ownId = Serdes.SERDE_PLAYER_ID.deserialize(arg1);
                     List<String> names = Serdes.SERDE_LIST_OF_STRING
                             .deserialize(arg2);
-                    Map<PlayerId, String> playerNames = Map.of(
-                            PlayerId.PLAYER_1, names.get(0), PlayerId.PLAYER_2,
-                            names.get(1));
+                    Map<PlayerId, String> playerNames = new HashMap<>();
+                    for(int i = 0; i < PlayerId.ALL.size(); i++){
+                        playerNames.put(PlayerId.ALL.get(i), names.get(i));
+                    }
                     // le premier nom est celui du premier joueur et le second
                     // est celui du second ainsi de suite
                     player.initPlayers(ownId, playerNames);

@@ -141,9 +141,8 @@ public final class ObservableGameState {
      * La constante INITIAL_VALUE_INTEGER_PROPERTY est égale à 0
      */
     private static Map<PlayerId, IntegerProperty> initPropertyIdMap() {
-        Map<PlayerId, IntegerProperty> temp = new HashMap<PlayerId, IntegerProperty>();
-        for (PlayerId id : PlayerId.ALL) {// TODO mettre des forEach avec des
-                                          // lambdas dans toutes ces méthodes
+        Map<PlayerId, IntegerProperty> temp = new HashMap<>();
+        for (PlayerId id : PlayerId.ALL) {
             temp.put(id, new SimpleIntegerProperty(
                     Constants.INITIAL_VALUE_OF_INTEGER_PROPERTY));
         }
@@ -208,17 +207,16 @@ public final class ObservableGameState {
         Map<PlayerId, List<Route>> mapOfPlayerRoutes = new HashMap<>();
         PlayerId.ALL.forEach(player -> mapOfPlayerRoutes.put(player,
                 publicGameState.playerState(player).routes()));
-
         for (Route route : ChMap.routes()) {
             for (PlayerId player : PlayerId.ALL) {
                 if (mapOfPlayerRoutes.get(player).contains(route)) {
                     propertyRouteOwners.get(route).set(player);
                     break;
                 }
-                propertyRouteOwners.get(route).set(null);
             }
         }
     }
+
 
     /**
      * update les tickets du joueur auquel la classe correspond

@@ -1,6 +1,6 @@
 package ch.epfl.tchu.game.net;
 
-import ch.epfl.tchu.SmartBot;
+import ch.epfl.tchu.game.SmartBot;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 import ch.epfl.tchu.net.RemotePlayerClient;
@@ -9,7 +9,6 @@ import ch.epfl.tchu.net.RemotePlayerProxy;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 

@@ -106,7 +106,7 @@ final class MapViewCreator {
 
             // Lorsqu'un joueur clique sur un élément quelconque d'un groupe
             // représentant une route, cela signifie qu'il désire s'en
-            // emparer — 
+            // emparer—
             // ou tenter de le faire dans le cas d'un tunnel.
             groupRoute.setOnMouseClicked(e -> {
                 ClaimRouteHandler claimRouteH = objectProperty.get();

@@ -6,14 +6,16 @@ import ch.epfl.tchu.game.Ticket;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.Group;
-
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+
+import static ch.epfl.tchu.game.Constants.*;
 
 /**
  * @author Thösam Norlha-Tsang (330163) classe non-instanciable dont le but est
@@ -21,6 +23,14 @@ import javafx.scene.text.Text;
  *         représentant des cartes
  */
 final class DecksViewCreator {
+    private static final int EXTERIOR_CARD_WIDTH = 60;
+    private static final int EXTERIOR_CARD_HEIGHT = 90;
+    private static final int INTERIOR_CARD_WIDTH = 40;
+    private static final int INTERIOR_CARD_HEIGHT = 70;
+    private static final int BACKGROUND_BUTTON_WIDTH = 50;
+    private static final int BACKGROUND_BUTTON_HEIGHT = 5;
+
+
     // constructeur privé
     private DecksViewCreator() {
     }
@@ -139,7 +149,6 @@ final class DecksViewCreator {
         gaugedTickets.setOnMouseClicked(e -> { // ou bien setOnAction
             ActionHandlers.DrawTicketsHandler drawTickets = drawTicketHandler
                     .get();
-            ;
             drawTickets.onDrawTickets();
         });
 
@@ -148,7 +157,7 @@ final class DecksViewCreator {
         gaugedDeck.disableProperty().bind(drawCardsHandler.isNull());
         gaugedDeck.setOnMouseClicked(e -> {
             ActionHandlers.DrawCardHandler drawCards = drawCardsHandler.get();
-            drawCards.onDrawCard(-1);
+            drawCards.onDrawCard(DECK_SLOT);
         });
 
         cardPaneRoot.getChildren().add(0, gaugedTickets); // has to be first
@@ -161,8 +170,8 @@ final class DecksViewCreator {
      * méthode pour donner un "style" au cartes, permets d'éviter de recopier du
      * code
      * 
-     * @param cardName
-     * @return
+     * @param cardName le nom de la carte (comme défini dans la classe Card)
+     * @return le nom de la carte
      */
     private static String assignCardStyle(String cardName) {
         return (cardName.equals(Card.LOCOMOTIVE.name()) ? "NEUTRAL" : cardName);
@@ -176,13 +185,13 @@ final class DecksViewCreator {
     private static StackPane cardEmptyLayout() {
         // les deux valeurs passées aux constructeur de Rectangle
         // correspondent au dimensions largeur et hauteur
-        Rectangle outside = new Rectangle(60, 90);
+        Rectangle outside = new Rectangle(EXTERIOR_CARD_WIDTH, EXTERIOR_CARD_HEIGHT);
         outside.getStyleClass().add("outside");
 
-        Rectangle filledInside = new Rectangle(40, 70);
+        Rectangle filledInside = new Rectangle(INTERIOR_CARD_WIDTH, INTERIOR_CARD_HEIGHT);
         filledInside.getStyleClass().addAll("filled", "inside");
 
-        Rectangle trainImage = new Rectangle(40, 70);
+        Rectangle trainImage = new Rectangle(INTERIOR_CARD_WIDTH, INTERIOR_CARD_HEIGHT);
         trainImage.getStyleClass().add("train-image");
 
         StackPane pane = new StackPane(outside, filledInside, trainImage);
@@ -238,12 +247,12 @@ final class DecksViewCreator {
 
         // les deux valeurs passées aux constructeur de Rectangle correspondent
         // au dimensions largeur et hauteur
-        Rectangle background = new Rectangle(50, 5);
+        Rectangle background = new Rectangle(BACKGROUND_BUTTON_WIDTH, BACKGROUND_BUTTON_HEIGHT);
         background.getStyleClass().add("background");
 
-        Rectangle foreground = new Rectangle(50, 5);
+        Rectangle foreground = new Rectangle(BACKGROUND_BUTTON_WIDTH, BACKGROUND_BUTTON_HEIGHT);
         foreground.getStyleClass().add("foreground");
-        foreground.widthProperty().bind(percentage.multiply(50).divide(100));
+        foreground.widthProperty().bind(percentage.multiply(BACKGROUND_BUTTON_WIDTH).divide(100));
 
         Group group = new Group(background, foreground);
         button.setGraphic(group);

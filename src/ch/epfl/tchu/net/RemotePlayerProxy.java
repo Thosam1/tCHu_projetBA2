@@ -50,9 +50,7 @@ public final class RemotePlayerProxy implements Player {
      */
     private void messageOut(String... args) {
         List<String> list = new ArrayList<>();
-        for(String string : args) {
-            list.add(string);
-        }
+        Collections.addAll(list, args);
         list.add("\n");
         
         try {
@@ -100,7 +98,7 @@ public final class RemotePlayerProxy implements Player {
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
         String argument1 = Serdes.SERDE_PLAYER_ID.serialize(ownId);
         String argument2 = Serdes.SERDE_LIST_OF_STRING
-                .serialize(List.of(playerNames.get(PlayerId.PLAYER_1),
+                .serialize(List.of(playerNames.get(PlayerId.PLAYER_1),      //TODO
                         playerNames.get(PlayerId.PLAYER_2)));
         messageOut(MessageId.INIT_PLAYERS.name(), argument1, argument2);
     }
