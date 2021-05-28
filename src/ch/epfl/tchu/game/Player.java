@@ -36,6 +36,12 @@ public interface Player {
     public abstract void receiveInfo(String info);
 
     /**
+     * appelée pour updater le chat d'un joueur
+     * Ajoute chatToAdd au chat du joueur courant et retourne la valeur que le joueur désir passer à l'autre joueur
+     * */
+    public abstract String updateChat(String chatToAdd, boolean returnAvailable);
+    
+    /**
      * appelée chaque fois que l'état du jeu a changé, pour informer le joueur de la composante publique de ce nouvel état, newState, ainsi que de son propre état, ownState
      * @param newState
      * @param ownState

@@ -1,5 +1,6 @@
 package ch.epfl.tchu.gui;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -58,12 +59,25 @@ public final class GraphicalPlayerAdapter implements Player {
     private final ActionHandlers.ClaimRouteHandler claimRouteHandler;
     private final ActionHandlers.ChooseCardsHandler chooseCardsHandler;
 
+    private final ActionHandlers.AddToChatHandler addToChatHandler;
+
+    private LinkedList<String> pendingChatMessages = new LinkedList<>();
+    
     /**
      * construit les instances de ActionHandlers et les stocke en attribut.
      * Leurs unique méthode manipule les BlockingQueue
      */
     public GraphicalPlayerAdapter() {
         // créé les handlers
+        /**
+         * pendingChatMessages contient tous les messages entrés par un joueur
+         * avant qu'ils aient été passé à l'autre joueur
+         */
+        addToChatHandler = newChatMessage -> {
+
+            pendingChatMessages.add(newChatMessage);
+        };
+        
         chooseTicketHandler = tickets -> {
             try {
                 qTickets.put(tickets);
@@ -119,7 +133,7 @@ public final class GraphicalPlayerAdapter implements Player {
     @Override
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
         Platform.runLater(() -> graphicalPlayer = new GraphicalPlayer(ownId,
-                playerNames));
+                playerNames, addToChatHandler));
 
     }
 
@@ -131,6 +145,33 @@ public final class GraphicalPlayerAdapter implements Player {
         Platform.runLater(() -> graphicalPlayer.receiveInfo(info));
     }
 
+    /**
+     * Cette méthode permet d'envoyer et recevoir un message
+     * 
+     * Dans un premier temps, si @param chatToAdd n'est pas vide ou null alors
+     * le joueur rajoute le message à son propre chat ce qui se fait par l'appel
+     * à addToChat
+     * 
+     * Dans un second temps, la prochaine valeur de pendingChatMessages est
+     * retourné si les conditions sont true
+     * 
+     * @param returnAvailable
+     *            n'est pas toujours true car dans Game la méthode updateChat du
+     *            premier joueur est appelée une fois de plus que celle du
+     *            second
+     */
+    @Override
+    public String updateChat(String chatToAdd, boolean returnAvailable) {
+        if (/*chatToAdd != null && */!chatToAdd.isBlank()) {
+            Platform.runLater(
+                    () -> graphicalPlayer.addToChat(chatToAdd));
+        }
+
+        return (!pendingChatMessages.isEmpty() && returnAvailable)
+                ? pendingChatMessages.remove()
+                : "";
+    }
+    
     /**
      * appelle sur le fil JavaFX la méthode setState du joueur graphique
      */

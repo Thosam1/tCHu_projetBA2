@@ -5,6 +5,7 @@ import java.util.*;
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
+import ch.epfl.tchu.gui.ActionHandlers.AddToChatHandler;
 import ch.epfl.tchu.gui.ActionHandlers.ChooseCardsHandler;
 import ch.epfl.tchu.gui.ActionHandlers.ChooseTicketsHandler;
 import ch.epfl.tchu.gui.ActionHandlers.ClaimRouteHandler;
@@ -22,6 +23,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -48,9 +50,15 @@ public final class GraphicalPlayer {
      */
     private static final int MAXIMUM_NUMBER_VISIBLE_MESSAGES = 5;
 
+    private static final int TEXT_INPUT_MAX_CAPACITY = 100;
+    private static final String DEFAULT_TEXT_INPUT = "Enter Text Here";
+
     private final ObservableGameState observableGame;
     private final ObservableList<Text> messageList = FXCollections
             .observableList(new ArrayList<>());
+    private final ObservableList<String> chatList = FXCollections // partie 12
+            .observableList(new ArrayList<>());
+
     private final PlayerId playerId;
     private final Map<PlayerId, String> mapPlayerNames;
     private final Stage main;
@@ -62,6 +70,10 @@ public final class GraphicalPlayer {
     private final ObjectProperty<ClaimRouteHandler> claimRouteProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<DrawTicketsHandler> drawTicketsProperty = new SimpleObjectProperty<>();
 
+    // cette propriété n'est jamais null pendant le jeu car nous voulons pouvoir
+    // envoyer un chat à tout moment
+    private final ObjectProperty<AddToChatHandler> addToChatProperty = new SimpleObjectProperty<>();
+
     /**
      * Constructeur de la classe GraphicalPlayer
      * 
@@ -71,11 +83,18 @@ public final class GraphicalPlayer {
      *            la map contenant les id des joueurs et leur map correspondant
      */
     public GraphicalPlayer(PlayerId playerId,
-            Map<PlayerId, String> mapPlayerNames) {
+            Map<PlayerId, String> mapPlayerNames,
+            AddToChatHandler addToChatHandler) {
+        // la propriété du addToChatHandler ne change jamais, ainsi il faut
+        // trouver un moment ou GraphicalPlayerAdapter passe le Handler à
+        // GraphicalPlayer
+
         assert isFxApplicationThread();
         this.playerId = playerId;
         this.mapPlayerNames = mapPlayerNames;
         observableGame = new ObservableGameState(playerId);
+
+        addToChatProperty.set(addToChatHandler);
 
         // créé le CardChooser que l'on passe à createMapView
         MapViewCreator.CardChooser chooseCard = this::chooseClaimCards;
@@ -91,7 +110,7 @@ public final class GraphicalPlayer {
                 drawTicketsProperty, drawCardProperty);
         Node handView = DecksViewCreator.createHandView(observableGame);
         Node infoView = InfoViewCreator.createInfoView(playerId, mapPlayerNames,
-                observableGame, messageList);
+                observableGame, messageList, this);
 
         main = mainSceneGraph(mapView, cardsView, handView, infoView);
         main.show();
@@ -130,6 +149,18 @@ public final class GraphicalPlayer {
             messageList.remove(0);
         }
         observableGame.updateTicketListHandPoints();    // --- --- Extension tickets verts
+    }
+
+    /**
+     * méthode qui rajoute le message d'un autre joueur au chat du joueur
+     * courant
+     * 
+     * @param newChat
+     *            le chat qui doit etre ajouté
+     */
+    public void addToChat(String newChat) {
+        assert isFxApplicationThread();
+        chatList.add(newChat);
     }
 
     /**
@@ -248,7 +279,8 @@ public final class GraphicalPlayer {
      */
     public void chooseClaimCards(List<SortedBag<Card>> possibleClaimCards,
             ChooseCardsHandler chooseCardsHandler) {
-        chooseCards(possibleClaimCards, chooseCardsHandler, false, StringsFr.CHOOSE_CARDS);
+        chooseCards(possibleClaimCards, chooseCardsHandler, false,
+                StringsFr.CHOOSE_CARDS);
     }
 
     /**
@@ -266,7 +298,8 @@ public final class GraphicalPlayer {
     public void choosedAdditionalCards(
             List<SortedBag<Card>> possibleAdditionalCards,
             ChooseCardsHandler chooseCardsHandler) {
-        chooseCards(possibleAdditionalCards, chooseCardsHandler, true, StringsFr.CHOOSE_ADDITIONAL_CARDS);
+        chooseCards(possibleAdditionalCards, chooseCardsHandler, true,
+                StringsFr.CHOOSE_ADDITIONAL_CARDS);
     }
 
     private void chooseCards(List<SortedBag<Card>> cardsList,
@@ -425,6 +458,62 @@ public final class GraphicalPlayer {
         drawCardProperty.set(null);
         claimRouteProperty.set(null);
         drawTicketsProperty.set(null);
+    }
+
+    /**
+     * méthode appelée dans createInfoView lorsque le bouton Chat est activé Son
+     * role est de faire apparaitre le chat
+     * 
+     * Les messages sont contenu dans une ListView (chatListView) Les nouveaux
+     * messages sont entrés dans textInput Lorsque le joueur active le bouton
+     * sendMessage, le contenu de textInput est extrait et passé au handler dans
+     * le cas ou il n'est pas blank
+     * 
+     * Nous avons décidé que toutes les actions sont seulement activées par
+     * cliques de souris
+     */
+    public void openChat() {
+        ListView<String> chatListView = new ListView<>(chatList);
+
+        Stage stage = new Stage(StageStyle.UTILITY);
+        stage.initOwner(main);
+        stage.initModality(Modality.WINDOW_MODAL);
+
+        VBox vBox = new VBox();
+
+        TextField textInput = new TextField(DEFAULT_TEXT_INPUT);
+        // si le joueur click sur textInput, son contenu est vidé pour que le
+        // joueur puisse entrer son message
+        textInput.setOnMouseClicked(e -> textInput.clear());
+
+        Button sendMessage = new Button();
+
+        sendMessage.getStyleClass().add("gauged");
+        sendMessage.setText("SEND");
+
+        sendMessage.setOnMouseClicked(e -> {
+            String input = textInput.getText(0,
+                    Math.min(TEXT_INPUT_MAX_CAPACITY, textInput.getLength()));
+
+            textInput.setText(DEFAULT_TEXT_INPUT);
+
+            if (!input.isBlank() && !input.equals(DEFAULT_TEXT_INPUT)) {
+                AddToChatHandler addToChatHandler = addToChatProperty.get();
+                addToChatHandler.onNewChatMessage(input);
+                addToChat(String.join(": ", List.of("You", input)));
+                // "You: " avant un message indique au joueur que c'est son
+                // message
+            }
+        });
+
+        vBox.getChildren().addAll(chatListView, textInput, sendMessage);
+
+        Scene scene = new Scene(vBox);
+        scene.getStylesheets().add("chooser.css");
+        stage.setTitle("Communicate with the other player");
+        stage.setScene(scene);
+
+        stage.show();
     }
 
     /**
