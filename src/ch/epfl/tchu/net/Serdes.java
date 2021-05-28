@@ -1,4 +1,5 @@
 package ch.epfl.tchu.net;
+
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -98,8 +99,7 @@ public final class Serdes {
             .bagOf(SERDE_TICKET, SEPARATOR_LIST);
 
     public static final Serde<List<SortedBag<Card>>> SERDE_LIST_OF_SORTED_BAG_OF_CARD = Serde
-            .listOf(SERDE_SORTED_BAG_OF_CARD,
-                    SEPARATOR_LIST_SORTED_BAG);
+            .listOf(SERDE_SORTED_BAG_OF_CARD, SEPARATOR_LIST_SORTED_BAG);
 
     /**
      * Serde pour les valeurs de types composites
@@ -115,8 +115,8 @@ public final class Serdes {
 
         @Override
         public PublicCardState deserialize(String string) {
-            String[] stringListe = string.split(
-                    Pattern.quote(SEPARATOR_LIST_COMPOSITE), -1);
+            String[] stringListe = string
+                    .split(Pattern.quote(SEPARATOR_LIST_COMPOSITE), -1);
             List<Card> faceUpCards = SERDE_LIST_OF_CARD
                     .deserialize(stringListe[0]);
             int deckSize = SERDE_INTEGER.deserialize(stringListe[1]);
@@ -137,8 +137,8 @@ public final class Serdes {
 
         @Override
         public PublicPlayerState deserialize(String string) {
-            String[] stringListe = string.split(
-                    Pattern.quote(SEPARATOR_LIST_COMPOSITE), -1);
+            String[] stringListe = string
+                    .split(Pattern.quote(SEPARATOR_LIST_COMPOSITE), -1);
             int ticketCount = SERDE_INTEGER.deserialize(stringListe[0]);
             int cardCount = SERDE_INTEGER.deserialize(stringListe[1]);
             List<Route> routes = SERDE_LIST_OF_ROUTE
@@ -159,8 +159,8 @@ public final class Serdes {
 
         @Override
         public PlayerState deserialize(String string) {
-            String[] stringListe = string.split(
-                    Pattern.quote(SEPARATOR_LIST_COMPOSITE), -1);
+            String[] stringListe = string
+                    .split(Pattern.quote(SEPARATOR_LIST_COMPOSITE), -1);
 
             SortedBag<Ticket> tickets = SERDE_SORTED_BAG_OF_TICKET
                     .deserialize(stringListe[0]);
@@ -189,8 +189,8 @@ public final class Serdes {
 
         @Override
         public PublicGameState deserialize(String string) {
-            String[] stringListe = string.split(
-                    Pattern.quote(SEPARATOR_PUBLIC_GAME_STATE), -1);
+            String[] stringListe = string
+                    .split(Pattern.quote(SEPARATOR_PUBLIC_GAME_STATE), -1);
 
             int ticketsCount = SERDE_INTEGER.deserialize(stringListe[0]);
             PublicCardState cardState = SERDE_PUBLIC_CARD_STATE

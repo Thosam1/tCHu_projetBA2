@@ -146,44 +146,36 @@ public final class ObservableGameState {
      */
     private static Map<PlayerId, IntegerProperty> initPropertyIdMap() {
         Map<PlayerId, IntegerProperty> temp = new HashMap<>();
-        for (PlayerId id : PlayerId.ALL) {
-            temp.put(id, new SimpleIntegerProperty(
-                    INITIAL_VALUE_OF_INTEGER_PROPERTY));
-        }
+        PlayerId.ALL.forEach(id -> temp.put(id,
+                new SimpleIntegerProperty(INITIAL_VALUE_OF_INTEGER_PROPERTY)));
         return Collections.unmodifiableMap(temp);
     }
 
     private static List<ObjectProperty<Card>> initFaceUpCards() {
         List<ObjectProperty<Card>> temp = new ArrayList<>();
-        for (int i = 0; i < Constants.FACE_UP_CARDS_COUNT; i++) {
-            ObjectProperty<Card> card = new SimpleObjectProperty<>();
-            temp.add(card);
-        }
+        Constants.FACE_UP_CARD_SLOTS
+                .forEach(i -> temp.add(new SimpleObjectProperty<>()));
         return Collections.unmodifiableList(temp);
     }
 
     private static Map<Route, ObjectProperty<PlayerId>> initRouteOwners() {
         Map<Route, ObjectProperty<PlayerId>> map = new HashMap<>();
-        for (Route route : ChMap.routes()) {
-            map.put(route, new SimpleObjectProperty<>(null));
-        }
+        ChMap.routes().forEach(
+                route -> map.put(route, new SimpleObjectProperty<>(null)));
         return Collections.unmodifiableMap(map);
     }
 
     private static Map<Card, IntegerProperty> initCardsOfInHand() {
         Map<Card, IntegerProperty> map = new HashMap<>();
-        for (Card card : Card.ALL) {
-            map.put(card, new SimpleIntegerProperty(
-                    INITIAL_VALUE_OF_INTEGER_PROPERTY));
-        }
+        Card.ALL.forEach(card -> map.put(card,
+                new SimpleIntegerProperty(INITIAL_VALUE_OF_INTEGER_PROPERTY)));
         return Collections.unmodifiableMap(map);
     }
 
     private static Map<Route, BooleanProperty> initCanClaimRoute() {
         Map<Route, BooleanProperty> map = new HashMap<>();
-        for (Route route : ChMap.routes()) {
-            map.put(route, new SimpleBooleanProperty(false));
-        }
+        ChMap.routes().forEach(
+                route -> map.put(route, new SimpleBooleanProperty(false)));
         return Collections.unmodifiableMap(map);
     }
 
@@ -196,10 +188,8 @@ public final class ObservableGameState {
      * propriété afin quelles soient les même que celles de publicGameState
      */
     private void modifyFaceUpCards() {
-        for (int slot : Constants.FACE_UP_CARD_SLOTS) {
-            Card newCard = publicGameState.cardState().faceUpCard(slot);
-            propertyFaceUpCards.get(slot).set(newCard);
-        }
+        Constants.FACE_UP_CARD_SLOTS.forEach(slot -> propertyFaceUpCards
+                .get(slot).set(publicGameState.cardState().faceUpCard(slot)));
     }
 
     /**
@@ -211,11 +201,12 @@ public final class ObservableGameState {
         Map<PlayerId, List<Route>> mapOfPlayerRoutes = new HashMap<>();
         PlayerId.ALL.forEach(player -> mapOfPlayerRoutes.put(player,
                 publicGameState.playerState(player).routes()));
-        
+
         for (Route route : ChMap.routes()) {
             for (PlayerId player : PlayerId.ALL) {
                 if (mapOfPlayerRoutes.get(player).contains(route)) {
                     propertyRouteOwners.get(route).set(player);
+                    break;
                 }
             }
         }
@@ -234,10 +225,8 @@ public final class ObservableGameState {
      * ordre de l enumeration Card avec locomotive à la fin
      */
     private void modifyCardsOfInHand() {
-        for (Card card : Card.ALL) {
-            propertyCardsOfInHand.get(card)
-                    .set(playerState.cards().countOf(card));
-        }
+        Card.ALL.forEach(card -> propertyCardsOfInHand.get(card)
+                .set(playerState.cards().countOf(card)));
     }
 
     /**
@@ -258,10 +247,8 @@ public final class ObservableGameState {
     private void modifyCanClaimRoute() {
         List<List<Station>> listePaireStations = listePaireStations(
                 publicGameState.claimedRoutes());
-        for (Route route : ChMap.routes()) {
-            propertyCanClaimRoute.get(route)
-                    .set(claimable(route, listePaireStations));
-        }
+        ChMap.routes().forEach(route -> propertyCanClaimRoute.get(route)
+                .set(claimable(route, listePaireStations)));
     }
 
     /**
@@ -355,9 +342,7 @@ public final class ObservableGameState {
 
     private List<List<Station>> listePaireStations(List<Route> claimedRoutes) {
         List<List<Station>> listeStations = new ArrayList<>();
-        for (Route route : claimedRoutes) {
-            listeStations.add(route.stations());
-        }
+        claimedRoutes.forEach(route -> listeStations.add(route.stations()));
         return listeStations;
     }
 

@@ -69,7 +69,8 @@ public final class RemotePlayerClient {
                     List<String> names = Serdes.SERDE_LIST_OF_STRING
                             .deserialize(arg2);
                     Map<PlayerId, String> playerNames = new HashMap<>();
-                    for(int i = 0; i < PlayerId.ALL.size(); i++){
+
+                    for (int i = 0; i < PlayerId.ALL.size(); i++) {
                         playerNames.put(PlayerId.ALL.get(i), names.get(i));
                     }
                     // le premier nom est celui du premier joueur et le second

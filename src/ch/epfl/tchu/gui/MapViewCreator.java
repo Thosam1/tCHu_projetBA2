@@ -105,20 +105,12 @@ final class MapViewCreator {
                 List<SortedBag<Card>> possibleClaimCards = observableGame
                         .getPossibleClaimCards(route);
 
-                // si possibleClaimCards contient un seul ensemble de cartes,
-                // donc le joueur n'a pas le choix des cartes à utiliser
+                // le joueur n'a pas le choix des cartes à utiliser
                 // pour s'emparer de la route
-                // la méthode onClaimRoute du gestionnaire d'action passé à
-                // createMapView peut être appelée
-                // 1 correspond au scénario ou une seule combinaison de
-                // cartes peut prendre pocéssion de la route
                 if (possibleClaimCards.size() == 1) {
                     claimRouteH.onClaimRoute(route, possibleClaimCards.get(0));
-                } else {// cas ou il y a plusieurs possibilité de cartes qui
-                        // peuvent permettre de prendre pocession de la route
-                        // provoque l'apparition d'un dialogue demandant au
-                        // joueur de choisir l'ensemble de cartes qu'il désire
-                        // utiliser pour essayer de s'emparer de la route
+                } else {// il a plusieurs possibilité donc une fenetre est
+                        // ouverte pour qu'il choisisse
                     ChooseCardsHandler chooseCardsH = chosenCards -> claimRouteH
                             .onClaimRoute(route, chosenCards);
                     cardChooser.chooseCards(possibleClaimCards, chooseCardsH);

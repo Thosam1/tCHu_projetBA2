@@ -43,7 +43,7 @@ public interface Serde<T> {
      *         deserialize
      */
     static <T> Serde<T> of(Function<T, String> fnSerialisation,
-                           Function<String, T> fnDeserialisation) {
+            Function<String, T> fnDeserialisation) {
         return new Serde<>() {
             public String serialize(T object) {
                 return fnSerialisation.apply(object);
@@ -71,6 +71,7 @@ public interface Serde<T> {
                 return object == null ? ""
                         : String.valueOf(list.indexOf(object));
             }
+
             public T deserialize(String string) {
                 return string.equals("") ? null
                         : list.get(Integer.parseInt(string));
@@ -86,11 +87,7 @@ public interface Serde<T> {
      *         (dé)sérialisées) par le serde donné (celui est défini par une
      *         classe anonyme) La serialisation d'une liste vide retourne ""
      */
-    static <T> Serde<List<T>> listOf(Serde<T> serde,
-                                     Character separator) {
-        // Le fait d avoir separateur en Character et pas char permet d appeler
-        // la méthode toString
-
+    static <T> Serde<List<T>> listOf(Serde<T> serde, Character separator) {
         return new Serde<>() {
             public String serialize(List<T> objet) {
                 List<String> list = new ArrayList<>();
@@ -124,8 +121,8 @@ public interface Serde<T> {
      * @return un serde capable de (dé)sérialiser des multiensembles listes de
      *         valeurs (dé)sérialisées) par le serde donné
      */
-    static <T extends Comparable<T>> Serde<SortedBag<T>> bagOf(
-            Serde<T> serde, Character separator) {
+    static <T extends Comparable<T>> Serde<SortedBag<T>> bagOf(Serde<T> serde,
+            Character separator) {
         Serde<List<T>> serdeList = listOf(serde, separator);
         return of(sortedBag -> serdeList.serialize(sortedBag.toList()),
                 string -> SortedBag.of(serdeList.deserialize(string)));
