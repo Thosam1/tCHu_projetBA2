@@ -8,12 +8,15 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+
+import java.util.Map;
 
 import static ch.epfl.tchu.game.Constants.*;
 
@@ -73,7 +76,7 @@ final class DecksViewCreator {
             cardsBox.getChildren().add(pane);
         }
 
-        ListView<Ticket> tickets = new ListView<>(game.playerTickets());
+        ListView<Ticket> tickets = ticketListBG(game);
         tickets.setId("tickets");
 
         HBox root = new HBox();// new HBox(tickets, cards);
@@ -262,5 +265,33 @@ final class DecksViewCreator {
         button.setGraphic(group);
         button.setText(label);
         return button;
+    }
+
+    //  ----------------------------------
+    private static ListView<Ticket> ticketListBG(ObservableGameState game){
+        ListView<Ticket> ticketListView = new ListView<>(game.playerTickets());
+        ticketListView.setCellFactory(param -> new ticketListBG(game));
+        return ticketListView;
+    }
+
+    static class ticketListBG extends ListCell<Ticket> { //also used in graphicalPlayer //todo
+        private ObservableGameState game;
+        public ticketListBG(ObservableGameState game){
+            this.game = game;
+        }
+        @Override
+        public void updateItem(Ticket item, boolean empty){
+            super.updateItem(item, empty);
+            Map<Ticket, Integer> map = game.getTicketListHandPoints();
+            if(!map.isEmpty() && item != null && map.containsKey(item)){
+                if(/*!styleProperty().getValue().equals("-fx-control-inner-background: \"#92db98\"") &&*/ map.get(item) > 0){
+                    setStyle("-fx-control-inner-background: \"#92db98\";");
+                    setText(item.toString() + "      ; +" + map.get(item) + " points");
+                }else{
+                    setText(item.toString());
+                    setStyle(null);
+                }
+            }
+        }
     }
 }

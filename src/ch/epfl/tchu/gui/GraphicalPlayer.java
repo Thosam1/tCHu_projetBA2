@@ -19,6 +19,7 @@ import javafx.event.Event;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.cell.TextFieldListCell;
@@ -357,8 +358,13 @@ public final class GraphicalPlayer {
 
     private ListView<Ticket> listViewTicket(SortedBag<Ticket> ticketsToChoose) {
         assert isFxApplicationThread();
+        observableGame.setTicketListPopUp(ticketsToChoose); //on le set comme ça on calcule seulement 1 fois pour toute la liste le mettre avant la création de la liste                             // --- --- Extension
         ListView<Ticket> ticketList = new ListView<>(
                 FXCollections.observableList(ticketsToChoose.toList()));
+        if (observableGame.playerState() != null) { //if null, it means it is the start window where we choose tickets
+            ticketList.setCellFactory(param -> new ticketListBG(observableGame));      //TODO why doesnt' work ?
+        }
+
         ticketList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         return ticketList;
     }
@@ -438,4 +444,22 @@ public final class GraphicalPlayer {
 
     }
 
+    //  --- --- --- Extension
+    private static class ticketListBG extends ListCell<Ticket> { //also used in graphicalPlayer //todo
+        private ObservableGameState game;
+        public ticketListBG(ObservableGameState game){
+            this.game = game;
+        }
+        @Override
+        public void updateItem(Ticket item, boolean empty){
+            super.updateItem(item, empty);
+            Map<Ticket, Integer> map = game.getTicketListPopUp();
+            if(!map.isEmpty() && item != null){
+                if(map.get(item) > 0){    //pour réduire on pourrait mettre, si xx ne contient pas le ticket alors ...mais peut être plus long
+                    setStyle("-fx-control-inner-background: \"#92db98\";");
+                }else{setStyle(null);}
+                setText(item.toString());
+            }
+        }
+    }
 }
