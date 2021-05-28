@@ -24,8 +24,8 @@ import ch.epfl.tchu.game.Ticket;
  * @author Aymeric de chillaz (326617)
  */
 public final class RemotePlayerProxy implements Player {
-    final BufferedWriter w;
-    final BufferedReader r;
+    private final BufferedWriter w;
+    private final BufferedReader r;
 
     public RemotePlayerProxy(Socket socket) throws IOException {
         w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),

@@ -28,6 +28,14 @@ final class InfoViewCreator {
     private InfoViewCreator() {
     }
 
+    /**
+     *  voir description au dessus-
+     * @param playerId
+     * @param mapPlayerNames
+     * @param observableGame
+     * @param messageList
+     * @return une partie de l'interface contenant les statistiques des deux joueurs
+     */
     public static VBox createInfoView(PlayerId playerId,
             Map<PlayerId, String> mapPlayerNames,
             ObservableGameState observableGame,

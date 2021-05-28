@@ -75,9 +75,7 @@ final class DecksViewCreator {
 
         ListView<Ticket> tickets = new ListView<>(game.playerTickets());
         tickets.setId("tickets");
-        /**
-         * Construction du plus bas haut plus haut de la pyramide/hiérarchie
-         */
+
         HBox root = new HBox();// new HBox(tickets, cards);
         root.getStylesheets().addAll("decks.css", "colors.css");
         root.getChildren().addAll(tickets, cardsBox);
