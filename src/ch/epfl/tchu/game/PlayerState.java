@@ -182,6 +182,9 @@ public final class PlayerState extends PublicPlayerState {
 
     //  --- --- --- Extension
     public Map<Ticket, Integer> ticketPoint(SortedBag<Ticket> tickets){
+        return ticketPointStatic(tickets, routes());
+    }
+    public static Map<Ticket, Integer> ticketPointStatic(SortedBag<Ticket> tickets, List<Route> routes){
         if(tickets.isEmpty()) return new HashMap<>();
         Map<Ticket, Integer> ticketPoints = new HashMap<>();
         int idMax = -1;
@@ -189,13 +192,13 @@ public final class PlayerState extends PublicPlayerState {
         //nous cherchons l'identité maximale des stations qui relient les routes du joueur
         //Ceci est utile juste après pour la création du StationPartition.Builder
 
-        for(Route r : routes()){
+        for(Route r : routes){
             idMax = Math.max(Math.max(r.station1().id(), r.station2().id()), idMax);
         }
         StationPartition.Builder builder = new StationPartition.Builder(idMax+1);
 
         //nous connectons toutes les stations pour obtenir la StationPartition du joueur
-        routes().forEach(r -> builder.connect(r.station1(), r.station2()));
+        routes.forEach(r -> builder.connect(r.station1(), r.station2()));
         StationPartition partition = builder.build();
 
         for (Ticket ticket : tickets) {

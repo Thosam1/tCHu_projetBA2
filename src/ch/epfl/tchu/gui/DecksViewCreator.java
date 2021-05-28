@@ -1,8 +1,6 @@
 package ch.epfl.tchu.gui;
 
-import ch.epfl.tchu.game.Card;
-import ch.epfl.tchu.game.Constants;
-import ch.epfl.tchu.game.Ticket;
+import ch.epfl.tchu.game.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -283,13 +281,22 @@ final class DecksViewCreator {
         public void updateItem(Ticket item, boolean empty){
             super.updateItem(item, empty);
             Map<Ticket, Integer> map = game.getTicketListHandPoints();
+
+            Map<Ticket, Integer> pointsIfHadAllAvailableRoute = PlayerState.ticketPointStatic(game.playerState().tickets(), game.allAvailableRoutesPlayer(game.playerState().routes()));
+
             if(!map.isEmpty() && item != null && map.containsKey(item)){
                 if(/*!styleProperty().getValue().equals("-fx-control-inner-background: \"#92db98\"") &&*/ map.get(item) > 0){
                     setStyle("-fx-control-inner-background: \"#92db98\";");
                     setText(item.toString() + "      ; +" + map.get(item) + " points");
                 }else{
-                    setText(item.toString());
-                    setStyle(null);
+                    System.out.println(pointsIfHadAllAvailableRoute);   //todo effacer
+                    if(pointsIfHadAllAvailableRoute.get(item) < 0){
+                        setStyle("-fx-control-inner-background: \"#e9787d\";");
+                        setText(item.toString() + "      ; " + pointsIfHadAllAvailableRoute.get(item) + " points");
+                    }else{
+                        setText(item.toString());
+                        setStyle(null);
+                    }
                 }
             }
         }

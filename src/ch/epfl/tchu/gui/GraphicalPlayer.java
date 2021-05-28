@@ -129,6 +129,7 @@ public final class GraphicalPlayer {
         if (messageList.size() > MAXIMUM_NUMBER_VISIBLE_MESSAGES) {
             messageList.remove(0);
         }
+        observableGame.updateTicketListHandPoints();    // --- --- Extension tickets verts
     }
 
     /**
@@ -454,11 +455,21 @@ public final class GraphicalPlayer {
         public void updateItem(Ticket item, boolean empty){
             super.updateItem(item, empty);
             Map<Ticket, Integer> map = game.getTicketListPopUp();
+
+            Map<Ticket, Integer> pointsIfHadAllAvailableRoute = PlayerState.ticketPointStatic(game.playerState().tickets(), game.allAvailableRoutesPlayer(game.playerState().routes()));
+
             if(!map.isEmpty() && item != null){
                 if(map.get(item) > 0){    //pour réduire on pourrait mettre, si xx ne contient pas le ticket alors ...mais peut être plus long
                     setStyle("-fx-control-inner-background: \"#92db98\";");
-                }else{setStyle(null);}
-                setText(item.toString());
+                }else{
+                    if(pointsIfHadAllAvailableRoute.get(item) < 0){
+                        setStyle("-fx-control-inner-background: \"#e9787d\";");
+                        setText(item.toString() + "      ; " + pointsIfHadAllAvailableRoute.get(item) + " points");
+                    }else{
+                        setText(item.toString());
+                        setStyle(null);
+                    }
+                }
             }
         }
     }

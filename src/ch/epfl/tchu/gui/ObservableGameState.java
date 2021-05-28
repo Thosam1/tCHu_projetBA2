@@ -350,7 +350,7 @@ public final class ObservableGameState {
      * les joueurs
      */
 
-    private List<List<Station>> listePaireStations(List<Route> claimedRoutes) {
+    private static List<List<Station>> listePaireStations(List<Route> claimedRoutes) {
         List<List<Station>> listeStations = new ArrayList<>();
         claimedRoutes.forEach(route -> listeStations.add(route.stations()));
         return listeStations;
@@ -366,7 +366,7 @@ public final class ObservableGameState {
      * référence = égalité structurelle ainsi égalité par référence = égalité
      * structurelle
      */
-    private boolean freeRoute(Route paramRoute,
+    private static boolean freeRoute(Route paramRoute,
             List<List<Station>> listePaireStations) {
         boolean output = true; // true si la route et sa voisine (si elle en a)
                                // n'appartiennent à personne
@@ -382,8 +382,25 @@ public final class ObservableGameState {
         return output;
     }
 
-    // --- --- Extension
+    // --- --- Extension ticket vert
     public PlayerState playerState(){
         return playerState;
     }
+
+    // --- --- Extension pour rendre rouge, je les deux méthodes dedans en static
+    public List<Route> allAvailableRoutesPlayer(List<Route> owned) {
+        List<Route> allAvailableRoutes = new ArrayList<>(owned);
+        List<List<Station>> stations = listePaireStations(getPublicGameState().claimedRoutes());
+        for(Route r : ChMap.routes()){
+            if(freeRoute(r, stations)){
+                allAvailableRoutes.add(r);}
+        }
+        return allAvailableRoutes;
+    }
+
+    // -- Extension ticket vert, initiallement dans modifyPlayerTickets, lors de la prise de route, n'est pas mis à jour instantanément, donc on l'a mis avec receiveInfo() de GraphicalPlayer
+    public void updateTicketListHandPoints(){
+        if(playerState != null){ticketListHandPoints = playerState.ticketPoint(playerState.tickets());}
+    }
+
 }
