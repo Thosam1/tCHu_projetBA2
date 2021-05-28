@@ -1,8 +1,6 @@
 package ch.epfl.tchu.net;
-
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
-
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
