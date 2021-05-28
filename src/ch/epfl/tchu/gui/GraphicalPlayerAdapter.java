@@ -162,13 +162,10 @@ public final class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public String updateChat(String chatToAdd, boolean returnAvailable) {
-        if (chatToAdd != null && !chatToAdd.isBlank()) {// TODO peut etre que le
-                                                        // différent que null
-                                                        // n'est pas nécéssaire.
-                                                        // A voir
+        if (/*chatToAdd != null && */!chatToAdd.isBlank()) {
             Platform.runLater(
-                    () -> graphicalPlayers.get(0).addToChat(chatToAdd));
-        } // get(0) car cette méthode n'est pas appelée pour les spectateurs
+                    () -> graphicalPlayer.addToChat(chatToAdd));
+        }
 
         return (!pendingChatMessages.isEmpty() && returnAvailable)
                 ? pendingChatMessages.remove()

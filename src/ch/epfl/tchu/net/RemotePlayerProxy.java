@@ -111,6 +111,13 @@ public final class RemotePlayerProxy implements Player {
     }
 
     @Override
+    public String updateChat(String chatToAdd, boolean notUsefulForProxy) {
+        String argument1 = Serdes.SERDE_STRING.serialize(chatToAdd);
+        messageOut(MessageId.UPDATE_CHAT.name(), argument1);
+        return Serdes.SERDE_STRING.deserialize(messageIn());
+    }
+    
+    @Override
     public void updateState(PublicGameState newState, PlayerState ownState) {
         String argument1 = Serdes.SERDE_PUBLIC_GAME_STATE.serialize(newState);
         String argument2 = Serdes.SERDE_PLAYER_STATE.serialize(ownState);

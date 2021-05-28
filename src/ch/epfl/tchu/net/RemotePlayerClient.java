@@ -79,6 +79,14 @@ public final class RemotePlayerClient {
                     String info = Serdes.SERDE_STRING.deserialize(arg1);
                     player.receiveInfo(info);
                     break;
+                
+                case UPDATE_CHAT:
+                    String chatMessageToAdd = Serdes.SERDE_STRING
+                            .deserialize(arg1);
+                    String chatMessageToSend = player
+                            .updateChat(chatMessageToAdd, true);
+                    writeFlush(w, chatMessageToSend);
+                    
                 case UPDATE_STATE:
                     PublicGameState publicGameState = Serdes.SERDE_PUBLIC_GAME_STATE
                             .deserialize(arg1);

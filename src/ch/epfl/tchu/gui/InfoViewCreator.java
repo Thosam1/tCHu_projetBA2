@@ -7,6 +7,7 @@ import ch.epfl.tchu.game.PlayerId;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
@@ -29,17 +30,19 @@ final class InfoViewCreator {
     }
 
     /**
-     *  voir description au dessus-
+     * voir description au dessus-
+     * 
      * @param playerId
      * @param mapPlayerNames
      * @param observableGame
      * @param messageList
-     * @return une partie de l'interface contenant les statistiques des deux joueurs
+     * @return une partie de l'interface contenant les statistiques des deux
+     *         joueurs
      */
     public static VBox createInfoView(PlayerId playerId,
             Map<PlayerId, String> mapPlayerNames,
             ObservableGameState observableGame,
-            ObservableList<Text> messageList) {
+            ObservableList<Text> messageList, GraphicalPlayer graphicalPlayer) {
 
         // créé un VBox et lui attribut ses feuilles de style
         VBox vBox = new VBox();
@@ -89,18 +92,25 @@ final class InfoViewCreator {
         }
 
         /** Messages */
-      //créé le text flow qui contiendra les 5 derniers messages
+        // créé le text flow qui contiendra les 5 derniers messages
         TextFlow textGameInfo = new TextFlow();
         textGameInfo.setId("game-info");
-        
+
         // Le contenu de la liste d'enfants—retournée par getChildren — de
         // l'instance de TextFlow contenant les messages d'information doit être
         // lié à celui de la liste d'informations passée à la méthode
         // createInfoView.
         Bindings.bindContent(textGameInfo.getChildren(), messageList);
 
-        vBox.getChildren().addAll(vBoxPlayerStats, separator, textGameInfo);
+        /** chat partie 12 */
 
+        Button chatButton = new Button("Chat");
+        chatButton.setOnMouseClicked((e) -> {
+            graphicalPlayer.openChat();
+        });
+
+        vBox.getChildren().addAll(vBoxPlayerStats, separator, textGameInfo, new Separator(), chatButton);
+        
         return vBox;
     }
 }

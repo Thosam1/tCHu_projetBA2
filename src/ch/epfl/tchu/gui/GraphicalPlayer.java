@@ -110,7 +110,7 @@ public final class GraphicalPlayer {
                 drawTicketsProperty, drawCardProperty);
         Node handView = DecksViewCreator.createHandView(observableGame);
         Node infoView = InfoViewCreator.createInfoView(playerId, mapPlayerNames,
-                observableGame, messageList);
+                observableGame, messageList, this);
 
         main = mainSceneGraph(mapView, cardsView, handView, infoView);
         main.show();

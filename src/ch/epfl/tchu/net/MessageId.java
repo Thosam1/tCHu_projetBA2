@@ -18,7 +18,8 @@ public enum MessageId {
     DRAW_SLOT,
     ROUTE,
     CARDS,
-    CHOOSE_ADDITIONAL_CARDS;
+    CHOOSE_ADDITIONAL_CARDS,
+    UPDATE_CHAT;//rajouté pour les appels à updateChat
 
     /**
      *  Liste immuable contenant toutes les valeurs du type enum MessageId, dans l'ordre
