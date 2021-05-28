@@ -102,7 +102,6 @@ public final class PlayerState extends PublicPlayerState {
      *
      * @param additionalCardsCount
      * @param initialCards
-     * @param drawnCards
      * @return la liste de tous les ensembles de cartes que le joueur pourrait utiliser pour s'emparer d'un tunnel, trié par ordre croissant du nombre de cartes locomotives, sachant qu'il a initialement posé les cartes initialCards, que les 3 cartes tirées du sommet de la pioche sont drawnCards, et que ces dernières forcent le joueur à poser encore additionalCardsCount cartes
      * @throws IllegalArgumentException si le nombre de cartes additionnelles n'est pas compris entre 1 et 3 (inclus), si l'ensemble des cartes initiales est vide ou contient plus de 2 types de cartes différents, ou si l'ensemble des cartes tirées ne contient pas exactement 3 cartes
      */
@@ -163,27 +162,14 @@ public final class PlayerState extends PublicPlayerState {
     /**
      * @return le nombre de points gagné ou perdu avec les tickets
      */
+    /**
+     * @return le nombre de points gagné ou perdu avec les tickets
+     */
     public int ticketPoints(){
-        int idMax = -1;
         int ticketPoints = 0;
-        
-        //nous cherchons l'identité maximale des stations qui relient les routes du joueur
-        //Ceci est utile juste après pour la création du StationPartition.Builder
-        
-        for(Route r : routes()){
-            idMax = Math.max(Math.max(r.station1().id(), r.station2().id()), idMax);
+        for(Map.Entry<Ticket, Integer> c : ticketPoint(tickets()).entrySet()){
+            ticketPoints += c.getValue();
         }
-        
-        StationPartition.Builder builder = new StationPartition.Builder(idMax+1);
-
-        //nous connectons toutes les stations pour obtenir la StationPartition du joueur
-        routes().forEach(r -> builder.connect(r.station1(), r.station2()));
-        StationPartition partition = builder.build();
-
-        for (Ticket ticket : tickets()) {
-            ticketPoints += ticket.points(partition);
-        }
-        
         return ticketPoints;
     }
 
@@ -194,4 +180,28 @@ public final class PlayerState extends PublicPlayerState {
         return claimPoints() + ticketPoints();
     }
 
+    //  --- --- --- Extension
+    public Map<Ticket, Integer> ticketPoint(SortedBag<Ticket> tickets){
+        if(tickets.isEmpty()) return new HashMap<>();
+        Map<Ticket, Integer> ticketPoints = new HashMap<>();
+        int idMax = -1;
+
+        //nous cherchons l'identité maximale des stations qui relient les routes du joueur
+        //Ceci est utile juste après pour la création du StationPartition.Builder
+
+        for(Route r : routes()){
+            idMax = Math.max(Math.max(r.station1().id(), r.station2().id()), idMax);
+        }
+        StationPartition.Builder builder = new StationPartition.Builder(idMax+1);
+
+        //nous connectons toutes les stations pour obtenir la StationPartition du joueur
+        routes().forEach(r -> builder.connect(r.station1(), r.station2()));
+        StationPartition partition = builder.build();
+
+        for (Ticket ticket : tickets) {
+            ticketPoints.put(ticket, ticket.points(partition));
+        }
+        return ticketPoints;
+
+    }
 }

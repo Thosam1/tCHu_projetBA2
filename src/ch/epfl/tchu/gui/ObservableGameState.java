@@ -34,6 +34,15 @@ public final class ObservableGameState {
     private PublicGameState publicGameState = null;
     private PlayerState playerState = null;
 
+    // --- --- Extensions
+    private Map<Ticket, Integer> ticketListHandPoints = new HashMap<>(); //ajouté pour le faire le calcul qu'une seule fois, est mis à jour, si le joueur tire des billets ou s'il prend une route -> on peut le mettre dans modifyPlayerTickets dans le setState
+    public Map<Ticket, Integer> getTicketListHandPoints(){return ticketListHandPoints;}
+    private Map<Ticket, Integer> ticketListPopUp = new HashMap<>();
+    public Map<Ticket, Integer> getTicketListPopUp(){return ticketListPopUp;}
+    public void setTicketListPopUp(SortedBag<Ticket> ticketsToChoose) {
+        ticketListPopUp = (playerState == null) ? ticketListPopUp : playerState.ticketPoint(ticketsToChoose);
+    }
+
     /**
      * Propriétés concernant l'état public de la partie
      */
@@ -129,9 +138,9 @@ public final class ObservableGameState {
          * joueur auquel l'instance de ObservableGameState correspond
          */
 
-        modifyPlayerTickets();
         modifyCardsOfInHand();
         modifyCanClaimRoute();
+        modifyPlayerTickets();
 
     }
 
@@ -217,6 +226,7 @@ public final class ObservableGameState {
      */
     private void modifyPlayerTickets() {
         propertyPlayerTickets.setAll(playerState.tickets().toList());
+        ticketListHandPoints = playerState.ticketPoint(playerState.tickets()); // --- --- Extension
     }
 
     /**
@@ -370,5 +380,10 @@ public final class ObservableGameState {
             }
         }
         return output;
+    }
+
+    // --- --- Extension
+    public PlayerState playerState(){
+        return playerState;
     }
 }
