@@ -11,6 +11,13 @@ import ch.epfl.tchu.game.Ticket;
  */
 public interface ActionHandlers {
 
+    interface AddToChatHandler{
+        /**
+         * appelé lorsqu'un joueur désire envoyer un chat
+         * */
+        void onNewChatMessage(String string);
+    }
+    
     interface DrawTicketsHandler{
         /**
          * appelée lorsque le joueur désire tirer des billets
