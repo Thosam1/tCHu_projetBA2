@@ -30,7 +30,6 @@ final class DecksViewCreator {
     private static final int BACKGROUND_BUTTON_WIDTH = 50;
     private static final int BACKGROUND_BUTTON_HEIGHT = 5;
 
-
     // constructeur privé
     private DecksViewCreator() {
     }
@@ -170,7 +169,8 @@ final class DecksViewCreator {
      * méthode pour donner un "style" au cartes, permets d'éviter de recopier du
      * code
      * 
-     * @param cardName le nom de la carte (comme défini dans la classe Card)
+     * @param cardName
+     *            le nom de la carte (comme défini dans la classe Card)
      * @return le nom de la carte
      */
     private static String assignCardStyle(String cardName) {
@@ -185,13 +185,16 @@ final class DecksViewCreator {
     private static StackPane cardEmptyLayout() {
         // les deux valeurs passées aux constructeur de Rectangle
         // correspondent au dimensions largeur et hauteur
-        Rectangle outside = new Rectangle(EXTERIOR_CARD_WIDTH, EXTERIOR_CARD_HEIGHT);
+        Rectangle outside = new Rectangle(EXTERIOR_CARD_WIDTH,
+                EXTERIOR_CARD_HEIGHT);
         outside.getStyleClass().add("outside");
 
-        Rectangle filledInside = new Rectangle(INTERIOR_CARD_WIDTH, INTERIOR_CARD_HEIGHT);
+        Rectangle filledInside = new Rectangle(INTERIOR_CARD_WIDTH,
+                INTERIOR_CARD_HEIGHT);
         filledInside.getStyleClass().addAll("filled", "inside");
 
-        Rectangle trainImage = new Rectangle(INTERIOR_CARD_WIDTH, INTERIOR_CARD_HEIGHT);
+        Rectangle trainImage = new Rectangle(INTERIOR_CARD_WIDTH,
+                INTERIOR_CARD_HEIGHT);
         trainImage.getStyleClass().add("train-image");
 
         StackPane pane = new StackPane(outside, filledInside, trainImage);
@@ -247,12 +250,15 @@ final class DecksViewCreator {
 
         // les deux valeurs passées aux constructeur de Rectangle correspondent
         // au dimensions largeur et hauteur
-        Rectangle background = new Rectangle(BACKGROUND_BUTTON_WIDTH, BACKGROUND_BUTTON_HEIGHT);
+        Rectangle background = new Rectangle(BACKGROUND_BUTTON_WIDTH,
+                BACKGROUND_BUTTON_HEIGHT);
         background.getStyleClass().add("background");
 
-        Rectangle foreground = new Rectangle(BACKGROUND_BUTTON_WIDTH, BACKGROUND_BUTTON_HEIGHT);
+        Rectangle foreground = new Rectangle(BACKGROUND_BUTTON_WIDTH,
+                BACKGROUND_BUTTON_HEIGHT);
         foreground.getStyleClass().add("foreground");
-        foreground.widthProperty().bind(percentage.multiply(BACKGROUND_BUTTON_WIDTH).divide(100));
+        foreground.widthProperty()
+                .bind(percentage.multiply(BACKGROUND_BUTTON_WIDTH).divide(100));
 
         Group group = new Group(background, foreground);
         button.setGraphic(group);

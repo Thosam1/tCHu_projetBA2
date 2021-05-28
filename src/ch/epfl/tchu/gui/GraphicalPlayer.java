@@ -246,15 +246,7 @@ public final class GraphicalPlayer {
      */
     public void chooseClaimCards(List<SortedBag<Card>> possibleClaimCards,
             ChooseCardsHandler chooseCardsHandler) {
-        assert isFxApplicationThread();
-        ObservableList<SortedBag<Card>> observableListCards = FXCollections
-                .observableArrayList(possibleClaimCards);
-        ListView<SortedBag<Card>> listView = listViewCard(observableListCards);
-        Button chooseClaimCardsButton = chooseCardsButton(listView,
-                chooseCardsHandler, false);
-        Stage chooseWindow = chooseGraph(main, StringsFr.CARDS_CHOICE,
-                StringsFr.CHOOSE_CARDS, listView, chooseClaimCardsButton);
-        chooseWindow.show();
+        chooseCards(possibleClaimCards, chooseCardsHandler, false, StringsFr.CHOOSE_CARDS);
     }
 
     /**
@@ -272,15 +264,20 @@ public final class GraphicalPlayer {
     public void choosedAdditionalCards(
             List<SortedBag<Card>> possibleAdditionalCards,
             ChooseCardsHandler chooseCardsHandler) {
+        chooseCards(possibleAdditionalCards, chooseCardsHandler, true, StringsFr.CHOOSE_ADDITIONAL_CARDS);
+    }
+
+    private void chooseCards(List<SortedBag<Card>> cardsList,
+            ChooseCardsHandler chooseCardsHandler, boolean emptyValid,
+            String introText) {
         assert isFxApplicationThread();
         ObservableList<SortedBag<Card>> observableListCards = FXCollections
-                .observableArrayList(possibleAdditionalCards);
+                .observableArrayList(cardsList);
         ListView<SortedBag<Card>> listView = listViewCard(observableListCards);
-        Button choosedAdditionalCardsButton = chooseCardsButton(listView,
-                chooseCardsHandler, true);
+        Button button = chooseCardsButton(listView, chooseCardsHandler,
+                emptyValid);
         Stage chooseWindow = chooseGraph(main, StringsFr.CARDS_CHOICE,
-                StringsFr.CHOOSE_ADDITIONAL_CARDS, listView,
-                choosedAdditionalCardsButton);
+                introText, listView, button);
         chooseWindow.show();
     }
 

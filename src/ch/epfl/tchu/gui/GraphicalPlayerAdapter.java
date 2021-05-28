@@ -64,9 +64,9 @@ public final class GraphicalPlayerAdapter implements Player {
      */
     public GraphicalPlayerAdapter() {
         // créé les handlers
-        chooseTicketHandler = ticketsHandler -> {
+        chooseTicketHandler = tickets -> {
             try {
-                qTickets.put(ticketsHandler);
+                qTickets.put(tickets);
             } catch (InterruptedException e) {
                 throw new Error();
             }

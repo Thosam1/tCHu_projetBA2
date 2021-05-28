@@ -99,7 +99,7 @@ public final class RemotePlayerProxy implements Player {
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
         String argument1 = Serdes.SERDE_PLAYER_ID.serialize(ownId);
         String argument2 = Serdes.SERDE_LIST_OF_STRING
-                .serialize(List.of(playerNames.get(PlayerId.PLAYER_1),      //TODO
+                .serialize(List.of(playerNames.get(PlayerId.PLAYER_1),
                         playerNames.get(PlayerId.PLAYER_2)));
         messageOut(MessageId.INIT_PLAYERS.name(), argument1, argument2);
     }
