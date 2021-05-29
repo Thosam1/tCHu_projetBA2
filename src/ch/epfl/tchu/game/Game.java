@@ -491,9 +491,7 @@ public abstract class Game {
      * d'appels à cette méthode)
      * 
      * Il est important de noter que le jeu n'a pas de notion du temps et que
-     * chaque appel à cette méthode permet d'updater un message max par joueur
-     * Si nous voulons remédier à ce problème, nous pouvons effectuer le code de
-     * cette méthode plusieurs fois par appel
+     * chaque appel à cette méthode permet d'updater un nombre restreint de messages
      * 
      * @param player
      *            permet d'avoir accès aux Player

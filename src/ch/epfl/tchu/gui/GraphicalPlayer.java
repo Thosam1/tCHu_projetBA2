@@ -500,7 +500,7 @@ public final class GraphicalPlayer {
             if (!input.isBlank() && !input.equals(DEFAULT_TEXT_INPUT)) {
                 AddToChatHandler addToChatHandler = addToChatProperty.get();
                 addToChatHandler.onNewChatMessage(input);
-                addToChat(String.join(": ", List.of("You", input)));
+                addToChat(String.join(": ", "You", input));
                 // "You: " avant un message indique au joueur que c'est son
                 // message
             }
@@ -510,7 +510,7 @@ public final class GraphicalPlayer {
 
         Scene scene = new Scene(vBox);
         scene.getStylesheets().add("chooser.css");
-        stage.setTitle("Communicate with the other player");
+        stage.setTitle(String.join("","Communique avec l'autre joueur (les messages ont une longueur maximum de ", String.valueOf(TEXT_INPUT_MAX_CAPACITY), ")"));
         stage.setScene(scene);
 
         stage.show();
