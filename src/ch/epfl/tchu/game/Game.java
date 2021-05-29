@@ -17,7 +17,9 @@ import ch.epfl.tchu.gui.Info;
  * @author Aymeric de chillaz (326617)
  */
 public abstract class Game {
-
+    //constante désignant le nombre maximum de messages du chat qui peuvent être
+    //updatés par un appel à updateChat
+    private static final int MAX_NUMBER_OF_CHAT_UPDATES = 5;
     private Game() {
     }
 
@@ -500,7 +502,7 @@ public abstract class Game {
      */
     private static void updateChat(Map<PlayerId, Player> players,
             Map<PlayerId, String> playerNames) {
-        for (int i = 0; i < 5; i++) {// TODO constante
+        for (int i = 0; i < MAX_NUMBER_OF_CHAT_UPDATES; i++) {
             String chatFor2 = players.get(PlayerId.PLAYER_1).updateChat("",
                     true);
 
