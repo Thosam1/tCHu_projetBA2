@@ -10,6 +10,7 @@ public enum MessageId {
     //ces messages correspondent directement aux méthodes de l'interface Player
     INIT_PLAYERS,
     RECEIVE_INFO,
+    UPDATE_CHAT,//rajouté pour les appels à updateChat 
     UPDATE_STATE,
     SET_INITIAL_TICKETS,
     CHOOSE_INITIAL_TICKETS,
@@ -18,8 +19,7 @@ public enum MessageId {
     DRAW_SLOT,
     ROUTE,
     CARDS,
-    CHOOSE_ADDITIONAL_CARDS,
-    UPDATE_CHAT;//rajouté pour les appels à updateChat
+    CHOOSE_ADDITIONAL_CARDS;
 
     /**
      *  Liste immuable contenant toutes les valeurs du type enum MessageId, dans l'ordre

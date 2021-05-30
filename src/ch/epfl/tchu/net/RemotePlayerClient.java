@@ -80,6 +80,7 @@ public final class RemotePlayerClient {
                     player.receiveInfo(info);
                     break;
                 
+                /**ETAPE LIBRE*/
                 case UPDATE_CHAT:
                     String chatMessageToAdd = Serdes.SERDE_STRING
                             .deserialize(arg1);

@@ -457,6 +457,8 @@ public abstract class Game {
     private static void infoToAll(Map<PlayerId, Player> players, String info,
             Map<PlayerId, String> playerNames) {
         players.forEach((c, v) -> v.receiveInfo(info));
+        
+        /**ETAPE LIBRE*/
         updateChat(players, playerNames);
     }
 
@@ -470,7 +472,7 @@ public abstract class Game {
                 (c, v) -> v.updateState(gameState, gameState.playerState(c)));
     }
 
-    /**
+    /** ETAPE LIBRE
      * updatChat est appelé pour updater le chat des deux joueurs cette méthode
      * consiste en trois appels à updateChat
      * 

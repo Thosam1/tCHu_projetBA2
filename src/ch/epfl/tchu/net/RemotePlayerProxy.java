@@ -110,6 +110,7 @@ public final class RemotePlayerProxy implements Player {
         messageOut(MessageId.RECEIVE_INFO.name(), argument1);
     }
 
+    /**ETAPE LIBRE*/
     @Override
     public String updateChat(String chatToAdd, boolean notUsefulForProxy) {
         String argument1 = Serdes.SERDE_STRING.serialize(chatToAdd);

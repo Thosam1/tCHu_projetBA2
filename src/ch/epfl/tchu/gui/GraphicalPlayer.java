@@ -396,7 +396,7 @@ public final class GraphicalPlayer {
         ListView<Ticket> ticketList = new ListView<>(
                 FXCollections.observableList(ticketsToChoose.toList()));
         if (observableGame.playerState() != null) { //if null, it means it is the start window where we choose tickets
-            ticketList.setCellFactory(param -> new ticketListBG(observableGame));      //TODO why doesnt' work ?
+            ticketList.setCellFactory(param -> new ticketListBG(observableGame));
         }
 
         ticketList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -460,7 +460,7 @@ public final class GraphicalPlayer {
         drawTicketsProperty.set(null);
     }
 
-    /**
+    /**ETAPE LIBRE
      * méthode appelée dans createInfoView lorsque le bouton Chat est activé Son
      * role est de faire apparaitre le chat
      * 
@@ -510,6 +510,7 @@ public final class GraphicalPlayer {
 
         Scene scene = new Scene(vBox);
         scene.getStylesheets().add("chooser.css");
+        chatListView.setMinWidth(500);//cette redimension permet de voir tout le Titre de stage
         stage.setTitle(String.join("","Communique avec l'autre joueur (les messages ont une longueur maximum de ", String.valueOf(TEXT_INPUT_MAX_CAPACITY), ")"));
         stage.setScene(scene);
 
