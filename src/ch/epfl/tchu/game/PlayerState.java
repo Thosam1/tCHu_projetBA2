@@ -162,9 +162,6 @@ public final class PlayerState extends PublicPlayerState {
     /**
      * @return le nombre de points gagné ou perdu avec les tickets
      */
-    /**
-     * @return le nombre de points gagné ou perdu avec les tickets
-     */
     public int ticketPoints(){
         int ticketPoints = 0;
         for(Map.Entry<Ticket, Integer> c : ticketPoint(tickets()).entrySet()){
@@ -181,9 +178,22 @@ public final class PlayerState extends PublicPlayerState {
     }
 
     //  --- --- --- Extension
+
+    /**
+     * Pour calculer les points apporté par les tickets avec les routes possédées par le joueur actuellement
+     * @param tickets
+     * @return une map contenant le ticket comme clé et le nombre de points rapporté en valeur
+     */
     public Map<Ticket, Integer> ticketPoint(SortedBag<Ticket> tickets){
         return ticketPointStatic(tickets, routes());
     }
+
+    /**
+     * Méthode utilisée dans GraphicalPlayer lors de la création de la fenêtre du tirage de billets
+     * @param tickets tickets
+     * @param routes les routes "possédées"
+     * @return une map contenant le ticket comme clé et le nombre de points rapporté en valeur
+     */
     public static Map<Ticket, Integer> ticketPointStatic(SortedBag<Ticket> tickets, List<Route> routes){
         if(tickets.isEmpty()) return new HashMap<>();
         Map<Ticket, Integer> ticketPoints = new HashMap<>();
@@ -205,6 +215,5 @@ public final class PlayerState extends PublicPlayerState {
             ticketPoints.put(ticket, ticket.points(partition));
         }
         return ticketPoints;
-
     }
 }

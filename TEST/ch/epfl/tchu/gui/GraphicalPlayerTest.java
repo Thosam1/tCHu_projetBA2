@@ -43,7 +43,7 @@ public final class GraphicalPlayerTest extends Application {
     public void start(Stage primaryStage) {
         Map<PlayerId, String> playerNames =
                 Map.of(PlayerId.PLAYER_1, "Ada", PlayerId.PLAYER_2, "Charles");
-        GraphicalPlayer p = new GraphicalPlayer(PlayerId.PLAYER_1, playerNames);    //toDo comment faire pour créer la vue ?
+        GraphicalPlayer p = new GraphicalPlayer(PlayerId.PLAYER_1, playerNames, null);    //toDo comment faire pour créer la vue ?
 
         setState(p);
 

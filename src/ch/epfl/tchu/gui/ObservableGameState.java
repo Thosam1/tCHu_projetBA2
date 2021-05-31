@@ -35,13 +35,23 @@ public final class ObservableGameState {
     private PlayerState playerState = null;
 
     // --- --- Extensions
+
+    // 1) billets verts, rouges
+        //partie "verte"
     private Map<Ticket, Integer> ticketListHandPoints = new HashMap<>(); //ajouté pour le faire le calcul qu'une seule fois, est mis à jour, si le joueur tire des billets ou s'il prend une route -> on peut le mettre dans modifyPlayerTickets dans le setState
     public Map<Ticket, Integer> getTicketListHandPoints(){return ticketListHandPoints;}
+
     private Map<Ticket, Integer> ticketListPopUp = new HashMap<>();
     public Map<Ticket, Integer> getTicketListPopUp(){return ticketListPopUp;}
-    public void setTicketListPopUp(SortedBag<Ticket> ticketsToChoose) {
-        ticketListPopUp = (playerState == null) ? ticketListPopUp : playerState.ticketPoint(ticketsToChoose);
-    }
+
+        //partie "rouge"
+    private Map<Ticket, Integer> ticketListHandHadAll = new HashMap<>();
+    public Map<Ticket, Integer> getTicketListHandHadAll() {return ticketListHandHadAll;}
+
+    private Map<Ticket, Integer> ticketListPopUpHadAll = new HashMap<>();
+    public Map<Ticket, Integer> getTicketListPopUpHadAll(){return ticketListPopUpHadAll;}
+
+
 
     /**
      * Propriétés concernant l'état public de la partie
@@ -226,7 +236,9 @@ public final class ObservableGameState {
      */
     private void modifyPlayerTickets() {
         propertyPlayerTickets.setAll(playerState.tickets().toList());
-        ticketListHandPoints = playerState.ticketPoint(playerState.tickets()); // --- --- Extension
+
+        // --- --- Extension --- --- billets verts, rouges
+        updateTicketListHand();
     }
 
     /**
@@ -388,6 +400,12 @@ public final class ObservableGameState {
     }
 
     // --- --- Extension pour rendre rouge, je les deux méthodes dedans en static
+
+    /**
+     * Utilisé dans playerstate.ticketPointStatic pour connaitre toutes les routes non possédées par le joueur adverse
+     * @param owned
+     * @return la liste des routes non possédées par le joueur adverse
+     */
     public List<Route> allAvailableRoutesPlayer(List<Route> owned) {
         List<Route> allAvailableRoutes = new ArrayList<>(owned);
         List<List<Station>> stations = listePaireStations(getPublicGameState().claimedRoutes());
@@ -398,9 +416,31 @@ public final class ObservableGameState {
         return allAvailableRoutes;
     }
 
-    // -- Extension ticket vert, initiallement dans modifyPlayerTickets, lors de la prise de route, n'est pas mis à jour instantanément, donc on l'a mis avec receiveInfo() de GraphicalPlayer
-    public void updateTicketListHandPoints(){
-        if(playerState != null){ticketListHandPoints = playerState.ticketPoint(playerState.tickets());}
+    // -- Extension ticket vert, rouges initiallement dans modifyPlayerTickets,
+
+    /**
+     * mets à jour les map contenant les billets dans la main et leur points correspondant
+     * -> actuellement
+     * -> si le joueur possédait toutes les routes non prises par le joueur adverse
+     */
+    public void updateTicketListHand(){
+        if(playerState != null){
+            ticketListHandPoints = playerState.ticketPoint(playerState.tickets());
+            ticketListHandHadAll = PlayerState.ticketPointStatic(playerState.tickets(), allAvailableRoutesPlayer(playerState.routes()));
+        }
     }
+
+    /**
+     * mets à jour les map contenant les billets du tirage (à choix) et leur points correspondant
+     * -> actuellement
+     * -> si le joueur possédait toutes les routes non prises par le joueur adverse
+     * @param ticketsToChoose les billets affichés au choix dans la fenêtre
+     */
+    public void updateTicketListPopUp(SortedBag<Ticket> ticketsToChoose){
+        ticketListPopUp = (playerState == null) ? ticketListPopUp : playerState.ticketPoint(ticketsToChoose);
+        ticketListPopUpHadAll = (playerState == null) ? ticketListPopUpHadAll : PlayerState.ticketPointStatic(ticketsToChoose, allAvailableRoutesPlayer(playerState().routes()));
+    }
+
+
 
 }

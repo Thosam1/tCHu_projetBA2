@@ -51,7 +51,7 @@ public final class Stage9Test extends Application {
                 new Text("Première information.\n"),
                 new Text("\nSeconde information.\n"));
         Node infoView = InfoViewCreator.createInfoView(PlayerId.PLAYER_1,
-                playerNames, gameState, infos);
+                playerNames, gameState, infos, null);
 
         BorderPane mainPane = new BorderPane(mapView, null, cardsView, handView,
                 infoView);

@@ -18,6 +18,26 @@ public final class Stage11Test extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+
+        System.out.println(StringsFr.DRAW);
+        String draw = StringsFr.DRAW.replace("%s", "")
+                .replace("\n", "");
+        String[] arrayDraw = draw.split(" ");
+        for(String s : arrayDraw){
+            System.out.println(s);
+        }
+
+        System.out.println(StringsFr.WINS);
+        String wins = StringsFr.WINS.replace("%s", "")
+                .replace("\n", "");
+        String[] arrayWins = wins.split(" ");
+        for(String s : arrayWins){
+//            if(s.isBlank()){continue;}
+            System.out.println(s);
+        }
+
+
       SortedBag<Ticket> tickets = SortedBag.of(ChMap.tickets());
       Map<PlayerId, String> names =
         Map.of(PlayerId.PLAYER_1, "Ada", PlayerId.PLAYER_2, "Charles");

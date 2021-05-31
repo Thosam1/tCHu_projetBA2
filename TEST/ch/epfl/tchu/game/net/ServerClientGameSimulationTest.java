@@ -81,6 +81,11 @@ public class ServerClientGameSimulationTest {
             }
 
             @Override
+            public String updateChat(String chatToAdd, boolean returnAvailable) {
+                return null;
+            }
+
+            @Override
             public void updateState(PublicGameState newState, PlayerState ownState) {
 
             }
@@ -149,6 +154,11 @@ public class ServerClientGameSimulationTest {
                 @Override
                 public void receiveInfo(String info) {
 
+                }
+
+                @Override
+                public String updateChat(String chatToAdd, boolean returnAvailable) {
+                    return null;
                 }
 
                 @Override

@@ -59,6 +59,11 @@ public class ServerClientTest {
             }
 
             @Override
+            public String updateChat(String chatToAdd, boolean returnAvailable) {
+                return null;
+            }
+
+            @Override
             public void updateState(PublicGameState newState, PlayerState ownState) {
 
             }

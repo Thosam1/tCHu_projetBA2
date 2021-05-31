@@ -4,6 +4,7 @@ import ch.epfl.tchu.game.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.css.PseudoClass;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
@@ -13,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 import java.util.Map;
 
@@ -30,6 +32,8 @@ final class DecksViewCreator {
     private static final int INTERIOR_CARD_HEIGHT = 70;
     private static final int BACKGROUND_BUTTON_WIDTH = 50;
     private static final int BACKGROUND_BUTTON_HEIGHT = 5;
+
+//    private static final String
 
     // constructeur privé
     private DecksViewCreator() {
@@ -268,37 +272,21 @@ final class DecksViewCreator {
     //  ----------------------------------
     private static ListView<Ticket> ticketListBG(ObservableGameState game){
         ListView<Ticket> ticketListView = new ListView<>(game.playerTickets());
-        ticketListView.setCellFactory(param -> new ticketListBG(game));
+        ticketListView.getStylesheets().add("ticketsGui.css");
+        ticketListView.setCellFactory(param -> new TicketListBGmodified(game));
         return ticketListView;
     }
-
-    static class ticketListBG extends ListCell<Ticket> { //also used in graphicalPlayer //todo
-        private ObservableGameState game;
-        public ticketListBG(ObservableGameState game){
+    //listview ---
+    private static class TicketListBGmodified extends GraphicalPlayer.TicketListBG {
+        private final ObservableGameState game;
+        public TicketListBGmodified(ObservableGameState game) {
+            super(game);
             this.game = game;
         }
         @Override
         public void updateItem(Ticket item, boolean empty){
             super.updateItem(item, empty);
-            Map<Ticket, Integer> map = game.getTicketListHandPoints();
-
-            Map<Ticket, Integer> pointsIfHadAllAvailableRoute = PlayerState.ticketPointStatic(game.playerState().tickets(), game.allAvailableRoutesPlayer(game.playerState().routes()));
-
-            if(!map.isEmpty() && item != null && map.containsKey(item)){
-                if(/*!styleProperty().getValue().equals("-fx-control-inner-background: \"#92db98\"") &&*/ map.get(item) > 0){
-                    setStyle("-fx-control-inner-background: \"#92db98\";");
-                    setText(item.toString() + "      ; +" + map.get(item) + " points");
-                }else{
-                    System.out.println(pointsIfHadAllAvailableRoute);   //todo effacer
-                    if(pointsIfHadAllAvailableRoute.get(item) < 0){
-                        setStyle("-fx-control-inner-background: \"#e9787d\";");
-                        setText(item.toString() + "      ; " + pointsIfHadAllAvailableRoute.get(item) + " points");
-                    }else{
-                        setText(item.toString());
-                        setStyle(null);
-                    }
-                }
-            }
+            bgColor(item, game.getTicketListHandPoints(), game.getTicketListHandHadAll());
         }
     }
 }

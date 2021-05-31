@@ -1,0 +1,7 @@
+.ticketClaimed {
+    -fx-control-inner-background: "#92db98";
+}
+
+.ticketImpossible {
+    -fx-control-inner-background: "#e9787d";
+}

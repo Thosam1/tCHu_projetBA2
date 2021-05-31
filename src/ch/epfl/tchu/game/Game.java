@@ -158,7 +158,6 @@ public abstract class Game {
                 // été gardé par le joueur courant
                 Game.infoToAll(players,
                         currInf.keptTickets(chosenTickets.size()), playerNames);
-
                 break;
 
             case DRAW_CARDS:
@@ -323,7 +322,6 @@ public abstract class Game {
                         else
                             Game.infoToAll(players, currInf.claimedRoute(
                                     desiredRoute, cardsUsedWithAddition), playerNames);
-
                         /**
                          * si le joueur ne rajoute pas de cartes alors il garde
                          * toutes ses cartes et saute son tour (gameState ne
@@ -336,6 +334,7 @@ public abstract class Game {
                                         : gameState.withClaimedRoute(
                                                 desiredRoute,
                                                 cardsUsedWithAddition);
+                        Game.updateStateForAll(players, gameState);                 // Extension, mis à jour de la listview des billets indirectement
                     }
 
                     // si le joueur n a pas de cartes additionnelles à poser
@@ -346,6 +345,7 @@ public abstract class Game {
                         
                         gameState = gameState.withClaimedRoute(desiredRoute,
                                 initialCards);
+                        Game.updateStateForAll(players, gameState);     // Extension, mis à jour de la listview des billets indirectement
 
                     } else {
                         // la route n est pas rajouté car le joueur n a pas les
@@ -366,6 +366,7 @@ public abstract class Game {
                     
                     gameState = gameState.withClaimedRoute(desiredRoute,
                             initialCards);
+                    Game.updateStateForAll(players, gameState);     // Extension, mis à jour de la listview des billets indirectement
                 }
                 break;
             default:
@@ -441,7 +442,7 @@ public abstract class Game {
             break;
         case -1:
             Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_2)
-                    .won(player2Score, player1Score), playerNames);
+                    .won(player2Score, player1Score), playerNames); //Todo méthode de player qui appelle
             break;
         default:
             break;
@@ -493,7 +494,7 @@ public abstract class Game {
      * Si nous voulons remédier à ce problème, nous pouvons effectuer le code de
      * cette méthode plusieurs fois par appel
      * 
-     * @param player
+     * @param players
      *            permet d'avoir accès aux Player
      * @param playerNames
      *            permet de rajouter l'émétteur du message au message Le premier

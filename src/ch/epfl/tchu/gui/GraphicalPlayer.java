@@ -11,28 +11,32 @@ import ch.epfl.tchu.gui.ActionHandlers.ChooseTicketsHandler;
 import ch.epfl.tchu.gui.ActionHandlers.ClaimRouteHandler;
 import ch.epfl.tchu.gui.ActionHandlers.DrawCardHandler;
 import ch.epfl.tchu.gui.ActionHandlers.DrawTicketsHandler;
+import ch.epfl.tchu.gui.Gif.Losers;
+import ch.epfl.tchu.gui.Gif.Winners;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
+import javafx.scene.text.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
+import org.junit.jupiter.api.Test;
+
 import static javafx.application.Platform.isFxApplicationThread;
 
 /**
@@ -148,7 +152,12 @@ public final class GraphicalPlayer {
         if (messageList.size() > MAXIMUM_NUMBER_VISIBLE_MESSAGES) {
             messageList.remove(0);
         }
-        observableGame.updateTicketListHandPoints();    // --- --- Extension tickets verts
+        //TODO vérifier si c'est mieux de mettre ça dans receiveInfo ou dans setState d^Observable GameState
+
+//        openEndingPopUp(message);
+//        if(gameFinishedMessage(message)){   // --- --- Extension popUp fin
+//            openEndingPopUp(message);
+//        }
     }
 
     /**
@@ -392,11 +401,12 @@ public final class GraphicalPlayer {
 
     private ListView<Ticket> listViewTicket(SortedBag<Ticket> ticketsToChoose) {
         assert isFxApplicationThread();
-        observableGame.setTicketListPopUp(ticketsToChoose); //on le set comme ça on calcule seulement 1 fois pour toute la liste le mettre avant la création de la liste                             // --- --- Extension
+
+        setTicketsPopUp(ticketsToChoose);   //on le set comme ça on calcule seulement 1 fois pour toute la liste le mettre avant la création de la liste
         ListView<Ticket> ticketList = new ListView<>(
                 FXCollections.observableList(ticketsToChoose.toList()));
         if (observableGame.playerState() != null) { //if null, it means it is the start window where we choose tickets
-            ticketList.setCellFactory(param -> new ticketListBG(observableGame));      //TODO why doesnt' work ?
+            ticketList.setCellFactory(param -> new TicketListBG(observableGame));
         }
 
         ticketList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -535,31 +545,113 @@ public final class GraphicalPlayer {
     }
 
     //  --- --- --- Extension
-    private static class ticketListBG extends ListCell<Ticket> { //also used in graphicalPlayer //todo
-        private ObservableGameState game;
-        public ticketListBG(ObservableGameState game){
+    public static class TicketListBG extends ListCell<Ticket> { // aussi utilisée dans deckViewCreator
+        private final ObservableGameState game;
+        public TicketListBG(ObservableGameState game){
             this.game = game;
         }
         @Override
         public void updateItem(Ticket item, boolean empty){
             super.updateItem(item, empty);
-            Map<Ticket, Integer> map = game.getTicketListPopUp();
-
-            Map<Ticket, Integer> pointsIfHadAllAvailableRoute = PlayerState.ticketPointStatic(game.playerState().tickets(), game.allAvailableRoutesPlayer(game.playerState().routes()));
-
-            if(!map.isEmpty() && item != null){
-                if(map.get(item) > 0){    //pour réduire on pourrait mettre, si xx ne contient pas le ticket alors ...mais peut être plus long
-                    setStyle("-fx-control-inner-background: \"#92db98\";");
+            bgColor(item, game.getTicketListPopUp(), game.getTicketListPopUpHadAll());
+        }
+        public void bgColor(Ticket item, Map<Ticket, Integer> map, Map<Ticket, Integer> mapHadAll) {
+            if(!map.isEmpty() && !mapHadAll.isEmpty() && item != null){
+                if(map.get(item) != null && map.get(item) > 0){
+                    getStyleClass().set(0, "ticketClaimed");
+//                    textAlignment(item.toString(), mapHadAll.get(item) + " points");
+                    setTextBG(item, mapHadAll);
+                }else if (mapHadAll.get(item) != null && mapHadAll.get(item) < 0){
+                    getStyleClass().set(0, "ticketImpossible");
+//                    textAlignment(item.toString(), mapHadAll.get(item) + " points");
+                    setTextBG(item, mapHadAll);
                 }else{
-                    if(pointsIfHadAllAvailableRoute.get(item) < 0){
-                        setStyle("-fx-control-inner-background: \"#e9787d\";");
-                        setText(item.toString() + "      ; " + pointsIfHadAllAvailableRoute.get(item) + " points");
-                    }else{
-                        setText(item.toString());
-                        setStyle(null);
-                    }
+                    setText(item.toString());
+                    setStyle(null);
                 }
             }
         }
+        private void setTextBG(Ticket item, Map<Ticket, Integer> mapHadAll){
+            setText(item.toString() + "      ; " + mapHadAll.get(item) + " points");
+        }
+
+        private void textAlignment(String ticketName, String pointsOfTicket){
+//            Label ticket = new Label(ticketName);
+//            Label points = new Label(pointsOfTicket);
+//            ticket.setAlignment(Pos.CENTER_LEFT);
+//            points.setAlignment(Pos.CENTER_RIGHT);
+            Text ticket = new Text(ticketName);
+            Text points = new Text(pointsOfTicket);
+            ticket.setTextAlignment(TextAlignment.LEFT);
+            points.setTextAlignment(TextAlignment.RIGHT);
+            HBox hBox = new HBox(ticket, points);
+            setGraphic(hBox);
+        }
+
+    }
+
+    /**
+     * méthode seulement appelée à la création d'une listview pour le choix des billets
+     * @param tickets
+     */
+    private void setTicketsPopUp(SortedBag<Ticket> tickets){
+        observableGame.updateTicketListPopUp(tickets);
+    }
+
+
+    // --- --- Extension méthode appeléé dans receiveInfo lorsque que la fin du jeu est communiquée
+    private void openEndingPopUp(String message){
+        assert isFxApplicationThread();
+        boolean winner = message.contains(mapPlayerNames.get(playerId));    // if the actual player wins or has a draw
+
+        Stage stage = new Stage(StageStyle.UTILITY);
+        stage.initOwner(main);
+        stage.initModality(Modality.WINDOW_MODAL);
+
+        VBox vBox = new VBox();
+        String imagePath = (winner) ? Winners.pickRandomWinnerGif() : Losers.pickRandomLoserGif();
+        ImageView imageView = new ImageView(new Image(imagePath));
+        vBox.setPadding(new Insets(10, 50, 20, 50));
+        vBox.setSpacing(10);
+
+        Label label = new Label(message, imageView);
+        label.setFont(Font.font("Verdana", FontWeight.SEMI_BOLD, 50));
+        label.setContentDisplay(ContentDisplay.TOP);
+
+        vBox.getChildren().addAll(imageView, label);
+
+        Scene scene = new Scene(vBox);
+        stage.setTitle("Le jeu est fini !");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    /**
+     * Méthode qui check si le message de fin de jeu est reçu ou pas et qui retourne vrai ou faux
+     * @param message
+     * @return
+     */
+    private boolean gameFinishedMessage(String message){
+        String draw = StringsFr.DRAW.replace("%s", "")
+                .replace("\n", "");
+        String[] arrayDraw = draw.split(" ");
+
+        String wins = StringsFr.WINS.replace("%s", "")
+                .replace("\n", "");
+        String[] arrayWins = wins.split(" ");
+        int similarities = 0;
+        for(String s : arrayDraw){
+            if(s.isBlank()){continue;}
+            if(message.contains(s)){
+                similarities += 1;
+            }
+        }
+        for(String s : arrayWins){
+            if(s.isBlank()){continue;}
+            if(message.contains(s)){
+                similarities += 1;
+            }
+        }
+        return (similarities >= 5); //on aurait pu mettre contains() "sont ex æqo avec" ou "remporte la victoire avec" mais qui sait si on change ces valeurs au futur (eg traduction anglaise etc...)
     }
 }

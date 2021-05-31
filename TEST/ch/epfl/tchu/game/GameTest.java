@@ -109,6 +109,11 @@ public class GameTest {
             System.out.println(" -   -   -   -   -");
         }
 
+        @Override
+        public String updateChat(String chatToAdd, boolean returnAvailable) {
+            return null;
+        }
+
 
         @Override
         public void updateState(PublicGameState newState, PlayerState ownState) {
