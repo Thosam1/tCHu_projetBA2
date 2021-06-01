@@ -272,7 +272,6 @@ final class DecksViewCreator {
     //  ----------------------------------
     private static ListView<Ticket> ticketListBG(ObservableGameState game){
         ListView<Ticket> ticketListView = new ListView<>(game.playerTickets());
-        ticketListView.getStylesheets().add("ticketsGui.css");
         ticketListView.setCellFactory(param -> new TicketListBGmodified(game));
         return ticketListView;
     }

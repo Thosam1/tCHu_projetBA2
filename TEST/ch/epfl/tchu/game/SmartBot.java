@@ -170,6 +170,11 @@ public class SmartBot implements Player {
 
     }
 
+    @Override
+    public void gameHasEnded(String message) {
+
+    }
+
 
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) { // préférence en fonction des routes déjà prises par le joueur et le joueur adverse

@@ -548,6 +548,7 @@ public final class GraphicalPlayer {
     public static class TicketListBG extends ListCell<Ticket> { // aussi utilisée dans deckViewCreator
         private final ObservableGameState game;
         public TicketListBG(ObservableGameState game){
+            this.getStylesheets().add("ticketsGui.css");
             this.game = game;
         }
         @Override
@@ -567,7 +568,8 @@ public final class GraphicalPlayer {
                     setTextBG(item, mapHadAll);
                 }else{
                     setText(item.toString());
-                    setStyle(null);
+//                    setStyle(null);
+                    getStyleClass().set(0, null);
                 }
             }
         }
@@ -587,7 +589,6 @@ public final class GraphicalPlayer {
             HBox hBox = new HBox(ticket, points);
             setGraphic(hBox);
         }
-
     }
 
     /**
@@ -600,8 +601,8 @@ public final class GraphicalPlayer {
 
 
     // --- --- Extension méthode appeléé dans receiveInfo lorsque que la fin du jeu est communiquée
-    private void openEndingPopUp(String message){
-        assert isFxApplicationThread();
+    protected void openEndingPopUp(String message){
+//        assert isFxApplicationThread(); exception thrown
         boolean winner = message.contains(mapPlayerNames.get(playerId));    // if the actual player wins or has a draw
 
         Stage stage = new Stage(StageStyle.UTILITY);
@@ -626,32 +627,32 @@ public final class GraphicalPlayer {
         stage.show();
     }
 
-    /**
-     * Méthode qui check si le message de fin de jeu est reçu ou pas et qui retourne vrai ou faux
-     * @param message
-     * @return
-     */
-    private boolean gameFinishedMessage(String message){
-        String draw = StringsFr.DRAW.replace("%s", "")
-                .replace("\n", "");
-        String[] arrayDraw = draw.split(" ");
-
-        String wins = StringsFr.WINS.replace("%s", "")
-                .replace("\n", "");
-        String[] arrayWins = wins.split(" ");
-        int similarities = 0;
-        for(String s : arrayDraw){
-            if(s.isBlank()){continue;}
-            if(message.contains(s)){
-                similarities += 1;
-            }
-        }
-        for(String s : arrayWins){
-            if(s.isBlank()){continue;}
-            if(message.contains(s)){
-                similarities += 1;
-            }
-        }
-        return (similarities >= 5); //on aurait pu mettre contains() "sont ex æqo avec" ou "remporte la victoire avec" mais qui sait si on change ces valeurs au futur (eg traduction anglaise etc...)
-    }
+//    /**
+//     * Méthode qui check si le message de fin de jeu est reçu ou pas et qui retourne vrai ou faux
+//     * @param message
+//     * @return
+//     */
+//    private boolean gameFinishedMessage(String message){
+//        String draw = StringsFr.DRAW.replace("%s", "")
+//                .replace("\n", "");
+//        String[] arrayDraw = draw.split(" ");
+//
+//        String wins = StringsFr.WINS.replace("%s", "")
+//                .replace("\n", "");
+//        String[] arrayWins = wins.split(" ");
+//        int similarities = 0;
+//        for(String s : arrayDraw){
+//            if(s.isBlank()){continue;}
+//            if(message.contains(s)){
+//                similarities += 1;
+//            }
+//        }
+//        for(String s : arrayWins){
+//            if(s.isBlank()){continue;}
+//            if(message.contains(s)){
+//                similarities += 1;
+//            }
+//        }
+//        return (similarities >= 5); //on aurait pu mettre contains() "sont ex æqo avec" ou "remporte la victoire avec" mais qui sait si on change ces valeurs au futur (eg traduction anglaise etc...)
+//    }
 }

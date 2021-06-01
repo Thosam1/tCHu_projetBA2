@@ -84,6 +84,11 @@ public class ServerClientTest {
             }
 
             @Override
+            public void gameHasEnded(String message) {
+
+            }
+
+            @Override
             public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
                 return null;
             }

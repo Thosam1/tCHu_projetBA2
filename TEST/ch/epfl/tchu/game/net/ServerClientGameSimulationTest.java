@@ -106,6 +106,11 @@ public class ServerClientGameSimulationTest {
             }
 
             @Override
+            public void gameHasEnded(String message) {
+
+            }
+
+            @Override
             public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
                 return null;
             }
@@ -179,6 +184,11 @@ public class ServerClientGameSimulationTest {
                 @Override
                 public TurnKind nextTurn() {
                     return null;
+                }
+
+                @Override
+                public void gameHasEnded(String message) {
+
                 }
 
                 @Override

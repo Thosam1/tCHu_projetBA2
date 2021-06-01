@@ -143,6 +143,12 @@ public final class RemotePlayerProxy implements Player {
     }
 
     @Override
+    public void gameHasEnded(String message) {
+        String argument1 = Serdes.SERDE_STRING.serialize(message);
+        messageOut(MessageId.RECEIVE_INFO.name(), argument1);
+    }
+
+    @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
         String argument1 = Serdes.SERDE_SORTED_BAG_OF_TICKET.serialize(options);
         messageOut(MessageId.CHOOSE_TICKETS.name(), argument1);

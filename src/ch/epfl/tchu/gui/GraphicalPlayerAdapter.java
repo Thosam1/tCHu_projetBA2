@@ -226,6 +226,11 @@ public final class GraphicalPlayerAdapter implements Player {
         return take(qTickets);
     }
 
+    @Override
+    public void gameHasEnded(String message){
+        graphicalPlayer.openEndingPopUp(message);
+    }
+
     /**
      * teste (sans bloquer!) si la file contenant les emplacements des cartes
      * contient une valeur; si c'est le cas, cela signifie que drawSlot est

@@ -67,6 +67,11 @@ public interface Player {
     public abstract TurnKind nextTurn();
 
     /**
+     * appelé à la fin du jeu, lorsque le/les gagnants sont annoncés
+     */
+    public abstract void gameHasEnded(String message);    // --- Extension
+
+    /**
      * appelée lorsque le joueur a décidé de tirer des billets supplémentaires en cours de partie, afin de lui communiquer les billets tirés et de savoir lesquels il garde
      * @param options
      * @return

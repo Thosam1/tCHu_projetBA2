@@ -211,6 +211,11 @@ public class GameTest {
             }
         }
 
+        @Override
+        public void gameHasEnded(String message) {
+
+        }
+
 
         @Override
         public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {

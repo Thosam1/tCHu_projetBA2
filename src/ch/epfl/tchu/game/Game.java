@@ -430,19 +430,19 @@ public abstract class Game {
 
         switch (Integer.compare(player1Score, player2Score)) {
         case 1:
-            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_1)
+            Game.gameHasEndedToAll(players, infoMap.get(PlayerId.PLAYER_1)
                     .won(player1Score, player2Score), playerNames);
             break;
         case 0:
-            Game.infoToAll(players,
+            Game.gameHasEndedToAll(players,
                     Info.draw(
                             List.of(playerNames.get(PlayerId.PLAYER_1),
                                     playerNames.get(PlayerId.PLAYER_2)),
                             player1Score), playerNames);
             break;
         case -1:
-            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_2)
-                    .won(player2Score, player1Score), playerNames); //Todo méthode de player qui appelle
+            Game.gameHasEndedToAll(players, infoMap.get(PlayerId.PLAYER_2)
+                    .won(player2Score, player1Score), playerNames);
             break;
         default:
             break;
@@ -467,6 +467,19 @@ public abstract class Game {
             GameState gameState) {
         players.forEach(
                 (c, v) -> v.updateState(gameState, gameState.playerState(c)));
+    }
+
+    /**
+     * Pour réduire la longueur de code, on a fusionné infoToAll() et l'envoi du message de fin de jeu
+     * @param players
+     * @param info
+     * @param playerNames
+     */
+    private static void gameHasEndedToAll(Map<PlayerId, Player> players, String info, Map<PlayerId, String> playerNames){  // --- Extension
+        players.forEach((c, v) -> v.receiveInfo(info));
+        updateChat(players, playerNames);
+
+        players.forEach((c, v) -> v.gameHasEnded(info));
     }
 
     /**

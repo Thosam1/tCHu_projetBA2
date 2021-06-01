@@ -111,6 +111,10 @@ public final class RemotePlayerClient {
                     encoded = Serdes.SERDE_TURN_KIND.serialize(turn);
                     writeFlush(w, encoded);
                     break;
+                case GAME_HAS_ENDED:
+                    String msg = Serdes.SERDE_STRING.deserialize(arg1);
+                    player.gameHasEnded(msg);
+                    break;
                 case CHOOSE_TICKETS:
                     SortedBag<Ticket> options = Serdes.SERDE_SORTED_BAG_OF_TICKET
                             .deserialize(arg1);
