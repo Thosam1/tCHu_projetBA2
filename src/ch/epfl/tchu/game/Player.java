@@ -35,7 +35,7 @@ public interface Player {
      */
     public abstract void receiveInfo(String info);
 
-    /**
+    /**ETAPE LIBRE
      * appelée pour updater le chat d'un joueur
      * Ajoute chatToAdd au chat du joueur courant et retourne la valeur que le joueur désir passer à l'autre joueur
      * */

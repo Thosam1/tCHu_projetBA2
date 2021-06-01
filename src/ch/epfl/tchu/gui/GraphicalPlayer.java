@@ -23,20 +23,23 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.*;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
-import org.junit.jupiter.api.Test;
-
 import static javafx.application.Platform.isFxApplicationThread;
 
 /**
@@ -152,12 +155,6 @@ public final class GraphicalPlayer {
         if (messageList.size() > MAXIMUM_NUMBER_VISIBLE_MESSAGES) {
             messageList.remove(0);
         }
-        //TODO vérifier si c'est mieux de mettre ça dans receiveInfo ou dans setState d^Observable GameState
-
-//        openEndingPopUp(message);
-//        if(gameFinishedMessage(message)){   // --- --- Extension popUp fin
-//            openEndingPopUp(message);
-//        }
     }
 
     /**
@@ -470,7 +467,7 @@ public final class GraphicalPlayer {
         drawTicketsProperty.set(null);
     }
 
-    /**
+    /**ETAPE LIBRE
      * méthode appelée dans createInfoView lorsque le bouton Chat est activé Son
      * role est de faire apparaitre le chat
      * 
@@ -510,7 +507,7 @@ public final class GraphicalPlayer {
             if (!input.isBlank() && !input.equals(DEFAULT_TEXT_INPUT)) {
                 AddToChatHandler addToChatHandler = addToChatProperty.get();
                 addToChatHandler.onNewChatMessage(input);
-                addToChat(String.join(": ", List.of("You", input)));
+                addToChat(String.join(": ", "You", input));
                 // "You: " avant un message indique au joueur que c'est son
                 // message
             }
@@ -520,7 +517,8 @@ public final class GraphicalPlayer {
 
         Scene scene = new Scene(vBox);
         scene.getStylesheets().add("chooser.css");
-        stage.setTitle("Communicate with the other player");
+        chatListView.setMinWidth(500);//cette redimension permet de voir tout le Titre de stage
+        stage.setTitle(String.join("","Communique avec l'autre joueur (les messages ont une longueur maximum de ", String.valueOf(TEXT_INPUT_MAX_CAPACITY), ")"));
         stage.setScene(scene);
 
         stage.show();

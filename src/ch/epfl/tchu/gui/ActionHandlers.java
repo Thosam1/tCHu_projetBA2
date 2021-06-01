@@ -11,6 +11,7 @@ import ch.epfl.tchu.game.Ticket;
  */
 public interface ActionHandlers {
 
+    /**ETAPE LIBRE*/
     interface AddToChatHandler{
         /**
          * appelé lorsqu'un joueur désire envoyer un chat

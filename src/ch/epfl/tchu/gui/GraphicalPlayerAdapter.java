@@ -59,8 +59,8 @@ public final class GraphicalPlayerAdapter implements Player {
     private final ActionHandlers.ClaimRouteHandler claimRouteHandler;
     private final ActionHandlers.ChooseCardsHandler chooseCardsHandler;
 
+    /**ETAPE LIBRE*/
     private final ActionHandlers.AddToChatHandler addToChatHandler;
-
     private LinkedList<String> pendingChatMessages = new LinkedList<>();
     
     /**
@@ -69,7 +69,7 @@ public final class GraphicalPlayerAdapter implements Player {
      */
     public GraphicalPlayerAdapter() {
         // créé les handlers
-        /**
+        /** ETAPE LIBRE
          * pendingChatMessages contient tous les messages entrés par un joueur
          * avant qu'ils aient été passé à l'autre joueur
          */
@@ -145,7 +145,7 @@ public final class GraphicalPlayerAdapter implements Player {
         Platform.runLater(() -> graphicalPlayer.receiveInfo(info));
     }
 
-    /**
+    /**ETAPE LIBRE
      * Cette méthode permet d'envoyer et recevoir un message
      * 
      * Dans un premier temps, si @param chatToAdd n'est pas vide ou null alors

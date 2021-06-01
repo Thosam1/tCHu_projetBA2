@@ -17,7 +17,9 @@ import ch.epfl.tchu.gui.Info;
  * @author Aymeric de chillaz (326617)
  */
 public abstract class Game {
-
+    //constante désignant le nombre maximum de messages du chat qui peuvent être
+    //updatés par un appel à updateChat
+    private static final int MAX_NUMBER_OF_CHAT_UPDATES = 5;
     private Game() {
     }
 
@@ -158,6 +160,7 @@ public abstract class Game {
                 // été gardé par le joueur courant
                 Game.infoToAll(players,
                         currInf.keptTickets(chosenTickets.size()), playerNames);
+
                 break;
 
             case DRAW_CARDS:
@@ -322,6 +325,7 @@ public abstract class Game {
                         else
                             Game.infoToAll(players, currInf.claimedRoute(
                                     desiredRoute, cardsUsedWithAddition), playerNames);
+
                         /**
                          * si le joueur ne rajoute pas de cartes alors il garde
                          * toutes ses cartes et saute son tour (gameState ne
@@ -334,7 +338,6 @@ public abstract class Game {
                                         : gameState.withClaimedRoute(
                                                 desiredRoute,
                                                 cardsUsedWithAddition);
-                        Game.updateStateForAll(players, gameState);                 // Extension, mis à jour de la listview des billets indirectement
                     }
 
                     // si le joueur n a pas de cartes additionnelles à poser
@@ -345,7 +348,6 @@ public abstract class Game {
                         
                         gameState = gameState.withClaimedRoute(desiredRoute,
                                 initialCards);
-                        Game.updateStateForAll(players, gameState);     // Extension, mis à jour de la listview des billets indirectement
 
                     } else {
                         // la route n est pas rajouté car le joueur n a pas les
@@ -366,7 +368,6 @@ public abstract class Game {
                     
                     gameState = gameState.withClaimedRoute(desiredRoute,
                             initialCards);
-                    Game.updateStateForAll(players, gameState);     // Extension, mis à jour de la listview des billets indirectement
                 }
                 break;
             default:
@@ -430,18 +431,18 @@ public abstract class Game {
 
         switch (Integer.compare(player1Score, player2Score)) {
         case 1:
-            Game.gameHasEndedToAll(players, infoMap.get(PlayerId.PLAYER_1)
+            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_1)
                     .won(player1Score, player2Score), playerNames);
             break;
         case 0:
-            Game.gameHasEndedToAll(players,
+            Game.infoToAll(players,
                     Info.draw(
                             List.of(playerNames.get(PlayerId.PLAYER_1),
                                     playerNames.get(PlayerId.PLAYER_2)),
                             player1Score), playerNames);
             break;
         case -1:
-            Game.gameHasEndedToAll(players, infoMap.get(PlayerId.PLAYER_2)
+            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_2)
                     .won(player2Score, player1Score), playerNames);
             break;
         default:
@@ -456,6 +457,8 @@ public abstract class Game {
     private static void infoToAll(Map<PlayerId, Player> players, String info,
             Map<PlayerId, String> playerNames) {
         players.forEach((c, v) -> v.receiveInfo(info));
+
+        /**ETAPE LIBRE*/
         updateChat(players, playerNames);
     }
 
@@ -503,9 +506,7 @@ public abstract class Game {
      * d'appels à cette méthode)
      * 
      * Il est important de noter que le jeu n'a pas de notion du temps et que
-     * chaque appel à cette méthode permet d'updater un message max par joueur
-     * Si nous voulons remédier à ce problème, nous pouvons effectuer le code de
-     * cette méthode plusieurs fois par appel
+     * chaque appel à cette méthode permet d'updater un nombre restreint de messages
      * 
      * @param players
      *            permet d'avoir accès aux Player
@@ -514,7 +515,7 @@ public abstract class Game {
      */
     private static void updateChat(Map<PlayerId, Player> players,
             Map<PlayerId, String> playerNames) {
-        for (int i = 0; i < 5; i++) {// TODO constante
+        for (int i = 0; i < MAX_NUMBER_OF_CHAT_UPDATES; i++) {
             String chatFor2 = players.get(PlayerId.PLAYER_1).updateChat("",
                     true);
 
