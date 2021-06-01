@@ -113,7 +113,7 @@ public final class RemotePlayerClient {
                     encoded = Serdes.SERDE_TURN_KIND.serialize(turn);
                     writeFlush(w, encoded);
                     break;
-                case GAME_HAS_ENDED:
+                case GAME_HAS_ENDED:    // --- Extension
                     String msg = Serdes.SERDE_STRING.deserialize(arg1);
                     player.gameHasEnded(msg);
                     break;

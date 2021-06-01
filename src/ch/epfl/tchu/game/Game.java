@@ -115,6 +115,8 @@ public abstract class Game {
                 .keptTickets(nbOfInitialTickets.get(0)), playerNames);
         Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_2)
                 .keptTickets(nbOfInitialTickets.get(1)), playerNames);
+//        Game.gameHasEndedToAll(players, infoMap.get(PlayerId.PLAYER_1)  //TODO EFFACER
+//                .won(72, 14), playerNames);
 
         /** La partie commence */
         while (numberOfLastTurns <= 2) {// le loop s'arrete quand les deux
@@ -431,18 +433,18 @@ public abstract class Game {
 
         switch (Integer.compare(player1Score, player2Score)) {
         case 1:
-            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_1)
+            Game.gameHasEndedToAll(players, infoMap.get(PlayerId.PLAYER_1)
                     .won(player1Score, player2Score), playerNames);
             break;
         case 0:
-            Game.infoToAll(players,
+            Game.gameHasEndedToAll(players,
                     Info.draw(
                             List.of(playerNames.get(PlayerId.PLAYER_1),
                                     playerNames.get(PlayerId.PLAYER_2)),
                             player1Score), playerNames);
             break;
         case -1:
-            Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_2)
+            Game.gameHasEndedToAll(players, infoMap.get(PlayerId.PLAYER_2)
                     .won(player2Score, player1Score), playerNames);
             break;
         default:

@@ -216,6 +216,15 @@ public final class GraphicalPlayerAdapter implements Player {
     }
 
     /**
+     * appelle, sur le fil JavaFX, la méthode openEndingPopUp du joueur graphique
+     * @param message le message à afficher
+     */
+    @Override
+    public void gameHasEnded(String message){
+        Platform.runLater(() ->graphicalPlayer.openEndingPopUp(message));
+    }
+
+    /**
      * enchaîne les actions effectuées par setInitialTicketChoice et
      * chooseInitialTickets
      */
@@ -224,11 +233,6 @@ public final class GraphicalPlayerAdapter implements Player {
         Platform.runLater(() -> graphicalPlayer.chooseTickets(options,
                 chooseTicketHandler));
         return take(qTickets);
-    }
-
-    @Override
-    public void gameHasEnded(String message){
-        graphicalPlayer.openEndingPopUp(message);
     }
 
     /**

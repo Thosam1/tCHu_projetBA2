@@ -567,7 +567,7 @@ public final class GraphicalPlayer {
             }
         }
         private void setTextBG(Ticket item, Map<Ticket, Integer> mapHadAll){
-            setText(item.toString() + "      ; " + mapHadAll.get(item) + " points");
+            setText(String.join("", item.toString(), "      ; ", mapHadAll.get(item).toString(), " points"));
         }
 
         private void textAlignment(String ticketName, String pointsOfTicket){
@@ -592,17 +592,24 @@ public final class GraphicalPlayer {
         observableGame.updateTicketListPopUp(tickets);
     }
 
+    private ListView<Ticket> listViewTicketHighlightStationsExtension(ListView<Ticket> basicListViewTicket){
+//        basicListViewTicket.getSelectionModel().selectedItemProperty().addListener();
+        return null;
+    }
 
-    // --- --- Extension méthode appeléé dans receiveInfo lorsque que la fin du jeu est communiquée
+    /**
+     * méthode appeléé dans receiveInfo lorsque que la fin du jeu est communiquée
+     * @param message
+     */
     protected void openEndingPopUp(String message){
-//        assert isFxApplicationThread(); exception thrown
+        assert isFxApplicationThread();
         boolean winner = message.contains(mapPlayerNames.get(playerId));    // if the actual player wins or has a draw
 
         Stage stage = new Stage(StageStyle.UTILITY);
-        stage.initOwner(main);
         stage.initModality(Modality.WINDOW_MODAL);
 
         VBox vBox = new VBox();
+
         String imagePath = (winner) ? Winners.pickRandomWinnerGif() : Losers.pickRandomLoserGif();
         ImageView imageView = new ImageView(new Image(imagePath));
         vBox.setPadding(new Insets(10, 50, 20, 50));
@@ -617,35 +624,7 @@ public final class GraphicalPlayer {
         Scene scene = new Scene(vBox);
         stage.setTitle("Le jeu est fini !");
         stage.setScene(scene);
+//        stage.setFullScreen(true);
         stage.show();
     }
-
-//    /**
-//     * Méthode qui check si le message de fin de jeu est reçu ou pas et qui retourne vrai ou faux
-//     * @param message
-//     * @return
-//     */
-//    private boolean gameFinishedMessage(String message){
-//        String draw = StringsFr.DRAW.replace("%s", "")
-//                .replace("\n", "");
-//        String[] arrayDraw = draw.split(" ");
-//
-//        String wins = StringsFr.WINS.replace("%s", "")
-//                .replace("\n", "");
-//        String[] arrayWins = wins.split(" ");
-//        int similarities = 0;
-//        for(String s : arrayDraw){
-//            if(s.isBlank()){continue;}
-//            if(message.contains(s)){
-//                similarities += 1;
-//            }
-//        }
-//        for(String s : arrayWins){
-//            if(s.isBlank()){continue;}
-//            if(message.contains(s)){
-//                similarities += 1;
-//            }
-//        }
-//        return (similarities >= 5); //on aurait pu mettre contains() "sont ex æqo avec" ou "remporte la victoire avec" mais qui sait si on change ces valeurs au futur (eg traduction anglaise etc...)
-//    }
 }
