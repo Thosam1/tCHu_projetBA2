@@ -516,6 +516,7 @@ public abstract class Game {
     private static void updateChat(Map<PlayerId, Player> players,
             Map<PlayerId, String> playerNames) {
         for (int i = 0; i < MAX_NUMBER_OF_CHAT_UPDATES; i++) {
+            
             String chatFor2 = players.get(PlayerId.PLAYER_1).updateChat("",
                     true);
 

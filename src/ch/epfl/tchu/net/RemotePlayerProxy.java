@@ -116,9 +116,7 @@ public final class RemotePlayerProxy implements Player {
         String argument1 = Serdes.SERDE_STRING.serialize(chatToAdd);
         messageOut(MessageId.UPDATE_CHAT.name(), argument1);
         
-        String messageIn = Serdes.SERDE_STRING.deserialize(messageIn());
-        return (messageIn.equals("empty"))? "" : messageIn;
-        //return Serdes.SERDE_STRING.deserialize(messageIn());
+        return Serdes.SERDE_STRING.deserialize(messageIn());
     }
     
     @Override
