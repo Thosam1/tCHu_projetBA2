@@ -115,8 +115,6 @@ public abstract class Game {
                 .keptTickets(nbOfInitialTickets.get(0)), playerNames);
         Game.infoToAll(players, infoMap.get(PlayerId.PLAYER_2)
                 .keptTickets(nbOfInitialTickets.get(1)), playerNames);
-//        Game.gameHasEndedToAll(players, infoMap.get(PlayerId.PLAYER_1)  //TODO EFFACER
-//                .won(72, 14), playerNames);
 
         /** La partie commence */
         while (numberOfLastTurns <= 2) {// le loop s'arrete quand les deux
