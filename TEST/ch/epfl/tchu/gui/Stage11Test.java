@@ -9,6 +9,7 @@ import ch.epfl.tchu.game.Game;
 import ch.epfl.tchu.game.Player;
 import ch.epfl.tchu.game.PlayerId;
 import ch.epfl.tchu.game.Ticket;
+import ch.epfl.tchu.net.Serdes;
 import javafx.application.Application;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -18,8 +19,7 @@ public final class Stage11Test extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-
-
+        
         System.out.println(StringsFr.DRAW);
         String draw = StringsFr.DRAW.replace("%s", "")
                 .replace("\n", "");
