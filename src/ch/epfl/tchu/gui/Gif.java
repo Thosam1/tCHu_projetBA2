@@ -11,7 +11,6 @@ public class Gif {
     public enum Winners {
         LITTLEGIRLDANCING("WinnerGif/littleGirlDancing.gif"),   // works
         HAMSTER("WinnerGif/hamsterDance.gif"),  // works
-//        GOKU("WinnerGif/gokuWinner.gif"),
         GECKO("WinnerGif/geckoThanos.gif");     // works
 
 
@@ -47,15 +46,9 @@ public class Gif {
 
     //losers
     public enum Losers {
-//        FATALITY("LoserGif/fatality.gif"),
-//        FAILFUNNY("LoserGif/failFunny.gif"),  // doesnt
-//        BASKETFAIL("LoserGif/basketFail.gif"), // half cut
-        LOSERTEXT("LoserGif/LoserText.gif"), //works
-//        GOLUMLOSER("LoserGif/golumLoser.gif"),        //too fast
-//        FREEZERLOSER("LoserGif/FreezerLoser.gif"),  //doesnt work
-//        GREYGIRLLOSER("LoserGif/greyGirlLoser.gif"),  // doesnt
-        DEALWITHIT("LoserGif/dealWithItLoser.gif"),     // works
-        PINGU("LoserGif/pinguLoser.gif");       // works
+        LOSERTEXT("LoserGif/LoserText.gif"),
+        DEALWITHIT("LoserGif/dealWithItLoser.gif"),
+        PINGU("LoserGif/pinguLoser.gif");
 
         /**
          *  Liste immuable contenant toutes les valeurs du type enum Losers, dans l'ordre

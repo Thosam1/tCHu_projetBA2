@@ -537,6 +537,10 @@ public final class GraphicalPlayer {
     }
 
     //  --- --- --- Extension
+
+    /**
+     * classe imbriquée pour s'occuper de la gestion de la couleur des lignes contenant les billets
+     */
     public static class TicketListBG extends ListCell<Ticket> { // aussi utilisée dans deckViewCreator
         private final ObservableGameState game;
         public TicketListBG(ObservableGameState game){
@@ -589,6 +593,7 @@ public final class GraphicalPlayer {
     protected void openEndingPopUp(String message){
         assert isFxApplicationThread();
         boolean winner = message.contains(mapPlayerNames.get(playerId));    // if the actual player wins or has a draw
+        //critique : ne fonctionnerais pas si on ajoute le nom du perdant dans le message StringsFr. des gagnants
 
         Stage stage = new Stage(StageStyle.UTILITY);
         stage.initModality(Modality.WINDOW_MODAL);
