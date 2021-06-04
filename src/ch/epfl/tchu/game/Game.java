@@ -338,6 +338,7 @@ public abstract class Game {
                                         : gameState.withClaimedRoute(
                                                 desiredRoute,
                                                 cardsUsedWithAddition);
+                        Game.updateStateForAll(players, gameState);                 // Extension, mis à jour de la listview des billets indirectement
                     }
 
                     // si le joueur n a pas de cartes additionnelles à poser
@@ -348,13 +349,13 @@ public abstract class Game {
                         
                         gameState = gameState.withClaimedRoute(desiredRoute,
                                 initialCards);
+                        Game.updateStateForAll(players, gameState);                 // Extension, mis à jour de la listview des billets indirectement
 
                     } else {
                         // la route n est pas rajouté car le joueur n a pas les
                         // cartes additionelles
                         Game.infoToAll(players,
                                 currInf.didNotClaimRoute(desiredRoute), playerNames);
-
                     }
                 }
 
@@ -368,6 +369,7 @@ public abstract class Game {
                     
                     gameState = gameState.withClaimedRoute(desiredRoute,
                             initialCards);
+                    Game.updateStateForAll(players, gameState);                 // Extension, mis à jour de la listview des billets indirectement
                 }
                 break;
             default:
