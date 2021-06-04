@@ -20,7 +20,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -553,34 +552,24 @@ public final class GraphicalPlayer {
             if(!map.isEmpty() && !mapHadAll.isEmpty() && item != null){
                 if(map.get(item) != null && map.get(item) > 0){
                     getStyleClass().set(0, "ticketClaimed");
-//                    textAlignment(item.toString(), mapHadAll.get(item) + " points");
                     setTextBG(item, mapHadAll);
                 }else if (mapHadAll.get(item) != null && mapHadAll.get(item) < 0){
                     getStyleClass().set(0, "ticketImpossible");
-//                    textAlignment(item.toString(), mapHadAll.get(item) + " points");
                     setTextBG(item, mapHadAll);
                 }else{
                     setText(item.toString());
-//                    setStyle(null);
                     getStyleClass().set(0, null);
                 }
             }
         }
         private void setTextBG(Ticket item, Map<Ticket, Integer> mapHadAll){
-            setText(String.join("", item.toString(), "      ; ", mapHadAll.get(item).toString(), " points"));
-        }
-
-        private void textAlignment(String ticketName, String pointsOfTicket){
-//            Label ticket = new Label(ticketName);
-//            Label points = new Label(pointsOfTicket);
-//            ticket.setAlignment(Pos.CENTER_LEFT);
-//            points.setAlignment(Pos.CENTER_RIGHT);
-            Text ticket = new Text(ticketName);
-            Text points = new Text(pointsOfTicket);
-            ticket.setTextAlignment(TextAlignment.LEFT);
-            points.setTextAlignment(TextAlignment.RIGHT);
-            HBox hBox = new HBox(ticket, points);
-            setGraphic(hBox);
+            //builder pour éviter +
+            StringBuilder str = new StringBuilder();
+            str.append(item.toString());
+            str.append("      ; ");
+            str.append(mapHadAll.get(item).toString());
+            str.append(" points");
+            setText(str.toString());
         }
     }
 
@@ -592,10 +581,6 @@ public final class GraphicalPlayer {
         observableGame.updateTicketListPopUp(tickets);
     }
 
-    private ListView<Ticket> listViewTicketHighlightStationsExtension(ListView<Ticket> basicListViewTicket){
-//        basicListViewTicket.getSelectionModel().selectedItemProperty().addListener();
-        return null;
-    }
 
     /**
      * méthode appeléé dans receiveInfo lorsque que la fin du jeu est communiquée
@@ -624,7 +609,6 @@ public final class GraphicalPlayer {
         Scene scene = new Scene(vBox);
         stage.setTitle("Le jeu est fini !");
         stage.setScene(scene);
-//        stage.setFullScreen(true);
         stage.show();
     }
 }

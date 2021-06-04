@@ -26,7 +26,7 @@ public class Gif {
         public static final int COUNT = Winners.ALL.size();
 
         private final String path;
-        private Winners(String path) { this.path = path;}  // constructeur privé
+        Winners(String path) { this.path = path;}  // constructeur privé
 
         /**
          * utilisée lors du pop up de fin du jeu sur l'écran du joueur s'il gagne
@@ -68,7 +68,7 @@ public class Gif {
         public static final int COUNT = Losers.ALL.size();
 
         private final String path;
-        private Losers(String path) { this.path = path;}  // constructeur privé
+        Losers(String path) { this.path = path;}  // constructeur privé
 
 
         /**

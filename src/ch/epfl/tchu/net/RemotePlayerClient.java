@@ -60,7 +60,6 @@ public final class RemotePlayerClient {
                 String arg1 = (textSplit.length >= 2) ? textSplit[1] : null;
                 String arg2 = (textSplit.length >= 3) ? textSplit[2] : null;
                 String encoded = "";
-
                 switch (message) {
                 case INIT_PLAYERS:
                     PlayerId ownId = Serdes.SERDE_PLAYER_ID.deserialize(arg1);
