@@ -28,17 +28,7 @@ your authentification token is here : https://dashboard.ngrok.com/get-started/yo
     this will establish an access to your localhost on the socket 5108 (the tChu server default socket)
 
 
-Session Status                online                                                                                              
-Account                       Nom Prénom (Plan: Free)                                                                         
-Version                       2.3.40                                                                                              
-Region                        Europe (eu)                                                                                   
-Web Interface                 http://127.0.0.1:4040                                                                               
-Forwarding                    tcp://2.tcp.ngrok.io:14491 -> localhost:5108                                                        
-                                                                                                                                  
-Connections                   ttl     opn     rt1     rt5     p50     p90                                                         
-                              2       0       0.00    0.00    948.48  1750.43
-
-![image](https://user-images.githubusercontent.com/63594070/128867604-f6b5d075-b729-43f5-b1a2-e4fa9c0e46a5.png)
+![image](https://user-images.githubusercontent.com/63594070/128867728-a268d958-74c9-4ce2-a085-7ea055936740.png)
 
 
 5) under "environment variable" of the class ServerMain, write:  2.tcp.ngrok.io:14491 (you will have a different number)
