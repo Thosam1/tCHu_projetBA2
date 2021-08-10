@@ -3,6 +3,7 @@
 ## Usage :
 
 For a local game : run Stage11Test which is under TEST/ch.epfl/tchu/gui/Stage11Test
+
 If you wanna play with friends through the internet, install ngrok and follow my youtube tutorial : https://youtu.be/KMK-xSsbpQs
 
 ## Prerequisites : 
